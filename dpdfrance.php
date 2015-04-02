@@ -227,7 +227,7 @@ class DPDFrance extends CarrierModule
 
 		parent::__construct();
 
-		$this->displayName = $this->l('DPD');
+		$this->displayName = $this->l('DPD France');
 		$this->description = $this->l('Offer DPD\'s fast and reliable delivery services to your customers');
 		$this->confirmUninstall = $this->l('Warning: all the data saved in your database will be deleted. Are you sure you want uninstall this module?');
 
@@ -256,6 +256,49 @@ class DPDFrance extends CarrierModule
 
 		if (_PS_VERSION_ >= '1.4' && (!$this->registerHook('header') || !$this->registerHook('paymentTop')))
 			return false;
+		return true;
+	}
+	
+	public static function uninstallByName($name)
+	{
+		if (!is_array($name))
+			$name = array($name);
+		$res = true;
+
+		foreach ($name as $n)
+			if (Validate::isModuleName($n))
+				$res &= Module::getInstanceByName($n)->uninstall();
+		return $res;
+	}
+
+	/* Migration function for customers coming from EXAPAQ v5 module */
+	public function upgradeFromExapaq()
+	{
+		Configuration::updateValue('DPDFRANCE_NOM_EXP', Configuration::get('EXAPAQ_NOM_EXP'));
+		Configuration::updateValue('DPDFRANCE_ADDRESS_EXP', Configuration::get('EXAPAQ_ADDRESS_EXP'));
+		Configuration::updateValue('DPDFRANCE_ADDRESS2_EXP', Configuration::get('EXAPAQ_ADDRESS2_EXP'));
+		Configuration::updateValue('DPDFRANCE_CP_EXP', Configuration::get('EXAPAQ_CP_EXP'));
+		Configuration::updateValue('DPDFRANCE_VILLE_EXP', Configuration::get('EXAPAQ_VILLE_EXP'));
+		Configuration::updateValue('DPDFRANCE_TEL_EXP', Configuration::get('EXAPAQ_TEL_EXP'));
+		Configuration::updateValue('DPDFRANCE_EMAIL_EXP', Configuration::get('EXAPAQ_EMAIL_EXP'));
+		Configuration::updateValue('DPDFRANCE_GSM_EXP', Configuration::get('EXAPAQ_GSM_EXP'));
+		Configuration::updateValue('DPDFRANCE_RELAIS_DEPOT_CODE', Configuration::get('EXAPAQ_ICIRELAIS_DEPOT_CODE'));
+		Configuration::updateValue('DPDFRANCE_RELAIS_SHIPPER_CODE', Configuration::get('EXAPAQ_ICIRELAIS_SHIPPER_CODE'));
+		Configuration::updateValue('DPDFRANCE_PREDICT_DEPOT_CODE', Configuration::get('EXAPAQ_PREDICT_DEPOT_CODE'));
+		Configuration::updateValue('DPDFRANCE_PREDICT_SHIPPER_CODE', Configuration::get('EXAPAQ_PREDICT_SHIPPER_CODE'));
+		Configuration::updateValue('DPDFRANCE_CLASSIC_DEPOT_CODE', Configuration::get('EXAPAQ_CLASSIC_DEPOT_CODE'));
+		Configuration::updateValue('DPDFRANCE_CLASSIC_SHIPPER_CODE', Configuration::get('EXAPAQ_CLASSIC_SHIPPER_CODE'));
+		Configuration::updateValue('DPDFRANCE_SUPP_ILES', Configuration::get('EXAPAQ_SUPP_ILES'));
+		Configuration::updateValue('DPDFRANCE_SUPP_MONTAGNE', Configuration::get('EXAPAQ_SUPP_MONTAGNE'));
+		Configuration::updateValue('DPDFRANCE_ETAPE_EXPEDITION', Configuration::get('EXAPAQ_ETAPE_EXPEDITION'));
+		Configuration::updateValue('DPDFRANCE_ETAPE_EXPEDIEE', Configuration::get('EXAPAQ_ETAPE_EXPEDIEE'));
+		Configuration::updateValue('DPDFRANCE_ETAPE_LIVRE', Configuration::get('EXAPAQ_ETAPE_LIVRE'));
+		Configuration::updateValue('DPDFRANCE_AD_VALOREM', Configuration::get('EXAPAQ_AD_VALOREM'));
+		Configuration::updateValue('DPDFRANCE_RELAIS_MYPUDO_URL', Configuration::get('EXAPAQ_ICIRELAIS_MYPUDO_URL'));
+
+		if (!Db::getInstance()->Execute('DROP TABLE IF EXISTS '._DB_PREFIX_.'exapaq_france'))
+			return false;
+
 		return true;
 	}
 
@@ -312,6 +355,28 @@ class DPDFrance extends CarrierModule
 		$sql = 'UPDATE '._DB_PREFIX_.'country SET id_zone='.(int)$id_zone_france.' WHERE iso_code = \'FR\' and active = 1';
 		if (!Db::getInstance()->Execute($sql))
 			return false;
+
+		// Disable old carriers
+		if (!Db::getInstance()->Execute('UPDATE '._DB_PREFIX_.'carrier SET deleted = 1 WHERE url LIKE \'%exapaq%\''))
+			return false;
+
+		// Uninstall old modules and migrate configuration if coming from EXAPAQ v5 module.
+		if (Module::isInstalled('exapaq'))
+		{
+			$this->upgradeFromExapaq();
+			$this->uninstallByName('exapaq');
+		}
+		if (Module::isInstalled('icirelais'))
+			$this->uninstallByName('icirelais');
+		if (Module::isInstalled('icirelaisedition'))
+			$this->uninstallByName('icirelaisedition');
+		if (Module::isInstalled('exapredict'))
+			$this->uninstallByName('exapredict');
+		if (Module::isInstalled('exapredictedition'))
+			$this->uninstallByName('exapredictedition');
+		if (Module::isInstalled('exaclassicedition'))
+			$this->uninstallByName('exaclassicedition');
+
 		return true;
 	}
 
