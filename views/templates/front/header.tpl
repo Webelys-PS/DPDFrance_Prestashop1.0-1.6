@@ -1,5 +1,5 @@
 {**
- * 2007-2015 PrestaShop
+ * 2007-2016 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -17,15 +17,15 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to http://www.prestashop.com for more information.
  *
- * @author    DPD France S.A.S. <ensavoirplus.ecommerce@dpd.fr>
- * @copyright 2015 DPD France S.A.S.
+ * @author    DPD France S.A.S. <support.ecommerce@dpd.fr>
+ * @copyright 2016 DPD France S.A.S.
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  *}
 
 <script type="text/javascript">
-	// Global JS Value
-	var dpdfranceRelaisCarrierId = "{$dpdfrance_relais_carrier_id|escape:'javascript':'UTF-8'}";
-	var dpdfrancePredictCarrierId = "{$dpdfrance_predict_carrier_id|escape:'javascript':'UTF-8'}";
-	var psVer = parseFloat("{$ps_version|escape:'javascript':'UTF-8'}");
-	var opc = "{$opc|escape:'javascript':'UTF-8'}";
+    var dpdfranceRelaisCarrierId = "{$dpdfrance_relais_carrier_id|escape:'javascript':'UTF-8'}";
+    var dpdfrancePredictCarrierId = "{$dpdfrance_predict_carrier_id|escape:'javascript':'UTF-8'}";
+    var psVer = parseFloat("{$ps_version|escape:'javascript':'UTF-8'}");
+    var opc = "{$opc|escape:'javascript':'UTF-8'}";
+    var cart_id = "{$cart->id|escape:'javascript':'UTF-8'}";
 </script>

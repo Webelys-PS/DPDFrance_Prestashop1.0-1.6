@@ -1,0 +1,27 @@
+Lead Prestashop
+
+*****************************************************
+      Voici une demande d'informations générée 
+      depuis le module DPD pour Prestashop.
+ Merci d'entrer en contact avec la société suivante
+*****************************************************
+
+Raison sociale : {raison_sociale}
+
+Site web : {site_web}
+
+Nom du contact : {firstName} {lastName}
+
+Adresse : {adresse}
+
+Code postal : {code_postal}
+
+Ville : {ville}
+
+E-mail : {email}
+
+Téléphone : {telephone}
+
+Volumétrie indiquée : {volume_colis}
+
+Message du prospect: {message}

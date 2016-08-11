@@ -1,5 +1,5 @@
 {**
- * 2007-2014 PrestaShop
+ * 2007-2016 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -17,8 +17,8 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to http://www.prestashop.com for more information.
  *
- * @author    DPD S.A.S. <ensavoirplus.ecommerce@dpd.fr>
- * @copyright 2015 DPD S.A.S.
+ * @author    DPD France S.A.S. <support.ecommerce@dpd.fr>
+ * @copyright 2016 DPD France S.A.S.
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  *}
 
@@ -26,7 +26,7 @@
 {literal}
 $(document).ready(function() 
 {
-	document.getElementById('opc_payment_methods-content').style.display = "none";
+    document.getElementById('opc_payment_methods-content').style.display = "none";
 });
 {/literal}
 </script>

@@ -1,5 +1,5 @@
 {**
- * 2007-2014 PrestaShop
+ * 2007-2016 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -17,10 +17,11 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to http://www.prestashop.com for more information.
  *
- * @author    DPD S.A.S. <ensavoirplus.ecommerce@dpd.fr>
- * @copyright 2015 DPD S.A.S.
+ * @author    DPD France S.A.S. <support.ecommerce@dpd.fr>
+ * @copyright 2016 DPD France S.A.S.
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  *}
+
 <link rel="stylesheet" type="text/css" href="../modules/dpdfrance/views/css/admin/dpdfrance_config.css"/>
 <link rel="stylesheet" type="text/css" href="../modules/dpdfrance/views/js/admin/jquery/plugins/fancybox/jquery.fancybox.css" media="screen"/>
 <script type="text/javascript" src="../modules/dpdfrance/views/js/admin/jquery/plugins/fancybox/jquery.fancybox.js"></script>
@@ -39,115 +40,8 @@ function dpdfrance_attr_carrier(element) {
     });
     element.val(maxValue);
 }
-
-$(document).ready(function() {
-    dpdfrance_contact_form = $("#dpdfrance_contact_form").html();
-    $('#open_pasclient').fancybox({
-        autoDimensions: false, 
-        minWidth: 640, 
-        maxWidth: 960, 
-        height: 700, 
-        padding: 20, 
-        modal: false,
-        hideOnOverlayClick: true,
-        beforeShow: function() {
-            $("#contact_form").validate({
-                rules: {
-                    siret: {
-                        required: true,
-                        digits: true,
-                        minlength: 14,
-                        maxlength: 14
-                    },
-                    optin: {
-                        required: true,
-                    },
-                    zipcode: {
-                        required: true,
-                        digits: true,
-                        minlength: 5,
-                        maxlength: 5
-                    },
-                    telephone: {
-                        required: true,
-                        digits: true,
-                        minlength: 10
-                    },
-                    message: {
-                        maxlength: 200,
-                    },
-                },
-                messages: {
-                    siret: " {/literal}{l s='Please enter your' mod='dpdfrance'} {l s='SIRET' mod='dpdfrance'}{literal}",
-                    optin: " {/literal}{l s='Your agreement is required' mod='dpdfrance'}{literal}",
-                    zipcode: {
-                        required: " {/literal}{l s='Please enter your' mod='dpdfrance'} {l s='Postal code' mod='dpdfrance'}{literal}",
-                        minlength: " 5 {/literal}{l s='Minimum digits required' mod='dpdfrance'}{literal}",
-                        digits: " {/literal}{l s='Digits only' mod='dpdfrance'}{literal}",
-                    },
-                    telephone: {
-                        required: " {/literal}{l s='Please enter your' mod='dpdfrance'} {l s='Telephone' mod='dpdfrance'}{literal}",
-                        minlength: " 10 {/literal}{l s='Minimum digits required' mod='dpdfrance'}{literal}",
-                        digits: " {/literal}{l s='Digits only' mod='dpdfrance'}{literal}",
-                    },
-                    message: " {/literal}{l s='Your message can\'t exceed 200 characters' mod='dpdfrance'}{literal}",
-                },
-                submitHandler: function (form) {
-                    return true;
-                }
-            });
-        }
-    });
-    if ({/literal}{$dpdfrance_data_sent|escape:'htmlall':'UTF-8'} == 0{literal}) {
-        $('#open_pasclient').click();
-    }
-});
 </script>
 {/literal}
-
-<div id="dpdfrance_contact_form" style="display: none;">
-    <div style="text-align: left; margin:0; padding: 0">
-        <img src="../modules/dpdfrance/logo.png" /> <h2 style="display: inline; vertical-align: middle; margin-left: 6px;">{l s='Welcome to DPD France!' mod='dpdfrance'}</h2>
-    </div>
-
-    <hr style="display: block; border-bottom: 1px solid #DDD;">
-
-    <p style="margin-top: 20px; text-align: justify;">{l s='Thank you for installing our module. By choosing DPD, you will enjoy innovative delivery solutions: home appointment with our Predict service, to more than 5.000 Pickup relaypoints with DPD Relais, on workplace with DPD Classic and worldwide with the DPD Classic Intercontinental services.' mod='dpdfrance'}</p>
-    <p style="margin-top: 20px; text-align: justify;">{l s='In order to know more about you, please complete this form. If you like so, a sales representative can get in touch with you as soon as possible.' mod='dpdfrance'}</p>
-
-    <form id="contact_form" action="" method="post" style="margin-top: 20px; text-align: center">
-        <dl style="text-align: left">
-            <label for="siret" class="margin_contactform">{l s='SIRET' mod='dpdfrance'}</label>
-            <input type="text" value="" name="siret" id="siret" class="input_contactform"/><br/>
-            
-            <label for="zipcode" class="margin_contactform">{l s='Postal code' mod='dpdfrance'}</label>
-            <input type="text" value="" name="zipcode" id="zipcode" class="input_contactform"/><br/>
-            
-            <label for="telephone" class="margin_contactform">{l s='Telephone' mod='dpdfrance'}</label>
-            <input type="text" value="" name="telephone" id="telephone" class="input_contactform"/><br/>
-
-            <label for="volume_colis" class="margin_contactform">{l s='Mean number of parcels' mod='dpdfrance'}</label>
-                <select name="volume_colis" id="volume_colis" class="input_contactform">
-                    <option value="Je démarre mon activité">{l s='I\'m starting my business' mod='dpdfrance'}</option>
-                    <option value="< 100 colis / mois">{l s='< 100 parcels / month' mod='dpdfrance'}</option>
-                    <option value="100 à 500 colis / mois">{l s='100 to 500 parcels / month' mod='dpdfrance'}</option>
-                    <option value="> 500 colis / mois">{l s='> 500 parcels / month' mod='dpdfrance'}</option>
-                </select>
-            <br/>
-
-            <label for="message" class="margin_contactform">{l s='Feel free to leave us a message' mod='dpdfrance'}</label>
-            <textarea rows="5" value="" name="message" id="message" style="width: 200px; height: 150px;"></textarea><br/><br/>
-            
-            <span style="margin-left: 5px">{l s='You agree to send this data to DPD France' mod='dpdfrance'}
-            <input style="margin-left: 10px" type="checkbox" value="" name="optin" id="optin"/></span>
-            
-            <p style="margin-left: 5px; font-size: 10px;">{l s='You have a right to access, modify, rectify and delete data concerning you (Article 34 of the Data Processing and Freedom law of the 6th of January 1978). You may exercise this right by ' mod='dpdfrance'} <a target="_blank" href="http://www.dpd.fr/nous_contacter">{l s='contacting us.' mod='dpdfrance'}</a>
-            </p>
-        </dl>
-
-        <input type="submit" class="button" name="submitContactForm" value="{l s='Confirm' mod='dpdfrance'}" style="float: center; margin-top: 10px; padding: 10px 20px" />
-    </form>
-</div>
 
 <form action="{$form_submit_url|escape:'htmlall':'UTF-8'}" method="post">
     <fieldset><legend><img src="../modules/dpdfrance/views/img/admin/admin.png" alt="" title="" />{l s='Settings' mod='dpdfrance'}</legend>
@@ -155,22 +49,28 @@ $(document).ready(function() {
         <!-- Tabs header -->
         <div id="dpdfrance_menu">
             <ul id="onglets">
-                <li><a id="onglet0" href="javascript:void(0)" onclick="$(&quot;#donnees_exp,#modes_transport,#options_supp,#gestion_exp,#recap&quot;).fadeOut(0, function() {literal}{{/literal}$(&quot;#accueil&quot;).fadeIn(&quot;slow&quot;){literal}}{/literal});"> {l s='Start' mod='dpdfrance'} </a></li>
-                <li><a id="onglet1" href="javascript:void(0)" onclick="$(&quot;#accueil,#modes_transport,#options_supp,#gestion_exp,#recap&quot;).fadeOut(0, function() {literal}{{/literal}$(&quot;#donnees_exp&quot;).fadeIn(&quot;slow&quot;){literal}}{/literal});"> {l s='Your personal data' mod='dpdfrance'} </a></li>
-                <li><a id="onglet2" href="javascript:void(0)" onclick="$(&quot;#accueil,#donnees_exp,#options_supp,#gestion_exp,#recap&quot;).fadeOut(0, function() {literal}{{/literal}$(&quot;#modes_transport&quot;).fadeIn(&quot;slow&quot;){literal}}{/literal});"> {l s='Delivery services' mod='dpdfrance'} </a></li>
-                <li><a id="onglet3" href="javascript:void(0)" onclick="$(&quot;#accueil,#donnees_exp,#modes_transport,#gestion_exp,#recap&quot;).fadeOut(0, function() {literal}{{/literal}$(&quot;#options_supp&quot;).fadeIn(&quot;slow&quot;){literal}}{/literal});"> {l s='Advanced settings' mod='dpdfrance'} </a></li>
-                <li><a id="onglet4" href="javascript:void(0)" onclick="$(&quot;#accueil,#donnees_exp,#modes_transport,#options_supp,#recap&quot;).fadeOut(0, function() {literal}{{/literal}$(&quot;#gestion_exp&quot;).fadeIn(&quot;slow&quot;){literal}}{/literal});"> {l s='Orders management' mod='dpdfrance'} </a></li>
-                <li><a id="onglet5" href="javascript:void(0)" onclick="$(&quot;#accueil,#donnees_exp,#modes_transport,#options_supp,#gestion_exp&quot;).fadeOut(0, function() {literal}{{/literal}$(&quot;#recap&quot;).fadeIn(&quot;slow&quot;){literal}}{/literal});"> {l s='Summary' mod='dpdfrance'} </a></li>
+                <li style="background-color: #dc0032;"><a id="onglet0" href="javascript:void(0)" onclick="$(&quot;#donnees_exp,#modes_transport,#options_supp,#gestion_exp,#recap&quot;).fadeOut(0, function() {literal}{{/literal}$(&quot;#accueil&quot;).fadeIn(&quot;slow&quot;);$(&quot;#onglet0&quot;).parent().css(&quot;background-color&quot;, &quot;#dc0032&quot;);
+        $(&quot;#onglet1,#onglet2,#onglet3,#onglet4,#onglet5&quot;).parent().css(&quot;background-color&quot;, &quot;#808285&quot;);{literal}}{/literal});"> {l s='Start' mod='dpdfrance'} </a></li>
+                <li><a id="onglet1" href="javascript:void(0)" onclick="$(&quot;#accueil,#modes_transport,#options_supp,#gestion_exp,#recap&quot;).fadeOut(0, function() {literal}{{/literal}$(&quot;#donnees_exp&quot;).fadeIn(&quot;slow&quot;);$(&quot;#onglet1&quot;).parent().css(&quot;background-color&quot;, &quot;#dc0032&quot;);
+        $(&quot;#onglet0,#onglet2,#onglet3,#onglet4,#onglet5&quot;).parent().css(&quot;background-color&quot;, &quot;#808285&quot;);{literal}}{/literal});"> {l s='Your personal data' mod='dpdfrance'} </a></li>
+                <li><a id="onglet2" href="javascript:void(0)" onclick="$(&quot;#accueil,#donnees_exp,#options_supp,#gestion_exp,#recap&quot;).fadeOut(0, function() {literal}{{/literal}$(&quot;#modes_transport&quot;).fadeIn(&quot;slow&quot;);$(&quot;#onglet2&quot;).parent().css(&quot;background-color&quot;, &quot;#dc0032&quot;);
+        $(&quot;#onglet1,#onglet0,#onglet3,#onglet4,#onglet5&quot;).parent().css(&quot;background-color&quot;, &quot;#808285&quot;);{literal}}{/literal});"> {l s='Delivery services' mod='dpdfrance'} </a></li>
+                <li><a id="onglet3" href="javascript:void(0)" onclick="$(&quot;#accueil,#donnees_exp,#modes_transport,#gestion_exp,#recap&quot;).fadeOut(0, function() {literal}{{/literal}$(&quot;#options_supp&quot;).fadeIn(&quot;slow&quot;);$(&quot;#onglet3&quot;).parent().css(&quot;background-color&quot;, &quot;#dc0032&quot;);
+        $(&quot;#onglet1,#onglet2,#onglet0,#onglet4,#onglet5&quot;).parent().css(&quot;background-color&quot;, &quot;#808285&quot;);{literal}}{/literal});"> {l s='Advanced settings' mod='dpdfrance'} </a></li>
+                <li><a id="onglet4" href="javascript:void(0)" onclick="$(&quot;#accueil,#donnees_exp,#modes_transport,#options_supp,#recap&quot;).fadeOut(0, function() {literal}{{/literal}$(&quot;#gestion_exp&quot;).fadeIn(&quot;slow&quot;);$(&quot;#onglet4&quot;).parent().css(&quot;background-color&quot;, &quot;#dc0032&quot;);
+        $(&quot;#onglet1,#onglet2,#onglet3,#onglet0,#onglet5&quot;).parent().css(&quot;background-color&quot;, &quot;#808285&quot;);{literal}}{/literal});"> {l s='Orders management' mod='dpdfrance'} </a></li>
+                <li><a id="onglet5" href="javascript:void(0)" onclick="$(&quot;#accueil,#donnees_exp,#modes_transport,#options_supp,#gestion_exp&quot;).fadeOut(0, function() {literal}{{/literal}$(&quot;#recap&quot;).fadeIn(&quot;slow&quot;);$(&quot;#onglet5&quot;).parent().css(&quot;background-color&quot;, &quot;#dc0032&quot;);
+        $(&quot;#onglet1,#onglet2,#onglet3,#onglet4,#onglet0&quot;).parent().css(&quot;background-color&quot;, &quot;#808285&quot;);{literal}}{/literal});"> {l s='Summary' mod='dpdfrance'} </a></li>
             </ul>
         </div>
 
         <!-- Tab Accueil -->
         <div id="accueil" style="display:block;">
             <br/><span class="section_title">{l s='Welcome to DPD' mod='dpdfrance'}</span><br/>
-            <div class="notabene" style="font-size:16px;">{l s='Please configure the DPD module. Documentation is available here : ' mod='dpdfrance'}<a id="dpdfrance_pdf" href="javascript:void(0)" onclick="window.open(&quot;../modules/dpdfrance/docs/readme_dpdfrance_prestashop.pdf&quot;, &quot;s&quot;, &quot;width= 640, height= 900, left=0, top=0, resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=no, copyhistory=no&quot;);"><img src ="../modules/dpdfrance/views/img/admin/pdf.png" alt="PDF"/></a></div><br/>
+            <div class="notabene" style="font-size:14px;">{l s='You must be a DPD France customer to use this module, if not please get in touch with us at ' mod='dpdfrance'}<a href="http://www.dpd.fr/nous_contacter_prestashop" target="_blank">www.dpd.fr</a></div><br/>
             <div id="accueil_wrap">
-                <div id="pasclient"><a id="open_pasclient" href="#dpdfrance_contact_form" style="text-decoration:none;"><span class="client_title">{l s='Not a customer yet?' mod='dpdfrance'}</span><div id="pasclient_img"></div><span class="client_subtitle">{l s='Click here to get in touch with our sales team' mod='dpdfrance'}</span></a></div>
-                <div id="client" href="javascript:void(0)" onclick="window.open(&quot;../modules/dpdfrance/docs/readme_dpdfrance_prestashop.pdf&quot;, &quot;s&quot;, &quot;width= 640, height= 900, left=0, top=0, resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=no, copyhistory=no&quot;);$(&quot;#accueil,#modes_transport,#options_supp,#gestion_exp&quot;).fadeOut(0, function() {literal}{{/literal}$(&quot;#donnees_exp&quot;).fadeIn(&quot;slow&quot;){literal}}{/literal});"><span class="client_title">{l s='I\'m already a customer' mod='dpdfrance'}</span><div id="client_img"></div><span class="client_subtitle">{l s='Proceed to the plugin configuration' mod='dpdfrance'}</span></div>
+                <div id="documentation" href="javascript:void(0)" onclick="window.open(&quot;../modules/dpdfrance/docs/readme_dpdfrance_prestashop.pdf&quot;, &quot;s&quot;, &quot;width= 640, height= 900, left=0, top=0, resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=no, copyhistory=no&quot;);"><span class="client_title">{l s='Open documentation' mod='dpdfrance'}</span><div id="documentation_img"></div><span class="client_subtitle">{l s='Please click here first to access the user manual' mod='dpdfrance'}</span></div>
+                <div id="client" href="javascript:void(0)" onclick="$(&quot;#onglet1&quot;).click();"><span class="client_title">{l s='I\'m already a customer' mod='dpdfrance'}</span><div id="client_img"></div><span class="client_subtitle">{l s='Proceed to the plugin configuration' mod='dpdfrance'}</span></div>
                 <br/>
             </div>
         </div>
@@ -189,8 +89,8 @@ $(document).ready(function() {
                 <label>{l s='GSM' mod='dpdfrance'}</label><div class="margin-form"><input type="text" size="33" name="gsm_exp" value="{$gsm_exp|escape:'htmlall':'UTF-8'}" /></div>
                 <label>{l s='E-mail' mod='dpdfrance'}</label><div class="margin-form"><input type="text" size="33" name="email_exp" value="{$email_exp|escape:'htmlall':'UTF-8'}" /></div>
 
-                <center><a size="6" name="next" class="button" href="javascript:void(0)" onclick="$(&quot;#donnees_exp,#modes_transport,#options_supp,#gestion_exp,#recap&quot;).fadeOut(0, function() {literal}{{/literal}$(&quot;#accueil&quot;).fadeIn(&quot;slow&quot;){literal}}{/literal});">{l s='Previous' mod='dpdfrance'}</a> 
-                <a size="6" name="next" class="button" href="javascript:void(0)" onclick="$(&quot;#donnees_exp,#options_supp,#gestion_exp&quot;).fadeOut(0, function() {literal}{{/literal}$(&quot;#modes_transport&quot;).fadeIn(&quot;slow&quot;){literal}}{/literal});">{l s='Next' mod='dpdfrance'}</a></center>
+                <center><a size="6" name="next" class="button" href="javascript:void(0)" onclick="$(&quot;#onglet0&quot;).click();">{l s='Previous' mod='dpdfrance'}</a> 
+                <a size="6" name="next" class="button" href="javascript:void(0)" onclick="$(&quot;#onglet2&quot;).click();">{l s='Next' mod='dpdfrance'}</a></center>
                 <br/>
             </div>
         </div>
@@ -280,8 +180,8 @@ $(document).ready(function() {
 
             <div class="notabene">{l s='Please contact your DPD sales representative to get your contract numbers and depot code.' mod='dpdfrance'}</div><br/><br/>
 
-            <center><a size="6" name="next" class="button" href="javascript:void(0)" onclick="$(&quot;#modes_transport,#options_supp,#gestion_exp&quot;).fadeOut(0, function() {literal}{{/literal}$(&quot;#donnees_exp&quot;).fadeIn(&quot;slow&quot;){literal}}{/literal});">{l s='Previous' mod='dpdfrance'}</a> 
-            <a size="6" name="next" class="button" href="javascript:void(0)" onclick="$(&quot;#donnees_exp,#modes_transport,#gestion_exp&quot;).fadeOut(0, function() {literal}{{/literal}$(&quot;#options_supp&quot;).fadeIn(&quot;slow&quot;){literal}}{/literal});">{l s='Next' mod='dpdfrance'}</a></center>
+            <center><a size="6" name="next" class="button" href="javascript:void(0)" onclick="$(&quot;#onglet1&quot;).click();">{l s='Previous' mod='dpdfrance'}</a> 
+            <a size="6" name="next" class="button" href="javascript:void(0)" onclick="$(&quot;#onglet3&quot;).click();">{l s='Next' mod='dpdfrance'}</a></center>
             <br/>
             </div>
         </div>
@@ -289,14 +189,22 @@ $(document).ready(function() {
         <!-- Tab Options supplémentaires -->
         <div id="options_supp" style="display:none;">
             <strong><br/>{l s='Advanced settings' mod='dpdfrance'}</strong><br/><br/>
-            <label>{l s='DPD Relais WebService URL' mod='dpdfrance'}</label><div class="margin-form"><input type="text" size="48" name="mypudo_url" value="{$mypudo_url|escape:'htmlall':'UTF-8'}" /> {l s='Caution! Critical setting' mod='dpdfrance'}</div>
+            <label>{l s='DPD Relais WebService URL' mod='dpdfrance'}</label><div class="margin-form"><input type="text" size="48" name="mypudo_url" value="{$mypudo_url|escape:'htmlall':'UTF-8'}" /><br/>{l s='Caution! Critical setting' mod='dpdfrance'}</div>
 
             {if $ps_version >= '1.4'}
                 <label>{l s='Coastal islands & Corsica overcost' mod='dpdfrance'}</label><div class="margin-form"><input type="text" size="3" name="supp_iles" value="{$supp_iles|escape:'htmlall':'UTF-8'}" />{l s=' € (-1 to disable delivery to these areas)' mod='dpdfrance'}</div>
                 <label>{l s='Mountain areas overcost' mod='dpdfrance'}</label><div class="margin-form"><input type="text" size="3" name="supp_montagne" value="{$supp_montagne|escape:'htmlall':'UTF-8'}" />{l s=' € (-1 to disable delivery to these areas)' mod='dpdfrance'}</div>
             {/if}
-            <center><a size="6" name="next" class="button" href="javascript:void(0)" onclick="$(&quot;#donnees_exp,#options_supp,#gestion_exp&quot;).fadeOut(0, function() {literal}{{/literal}$(&quot;#modes_transport&quot;).fadeIn(&quot;slow&quot;){literal}}{/literal});">{l s='Previous' mod='dpdfrance'}</a> 
-            <a size="6" name="next" class="button" href="javascript:void(0)" onclick="$(&quot;#donnees_exp,#modes_transport,#options_supp&quot;).fadeOut(0, function() {literal}{{/literal}$(&quot;#gestion_exp&quot;).fadeIn(&quot;slow&quot;){literal}}{/literal});">{l s='Next' mod='dpdfrance'}</a></center>
+
+            <label>{l s='Google Maps API Key' mod='dpdfrance'}</label>
+            <div class="margin-form">
+                <input type="text" size="48" name="google_api_key" value="{$google_api_key|escape:'htmlall':'UTF-8'}" />
+                <br/>
+                <a href="https://console.developers.google.com/flows/enableapi?apiid=maps_backend,geocoding_backend,directions_backend,distance_matrix_backend,elevation_backend,places_backend&keyType=CLIENT_SIDE&reusekey=true" target="_blank" >{l s='Click here to retrieve your Google API Key' mod='dpdfrance'}</a>
+            </div>
+            <br/>
+            <center><a size="6" name="next" class="button" href="javascript:void(0)" onclick="$(&quot;#onglet2&quot;).click();">{l s='Previous' mod='dpdfrance'}</a> 
+            <a size="6" name="next" class="button" href="javascript:void(0)" onclick="$(&quot;#onglet4&quot;).click();">{l s='Next' mod='dpdfrance'}</a></center>
             <br/>
         </div>
 
@@ -355,9 +263,22 @@ $(document).ready(function() {
                 {/foreach}
                 </select><br/>{l s='Ad Valorem : Please refer to your pricing conditions.' mod='dpdfrance'}<br/>
             </div>
-        
-            <center><a size="6" name="next" class="button" href="javascript:void(0)" onclick="$(&quot;#donnees_exp,#modes_transport,#gestion_exp&quot;).fadeOut(0, function() {literal}{{/literal}$(&quot;#options_supp&quot;).fadeIn(&quot;slow&quot;){literal}}{/literal});">{l s='Previous' mod='dpdfrance'}</a> 
-            <a size="6" name="next" class="button" href="javascript:void(0)" onclick="$(&quot;#accueil,#donnees_exp,#modes_transport,#options_supp,#gestion_exp&quot;).fadeOut(0, function() {literal}{{/literal}$(&quot;#recap&quot;).fadeIn(&quot;slow&quot;){literal}}{/literal});">{l s='Next' mod='dpdfrance'}</a></center>
+
+            <label>{l s='DPD Returns service' mod='dpdfrance'}<br/></label>
+            <div class="margin-form">
+                <select name="retour">
+                {foreach from=$optretour item=option key=key} 
+                    {if $key == $dpdfrance_retour_option}
+                        <option value="{$key|escape:'htmlall':'UTF-8'}" selected>{$option|escape:'htmlall':'UTF-8'}</option>
+                    {else}
+                        <option value="{$key|escape:'htmlall':'UTF-8'}">{$option|escape:'htmlall':'UTF-8'}</option>
+                    {/if}
+                {/foreach}
+                </select><br/>{l s='DPD Returns options : Please refer to your pricing conditions.' mod='dpdfrance'}<br/>
+            </div>
+
+            <center><a size="6" name="next" class="button" href="javascript:void(0)" onclick="$(&quot;#onglet3&quot;).click();">{l s='Previous' mod='dpdfrance'}</a> 
+            <a size="6" name="next" class="button" href="javascript:void(0)" onclick="$(&quot;#onglet5&quot;).click();">{l s='Next' mod='dpdfrance'}</a></center>
             <br/>
         </div>
 
@@ -365,7 +286,7 @@ $(document).ready(function() {
         <div id="recap" style="display:none;">
             <strong><center><br/><br/>{l s='You\'re all set!' mod='dpdfrance'}</center></strong><br/><br/>
             <center><input id="save_settings_button" type="submit" name="submitRcReferer" value="{l s='Save settings' mod='dpdfrance'}" class="button"></center></br>
-            <center><a size="6" name="next" class="button" href="javascript:void(0)" onclick="$(&quot;#donnees_exp,#modes_transport,#options_supp,#recap&quot;).fadeOut(0, function() {literal}{{/literal}$(&quot;#gestion_exp&quot;).fadeIn(&quot;slow&quot;){literal}}{/literal});">{l s='Return to configuration' mod='dpdfrance'}</a></center><br/>
+            <center><a size="6" name="next" class="button" href="javascript:void(0)" onclick="$(&quot;#onglet4&quot;).click();">{l s='Return to configuration' mod='dpdfrance'}</a></center><br/>
             <br/>
         </div>
     </fieldset>
