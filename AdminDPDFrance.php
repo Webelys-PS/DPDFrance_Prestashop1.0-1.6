@@ -613,11 +613,12 @@ class AdminDPDFrance extends AdminTab
                                 $tel_dest = (($address_delivery->phone_mobile) ? $address_delivery->phone_mobile : (($address_invoice->phone_mobile) ? $address_invoice->phone_mobile : (($address_delivery->phone) ? $address_delivery->phone : (($address_invoice->phone) ? $address_invoice->phone : ''))));
                             }
                             $mobile = self::formatGSM($tel_dest, $code_pays_dest);
+                            $poids_all = Tools::getValue('parcelweight');
                             if (Tools::strtolower(Configuration::get('PS_WEIGHT_UNIT', null, null, (int) $order->id_shop))=='kg') {
-                                $poids=(int)(Tools::getValue('parcelweight')[$order->id]*100);
+                                $poids=(int)($poids_all[$order->id]*100);
                             }
                             if (Tools::strtolower(Configuration::get('PS_WEIGHT_UNIT', null, null, (int) $order->id_shop))=='g') {
-                                $poids=(int)(Tools::getValue('parcelweight')[$order->id]*0.1);
+                                $poids=(int)($poids_all[$order->id]*0.1);
                             }
                             $retour_option=(int)Configuration::get('DPDFRANCE_RETOUR_OPTION', null, null, (int)$order->id_shop); /* 2: Inverse, 3: Sur demande, 4: Préparée */
                             switch ($service) {
