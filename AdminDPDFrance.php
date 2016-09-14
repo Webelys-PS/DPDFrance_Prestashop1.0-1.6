@@ -94,12 +94,14 @@ class AdminDPDFrance extends AdminTab
                         ORDER  BY date_add DESC, id_order_history DESC
                         LIMIT  1)
                     NOT IN ('.(int) Configuration::get('DPDFRANCE_ETAPE_LIVRE', null, null, (int) $id_shop).',0,5,6,7,8)
-                    ORDER BY invoice_date ASC';
+                    ORDER BY id_order DESC
+                    LIMIT 500';
 
         $sql15='    SELECT id_order
                     FROM '._DB_PREFIX_.'orders O
                     WHERE `current_state` NOT IN('.(int) Configuration::get('DPDFRANCE_ETAPE_LIVRE', null, null, (int) $id_shop).',0,5,6,7,8) AND O.id_shop '.$id_shop.'
-                    ORDER BY invoice_date ASC';
+                    ORDER BY id_order DESC
+                    LIMIT 500';
 
         if (_PS_VERSION_<'1.5') {
             $result=Db::getInstance()->ExecuteS($sql14);
@@ -166,18 +168,20 @@ class AdminDPDFrance extends AdminTab
         }
         Configuration::updateValue('DPDFRANCE_LAST_TRACKING', time());
         if ($id_shop==0) {
-            $id_shop_sql='LIKE "%"';
+            $id_shop_sql='';
+            $id_shop_cfg=null;
         } else {
-            $id_shop_sql='= '.(int) $id_shop;
+            $id_shop_sql='AND O.id_shop= '.(int) $id_shop;
+            $id_shop_cfg=(int) $id_shop;
         }
-        if (Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, (int) $id_shop)) {
-            $predict_carrier_log='CA.id_carrier IN ('.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, (int) $id_shop), 1)))).') OR ';
+        if (Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, (int) $id_shop_cfg)) {
+            $predict_carrier_log='CA.id_carrier IN ('.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, $id_shop_cfg), 1)))).') OR ';
         }
-        if (Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, (int) $id_shop)) {
-            $classic_carrier_log='CA.id_carrier IN ('.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, (int) $id_shop), 1)))).') OR ';
+        if (Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, $id_shop_cfg)) {
+            $classic_carrier_log='CA.id_carrier IN ('.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, $id_shop_cfg), 1)))).') OR ';
         }
-        if (Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, (int) $id_shop)) {
-            $relais_carrier_log='CA.id_carrier IN ('.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, (int) $id_shop), 1)))).') OR ';
+        if (Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, $id_shop_cfg)) {
+            $relais_carrier_log='CA.id_carrier IN ('.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, $id_shop_cfg), 1)))).') OR ';
         }
         $europe_carrier_log='CA.name LIKE "%DPD%"';
 
@@ -188,15 +192,19 @@ class AdminDPDFrance extends AdminTab
                         WHERE    OH.id_order = O.id_order
                         ORDER BY  date_add DESC, id_order_history DESC
                         LIMIT    1)
-                NOT IN  ('.(int) Configuration::get('DPDFRANCE_ETAPE_LIVRE', null, null, (int) $id_shop).',0,5,6,7,8) AND
+                NOT IN  ('.(int) Configuration::get('DPDFRANCE_ETAPE_LIVRE', null, null, $id_shop_cfg).',0,5,6,7,8) AND
                         CA.id_carrier=O.id_carrier AND
-                        ('.$predict_carrier_log.$classic_carrier_log.$relais_carrier_log.$europe_carrier_log.')';
+                        ('.$predict_carrier_log.$classic_carrier_log.$relais_carrier_log.$europe_carrier_log.')
+                ORDER BY id_order DESC
+                LIMIT 500';
 
         $sql15='SELECT  O.reference as reference, O.id_carrier as id_carrier, O.id_order as id_order, O.shipping_number as shipping_number, O.id_shop as id_shop
                 FROM    '._DB_PREFIX_.'orders AS O, '._DB_PREFIX_.'carrier AS CA
-                WHERE   CA.id_carrier=O.id_carrier AND O.id_shop '.$id_shop_sql.' AND O.current_state
-                NOT IN  ('.(int) Configuration::get('DPDFRANCE_ETAPE_LIVRE', null, null, (int) $id_shop).',0,5,6,7,8) AND
-                        ('.$predict_carrier_log.$classic_carrier_log.$relais_carrier_log.$europe_carrier_log.')';
+                WHERE   CA.id_carrier=O.id_carrier '.$id_shop_sql.' AND O.current_state
+                NOT IN  ('.(int) Configuration::get('DPDFRANCE_ETAPE_LIVRE', null, null, $id_shop_cfg).',0,5,6,7,8) AND
+                        ('.$predict_carrier_log.$classic_carrier_log.$relais_carrier_log.$europe_carrier_log.')
+                ORDER BY id_order DESC
+                LIMIT 500';
 
         if (_PS_VERSION_<'1.5') {
             $orderlist=Db::getInstance()->ExecuteS($sql14);
@@ -239,6 +247,7 @@ class AdminDPDFrance extends AdminTab
                                         'searchmode'=>'SearchMode_Equals',
                                         'language'=>'F'
                                     );
+
                     $serviceurl='http://webtrace.dpd.fr/dpd-webservices/webtrace_service.asmx?WSDL';
                     try {
                         $client=new SoapClient($serviceurl, array('connection_timeout'=>5, 'cache_wsdl'=>WSDL_CACHE_NONE, 'exceptions'=>true));
@@ -289,13 +298,16 @@ class AdminDPDFrance extends AdminTab
                     foreach ($parcels as $shipmentnumber => $status) {
                         if (Validate::isLoadedObject($order = new Order((int)$id_order))) {
                             if (_PS_VERSION_ < '1.5') {
+                                $orderstate = new OrderHistory($id_order);
+                                $current_state_id = $orderstate->getLastOrderState($id_order)->id;
                                 $internalref = $order->id;
                                 $order->id_shop = '';
                             } else {
+                                $current_state_id = $order->current_state;
                                 $internalref = $order->reference;
                             }
                             // Update to delivered
-                            if ((in_array(40, $status, true) || in_array(400, $status, true)) && $order->current_state != (int)Configuration::get('DPDFRANCE_ETAPE_LIVRE', null, null, (int)$order->id_shop)) {
+                            if ((in_array(40, $status, true) || in_array(400, $status, true)) && $current_state_id != (int)Configuration::get('DPDFRANCE_ETAPE_LIVRE', null, null, (int)$order->id_shop)) {
                                 $history = new OrderHistory();
                                 $history->id_order = (int)$id_order;
                                 $history->id_employee = (int)$id_employee;
@@ -306,7 +318,7 @@ class AdminDPDFrance extends AdminTab
                                 break; // Stop at first parcel
                             } else {
                                 // Update to shipped
-                                if ((in_array(10, $status, true) || in_array(28, $status, true) || in_array(89, $status, true)) && $order->current_state != (int)Configuration::get('DPDFRANCE_ETAPE_EXPEDIEE', null, null, (int)$order->id_shop) && $order->current_state != (int)Configuration::get('DPDFRANCE_ETAPE_LIVRE', null, null, (int)$order->id_shop)) {
+                                if ((in_array(10, $status, true) || in_array(28, $status, true) || in_array(89, $status, true)) && $current_state_id != (int)Configuration::get('DPDFRANCE_ETAPE_EXPEDIEE', null, null, (int)$order->id_shop) && $current_state_id != (int)Configuration::get('DPDFRANCE_ETAPE_LIVRE', null, null, (int)$order->id_shop)) {
                                     $service = self::getService($order, Context::getContext()->language->id);
                                     switch ($service) {
                                         case 'PRE':
@@ -749,8 +761,8 @@ class AdminDPDFrance extends AdminTab
                 foreach ($orderlist as $order_var) {
                     $order = new Order($order_var['id_order']);
                     $address_delivery = new Address($order->id_address_delivery, (int)Context::getContext()->language->id);
-                    $orderstate = new OrderHistory($order_var['id_order']);
                     if (_PS_VERSION_ < '1.5') {
+                        $orderstate = new OrderHistory($order_var['id_order']);
                         $current_state_id = ($orderstate->getLastOrderState($order_var['id_order'])->id);
                         $current_state_name = $statuses_array[($orderstate->getLastOrderState($order_var['id_order'])->id)];
                         $order->reference = $order->id;

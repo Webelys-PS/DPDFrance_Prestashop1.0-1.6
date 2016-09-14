@@ -370,10 +370,21 @@ div.alert.alert-danger:before
 
 span.section_title
 {
-    font-family:DPDPlutoSansRegular;
     line-height:52px;
+    font-family:DPDPlutoSansLight;
+    font-weight: bold;
+    text-align:center;
 }
 
+span.section_title_alt
+{
+    line-height:52px;
+    font-family:DPDPlutoSansLight;
+    font-weight: bold;
+    text-align:center;
+    left: 41%;
+    position: relative;
+}
 #service_relais
 {
     background-color:#FFF;
@@ -509,25 +520,12 @@ div.margin-form input
 {
     margin:auto;
     width:800px;
-}
-
-#gestion_exp strong
-{
     font-family:DPDPlutoSansLight;
-    left:41%;
-    position:relative;
-}
-
-#options_supp strong
-{
-    font-family:DPDPlutoSansLight;
-    left:41%;
-    line-height:24px;
-    position:relative;
 }
 
 #options_supp
 {
+    font-family:DPDPlutoSansLight;
     margin:auto;
     width:760px;
 }

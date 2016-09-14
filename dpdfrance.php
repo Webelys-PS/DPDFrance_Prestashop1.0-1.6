@@ -183,7 +183,7 @@ class DPDFrance extends CarrierModule
         } else {
             $this->tab='shipping_logistics';
         }
-        $this->version = '5.2.1';
+        $this->version = '5.2.2';
         $this->author = 'DPD France S.A.S.';
         $this->module_key = '41c64060327b5afada101ff25bd38850';
         $this->need_instance = 1;
@@ -413,6 +413,7 @@ class DPDFrance extends CarrierModule
         || !Configuration::deleteByName('DPDFRANCE_ETAPE_EXPEDITION')
         || !Configuration::deleteByName('DPDFRANCE_ETAPE_EXPEDIEE')
         || !Configuration::deleteByName('DPDFRANCE_ETAPE_LIVRE')
+        || !Configuration::deleteByName('DPDFRANCE_AUTO_UPDATE')
         || !Configuration::deleteByName('DPDFRANCE_AD_VALOREM')
         || !Configuration::deleteByName('DPDFRANCE_RETOUR_OPTION')
         || !Configuration::deleteByName('DPDFRANCE_DATA_SENT')
@@ -517,6 +518,7 @@ class DPDFrance extends CarrierModule
             Configuration::updateValue('DPDFRANCE_ETAPE_EXPEDITION', (int)Tools::getValue('id_expedition'));
             Configuration::updateValue('DPDFRANCE_ETAPE_EXPEDIEE', (int)Tools::getValue('id_expedie'));
             Configuration::updateValue('DPDFRANCE_ETAPE_LIVRE', (int)Tools::getValue('id_livre'));
+            Configuration::updateValue('DPDFRANCE_AUTO_UPDATE', (int)Tools::getValue('auto_update'));
             Configuration::updateValue('DPDFRANCE_AD_VALOREM', (int)Tools::getValue('ad_valorem'));
             Configuration::updateValue('DPDFRANCE_RETOUR_OPTION', (int)Tools::getValue('retour'));
 
@@ -559,8 +561,10 @@ class DPDFrance extends CarrierModule
                 'dpdfrance_etape_expedition'=> (int)Configuration::get('DPDFRANCE_ETAPE_EXPEDITION'),
                 'dpdfrance_etape_expediee'  => (int)Configuration::get('DPDFRANCE_ETAPE_EXPEDIEE'),
                 'dpdfrance_etape_livre'     => (int)Configuration::get('DPDFRANCE_ETAPE_LIVRE'),
+                'auto_update'               => (int)Configuration::get('DPDFRANCE_AUTO_UPDATE'),
                 'dpdfrance_ad_valorem'      => (int)Configuration::get('DPDFRANCE_AD_VALOREM'),
                 'dpdfrance_retour_option'   => (int)Configuration::get('DPDFRANCE_RETOUR_OPTION'),
+                'optupdate'                 => array($this->l('Disabled'), $this->l('Enabled')),
                 'optvd'                     => array($this->l('Integrated parcel insurance service (23 € / kg)'), $this->l('Ad Valorem insurance service')),
                 'optretour'                 => array('0' => $this->l('No returns'), '4' => $this->l('Prepared'), '3' => $this->l('On Demand')),
                 'ps_version'                => (float)_PS_VERSION_,
@@ -576,7 +580,7 @@ class DPDFrance extends CarrierModule
     public function hookBackOfficeHeader($params)
     {
         /* Check if last tracking call is more than 1 hour old */
-        if (time() - (int)Configuration::get('DPDFRANCE_LAST_TRACKING') > 3600) {
+        if (time() - (int)Configuration::get('DPDFRANCE_LAST_TRACKING') > 3600 && (int)Configuration::get('DPDFRANCE_AUTO_UPDATE') == 1) {
             $cron_url = _MODULE_DIR_.'dpdfrance/cron.php?token='.Tools::encrypt('dpdfrance/cron').'&shop='.(int) $this->context->shop->id.'&employee='.(int) $this->context->employee->id;
             return '<script type="text/javascript">
                     $(document).ready(function() {

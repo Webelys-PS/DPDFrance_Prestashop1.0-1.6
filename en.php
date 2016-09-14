@@ -19,6 +19,8 @@ $_MODULE['<{dpdfrance}prestashop>dpdfrance_bf4996f1e9e659b4156a3015a0ca1263'] = 
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_53f98100d5913879895981e4692a4654'] = 'No returns';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_4f8ebbe84c83c694e33dfc679cf40ddb'] = 'Prepared';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_244492cdce9dce0555c52ebe1182e0a3'] = 'On Demand';
+$_MODULE['<{dpdfrance}prestashop>dpdfrance_b9f5c797ebbf55adccdd8539a65a0241'] = 'Disabled';
+$_MODULE['<{dpdfrance}prestashop>dpdfrance_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Enabled';
 
 $_MODULE['<{dpdfrance}prestashop>admindpdfrance_38ff1cbc89d2ef11019b90cdd9b195e1'] = 'DPD News (show/hide)';
 $_MODULE['<{dpdfrance}prestashop>admindpdfrance_ff24aefb285d37e92ec786fb19eeeeef'] = 'Deliveries management';
@@ -138,6 +140,8 @@ $_MODULE['<{dpdfrance}prestashop>config_57739b9e202d0dd9c107eb760ebe18bb'] = 'Sh
 $_MODULE['<{dpdfrance}prestashop>config_67fe38eecbfddf3d223db68bd0024b1b'] = 'Once parcel trackings are generated, orders will be updated to this state.';
 $_MODULE['<{dpdfrance}prestashop>config_82004438f282149d49dc6ed874a3f498'] = 'Delivered status';
 $_MODULE['<{dpdfrance}prestashop>config_9286f461ebf8f30c8ed7b6053866022e'] = 'Once parcels are delivered, orders will be updated to this state.';
+$_MODULE['<{dpdfrance}prestashop>config_cd333edbe1189f198601628a9f5ab7f2'] = 'Automatic update of orders';
+$_MODULE['<{dpdfrance}prestashop>config_0eb84850a64d9cdd38f5f838a7cb3c93'] = 'Order statuses will be automatically updated following parcel delivery status.';
 $_MODULE['<{dpdfrance}prestashop>config_9ee9d20ce2d2006a622cf57d47d94943'] = 'Parcel insurance service';
 $_MODULE['<{dpdfrance}prestashop>config_c6eba3662c26ed94f37b1e91bc0d76e5'] = 'Ad Valorem : Please refer to your pricing conditions.';
 $_MODULE['<{dpdfrance}prestashop>config_831b5b5aabe1036d618277b61c1f65d3'] = 'DPD Returns service';

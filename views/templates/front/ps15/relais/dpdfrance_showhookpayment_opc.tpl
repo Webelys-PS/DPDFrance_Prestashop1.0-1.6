@@ -24,10 +24,10 @@
 
 <script type="text/javascript">
 {literal}
-$(document).ready(function() 
+$(document).ready(function()
 {
-	document.getElementById('opc_payment_methods-content').style.display = "block";
-	document.getElementById('HOOK_PAYMENT').style.display = "block";
+    document.getElementById('opc_payment_methods-content').style.display = "block";
+    document.getElementById('HOOK_PAYMENT').style.display = "block";
 });
 {/literal}
 </script>

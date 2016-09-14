@@ -84,6 +84,8 @@ $_MODULE['<{dpdfrance}prestashop>dpdfrance_bf4996f1e9e659b4156a3015a0ca1263'] = 
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_53f98100d5913879895981e4692a4654'] = 'Aucun retour';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_4f8ebbe84c83c694e33dfc679cf40ddb'] = 'Préparée';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_244492cdce9dce0555c52ebe1182e0a3'] = 'Sur demande';
+$_MODULE['<{dpdfrance}prestashop>dpdfrance_b9f5c797ebbf55adccdd8539a65a0241'] = 'Desactivée';
+$_MODULE['<{dpdfrance}prestashop>dpdfrance_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Activée';
 
 $_MODULE['<{dpdfrance}prestashop>config_f4f70727dc34561dfde1a3c529b6205c'] = 'Configuration';
 $_MODULE['<{dpdfrance}prestashop>config_a6122a65eaa676f700ae68d393054a37'] = 'Accueil';
@@ -136,6 +138,8 @@ $_MODULE['<{dpdfrance}prestashop>config_1b8a703b106e30cbf5af4cd6ee413845'] = 'Su
 $_MODULE['<{dpdfrance}prestashop>config_57739b9e202d0dd9c107eb760ebe18bb'] = 'Statut \"En cours de livraison\"';
 $_MODULE['<{dpdfrance}prestashop>config_67fe38eecbfddf3d223db68bd0024b1b'] = 'Une fois les suivis de colis générés, les commandes passeront à ce statut.';
 $_MODULE['<{dpdfrance}prestashop>config_82004438f282149d49dc6ed874a3f498'] = 'Statut \"Livré\"';
+$_MODULE['<{dpdfrance}prestashop>config_cd333edbe1189f198601628a9f5ab7f2'] = 'Mise à jour automatique des statuts';
+$_MODULE['<{dpdfrance}prestashop>config_0eb84850a64d9cdd38f5f838a7cb3c93'] = 'Les commandes seront automatiquement mises à jour selon le statut de la livraison.';
 $_MODULE['<{dpdfrance}prestashop>config_9286f461ebf8f30c8ed7b6053866022e'] = 'Une fois les colis livrés, les commandes passeront à ce statut.';
 $_MODULE['<{dpdfrance}prestashop>config_9ee9d20ce2d2006a622cf57d47d94943'] = 'Conditions d\'assurance des colis par défaut';
 $_MODULE['<{dpdfrance}prestashop>config_c6eba3662c26ed94f37b1e91bc0d76e5'] = 'Ad Valorem : veuillez vous référer à vos conditions tarifaires.';

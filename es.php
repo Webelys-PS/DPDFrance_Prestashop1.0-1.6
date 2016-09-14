@@ -19,6 +19,8 @@ $_MODULE['<{dpdfrance}prestashop>dpdfrance_bf4996f1e9e659b4156a3015a0ca1263'] = 
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_53f98100d5913879895981e4692a4654'] = 'Sin retorno';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_4f8ebbe84c83c694e33dfc679cf40ddb'] = 'Preparado';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_244492cdce9dce0555c52ebe1182e0a3'] = 'Bajo demanda';
+$_MODULE['<{dpdfrance}prestashop>dpdfrance_b9f5c797ebbf55adccdd8539a65a0241'] = 'Desactivada';
+$_MODULE['<{dpdfrance}prestashop>dpdfrance_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Activada';
 
 $_MODULE['<{dpdfrance}prestashop>admindpdfrance_38ff1cbc89d2ef11019b90cdd9b195e1'] = 'Informaciones DPD (mostrar/ocultar)';
 $_MODULE['<{dpdfrance}prestashop>admindpdfrance_ff24aefb285d37e92ec786fb19eeeeef'] = 'Gestión de los envios';
@@ -138,6 +140,8 @@ $_MODULE['<{dpdfrance}prestashop>config_57739b9e202d0dd9c107eb760ebe18bb'] = 'Es
 $_MODULE['<{dpdfrance}prestashop>config_67fe38eecbfddf3d223db68bd0024b1b'] = 'Una vez los trackings añadidos, los pedidos seran actualizados a este estado.';
 $_MODULE['<{dpdfrance}prestashop>config_82004438f282149d49dc6ed874a3f498'] = 'Estado de pedidos entregados';
 $_MODULE['<{dpdfrance}prestashop>config_9286f461ebf8f30c8ed7b6053866022e'] = 'Una vez los paquetes entregados, los pedidos seran actualizados a este estado.';
+$_MODULE['<{dpdfrance}prestashop>config_cd333edbe1189f198601628a9f5ab7f2'] = 'Actualizacion automatica de los estados';
+$_MODULE['<{dpdfrance}prestashop>config_0eb84850a64d9cdd38f5f838a7cb3c93'] = 'Los pedidos seran automaticamente actualizados segun el estado de la entrega.';
 $_MODULE['<{dpdfrance}prestashop>config_9ee9d20ce2d2006a622cf57d47d94943'] = 'Servicio de seguro de paquetes';
 $_MODULE['<{dpdfrance}prestashop>config_c6eba3662c26ed94f37b1e91bc0d76e5'] = 'Ad Valorem : consulte sus condiciones de precio.';
 $_MODULE['<{dpdfrance}prestashop>config_831b5b5aabe1036d618277b61c1f65d3'] = 'Servicio DPD Retorno';

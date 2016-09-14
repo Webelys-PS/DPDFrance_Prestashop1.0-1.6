@@ -66,7 +66,7 @@ function dpdfrance_attr_carrier(element) {
 
         <!-- Tab Accueil -->
         <div id="accueil" style="display:block;">
-            <br/><span class="section_title">{l s='Welcome to DPD' mod='dpdfrance'}</span><br/>
+            <strong><br/><span class="section_title">{l s='Welcome to DPD' mod='dpdfrance'}</span></strong><br/>
             <div class="notabene" style="font-size:14px;">{l s='You must be a DPD France customer to use this module, if not please get in touch with us at ' mod='dpdfrance'}<a href="http://www.dpd.fr/nous_contacter_prestashop" target="_blank">www.dpd.fr</a></div><br/>
             <div id="accueil_wrap">
                 <div id="documentation" href="javascript:void(0)" onclick="window.open(&quot;../modules/dpdfrance/docs/readme_dpdfrance_prestashop.pdf&quot;, &quot;s&quot;, &quot;width= 640, height= 900, left=0, top=0, resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=no, copyhistory=no&quot;);"><span class="client_title">{l s='Open documentation' mod='dpdfrance'}</span><div id="documentation_img"></div><span class="client_subtitle">{l s='Please click here first to access the user manual' mod='dpdfrance'}</span></div>
@@ -188,7 +188,7 @@ function dpdfrance_attr_carrier(element) {
 
         <!-- Tab Options supplémentaires -->
         <div id="options_supp" style="display:none;">
-            <strong><br/>{l s='Advanced settings' mod='dpdfrance'}</strong><br/><br/>
+            <br/><span class="section_title_alt">{l s='Advanced settings' mod='dpdfrance'}</span><br/><br/>
             <label>{l s='DPD Relais WebService URL' mod='dpdfrance'}</label><div class="margin-form"><input type="text" size="48" name="mypudo_url" value="{$mypudo_url|escape:'htmlall':'UTF-8'}" /><br/>{l s='Caution! Critical setting' mod='dpdfrance'}</div>
 
             {if $ps_version >= '1.4'}
@@ -210,8 +210,7 @@ function dpdfrance_attr_carrier(element) {
 
         <!-- Tab Gestion des expéditions -->
         <div id="gestion_exp" style="display:none;">
-            <strong><br/><br/>{l s='Orders management' mod='dpdfrance'}</strong><br/><br/><br/>
-
+            <br/><span class="section_title_alt">{l s='Orders management' mod='dpdfrance'}</span><br/><br/>
             <label>{l s='Preparation in progress status' mod='dpdfrance'}<br/></label>
                 <div class="margin-form">
                 <select name="id_expedition">
@@ -249,6 +248,20 @@ function dpdfrance_attr_carrier(element) {
                     {/if}
                 {/foreach}
                 </select><br/>{l s='Once parcels are delivered, orders will be updated to this state.' mod='dpdfrance'}<br/>
+            </div>
+
+            <label>{l s='Automatic update of statuses' mod='dpdfrance'}<br/></label>
+            <div class="margin-form">
+               <select name="auto_update">
+                {foreach from=$optupdate item=option key=key} 
+                    {if $key == $auto_update}
+                        <option value="{$key|escape:'htmlall':'UTF-8'}" selected>{$option|escape:'htmlall':'UTF-8'}</option>
+                    {else}
+                        <option value="{$key|escape:'htmlall':'UTF-8'}">{$option|escape:'htmlall':'UTF-8'}</option>
+                    {/if}
+                {/foreach}
+                </select>
+                <br/>{l s='Order statuses will be automatically updated depending on parcel delivery status.' mod='dpdfrance'}<br/>
             </div>
 
             <label>{l s='Parcel insurance service' mod='dpdfrance'}<br/></label>
