@@ -27,6 +27,10 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+if (_PS_VERSION_ >= '1.7') {
+    die('This version of the DPD France module only works on Prestashop 1.0 to 1.6. Please install the suitable module for your Prestashop version.');
+}
+
 /* Class extension for Prestashop 1.3 and lower */
 if (version_compare(_PS_VERSION_, '1.4.0.0 ', '<')) {
     if (!class_exists('CarrierModule', false)) {
@@ -183,7 +187,7 @@ class DPDFrance extends CarrierModule
         } else {
             $this->tab='shipping_logistics';
         }
-        $this->version = '5.2.2';
+        $this->version = '5.2.3';
         $this->author = 'DPD France S.A.S.';
         $this->module_key = '41c64060327b5afada101ff25bd38850';
         $this->need_instance = 1;
@@ -241,8 +245,9 @@ class DPDFrance extends CarrierModule
         || !Configuration::updateValue('DPDFRANCE_ETAPE_EXPEDIEE', '4')
         || !Configuration::updateValue('DPDFRANCE_ETAPE_LIVRE', '5')
         || !Configuration::updateValue('DPDFRANCE_AD_VALOREM', '')
+        || !Configuration::updateValue('DPDFRANCE_AUTO_UPDATE', '')
+        || !Configuration::updateValue('DPDFRANCE_MARKETPLACE_MODE', '')
         || !Configuration::updateValue('DPDFRANCE_RETOUR_OPTION', '0')
-        || !Configuration::updateValue('DPDFRANCE_DATA_SENT', '0')
         || !Configuration::updateValue('DPDFRANCE_LAST_TRACKING', '')) {
             return false;
         }
@@ -318,7 +323,7 @@ class DPDFrance extends CarrierModule
         `id_carrier` int(5) unsigned DEFAULT NULL,
         `service` varchar(3) DEFAULT NULL,
         `relay_id` varchar(8) DEFAULT NULL,
-        `company` varchar(23) DEFAULT NULL,
+        `company` varchar(32) DEFAULT NULL,
         `address1` varchar(128) DEFAULT NULL,
         `address2` varchar(128) DEFAULT NULL,
         `postcode` varchar(10) DEFAULT NULL,
@@ -414,6 +419,7 @@ class DPDFrance extends CarrierModule
         || !Configuration::deleteByName('DPDFRANCE_ETAPE_EXPEDIEE')
         || !Configuration::deleteByName('DPDFRANCE_ETAPE_LIVRE')
         || !Configuration::deleteByName('DPDFRANCE_AUTO_UPDATE')
+        || !Configuration::deleteByName('DPDFRANCE_MARKETPLACE_MODE')
         || !Configuration::deleteByName('DPDFRANCE_AD_VALOREM')
         || !Configuration::deleteByName('DPDFRANCE_RETOUR_OPTION')
         || !Configuration::deleteByName('DPDFRANCE_DATA_SENT')
@@ -519,6 +525,12 @@ class DPDFrance extends CarrierModule
             Configuration::updateValue('DPDFRANCE_ETAPE_EXPEDIEE', (int)Tools::getValue('id_expedie'));
             Configuration::updateValue('DPDFRANCE_ETAPE_LIVRE', (int)Tools::getValue('id_livre'));
             Configuration::updateValue('DPDFRANCE_AUTO_UPDATE', (int)Tools::getValue('auto_update'));
+
+            if ((int)Tools::getValue('marketplace_mode') != (int)Configuration::get('DPDFRANCE_MARKETPLACE_MODE')) {
+                Configuration::updateValue('DPDFRANCE_MARKETPLACE_MODE', (int)Tools::getValue('marketplace_mode'));
+                $this->setMarketplaceUrls((int)Configuration::get('DPDFRANCE_MARKETPLACE_MODE'));
+            }
+
             Configuration::updateValue('DPDFRANCE_AD_VALOREM', (int)Tools::getValue('ad_valorem'));
             Configuration::updateValue('DPDFRANCE_RETOUR_OPTION', (int)Tools::getValue('retour'));
 
@@ -535,41 +547,42 @@ class DPDFrance extends CarrierModule
             echo '<div class="warnmsg">'.$this->l('Warning! The PHP extension SOAP is not installed on this server. You must activate it in order to use the DPD plugin').'</div>';
         } else {
             $this->context->smarty->assign(array(
-                'nom_exp'                   => Tools::getValue('nom_exp', Configuration::get('DPDFRANCE_NOM_EXP')),
-                'address_exp'               => Tools::getValue('address_exp', Configuration::get('DPDFRANCE_ADDRESS_EXP')),
-                'address2_exp'              => Tools::getValue('address2_exp', Configuration::get('DPDFRANCE_ADDRESS2_EXP')),
-                'cp_exp'                    => Tools::getValue('cp_exp', Configuration::get('DPDFRANCE_CP_EXP')),
-                'ville_exp'                 => Tools::getValue('ville_exp', Configuration::get('DPDFRANCE_VILLE_EXP')),
-                'tel_exp'                   => Tools::getValue('tel_exp', Configuration::get('DPDFRANCE_TEL_EXP')),
-                'email_exp'                 => Tools::getValue('email_exp', Configuration::get('DPDFRANCE_EMAIL_EXP')),
-                'gsm_exp'                   => Tools::getValue('gsm_exp', Configuration::get('DPDFRANCE_GSM_EXP')),
-                'relais_depot_code'         => Tools::getValue('relais_depot_code', Configuration::get('DPDFRANCE_RELAIS_DEPOT_CODE')),
-                'predict_depot_code'        => Tools::getValue('predict_depot_code', Configuration::get('DPDFRANCE_PREDICT_DEPOT_CODE')),
-                'classic_depot_code'        => Tools::getValue('classic_depot_code', Configuration::get('DPDFRANCE_CLASSIC_DEPOT_CODE')),
-                'relais_shipper_code'       => Tools::getValue('relais_shipper_code', Configuration::get('DPDFRANCE_RELAIS_SHIPPER_CODE')),
-                'predict_shipper_code'      => Tools::getValue('predict_shipper_code', Configuration::get('DPDFRANCE_PREDICT_SHIPPER_CODE')),
-                'classic_shipper_code'      => Tools::getValue('classic_shipper_code', Configuration::get('DPDFRANCE_CLASSIC_SHIPPER_CODE')),
-                'carriers'                  => Carrier::getCarriers($this->context->language->id, false, false, false, null, (defined('ALL_CARRIERS') ? ALL_CARRIERS : null)),
-                'dpdfrance_relais_carrier_id' => Tools::getValue('dpdfrance_relais_carrier_id', Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID')),
+                'nom_exp'                      => Tools::getValue('nom_exp', Configuration::get('DPDFRANCE_NOM_EXP')),
+                'address_exp'                  => Tools::getValue('address_exp', Configuration::get('DPDFRANCE_ADDRESS_EXP')),
+                'address2_exp'                 => Tools::getValue('address2_exp', Configuration::get('DPDFRANCE_ADDRESS2_EXP')),
+                'cp_exp'                       => Tools::getValue('cp_exp', Configuration::get('DPDFRANCE_CP_EXP')),
+                'ville_exp'                    => Tools::getValue('ville_exp', Configuration::get('DPDFRANCE_VILLE_EXP')),
+                'tel_exp'                      => Tools::getValue('tel_exp', Configuration::get('DPDFRANCE_TEL_EXP')),
+                'email_exp'                    => Tools::getValue('email_exp', Configuration::get('DPDFRANCE_EMAIL_EXP')),
+                'gsm_exp'                      => Tools::getValue('gsm_exp', Configuration::get('DPDFRANCE_GSM_EXP')),
+                'relais_depot_code'            => Tools::getValue('relais_depot_code', Configuration::get('DPDFRANCE_RELAIS_DEPOT_CODE')),
+                'predict_depot_code'           => Tools::getValue('predict_depot_code', Configuration::get('DPDFRANCE_PREDICT_DEPOT_CODE')),
+                'classic_depot_code'           => Tools::getValue('classic_depot_code', Configuration::get('DPDFRANCE_CLASSIC_DEPOT_CODE')),
+                'relais_shipper_code'          => Tools::getValue('relais_shipper_code', Configuration::get('DPDFRANCE_RELAIS_SHIPPER_CODE')),
+                'predict_shipper_code'         => Tools::getValue('predict_shipper_code', Configuration::get('DPDFRANCE_PREDICT_SHIPPER_CODE')),
+                'classic_shipper_code'         => Tools::getValue('classic_shipper_code', Configuration::get('DPDFRANCE_CLASSIC_SHIPPER_CODE')),
+                'carriers'                     => Carrier::getCarriers($this->context->language->id, false, false, false, null, (defined('ALL_CARRIERS') ? ALL_CARRIERS : null)),
+                'dpdfrance_relais_carrier_id'  => Tools::getValue('dpdfrance_relais_carrier_id', Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID')),
                 'dpdfrance_predict_carrier_id' => Tools::getValue('dpdfrance_predict_carrier_id', Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID')),
                 'dpdfrance_classic_carrier_id' => Tools::getValue('dpdfrance_classic_carrier_id', Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID')),
-                'mypudo_url'                => Tools::getValue('mypudo_url', Configuration::get('DPDFRANCE_RELAIS_MYPUDO_URL')),
-                'supp_iles'                 => Tools::getValue('supp_iles', Configuration::get('DPDFRANCE_SUPP_ILES')),
-                'supp_montagne'             => Tools::getValue('supp_montagne', Configuration::get('DPDFRANCE_SUPP_MONTAGNE')),
-                'google_api_key'            => Tools::getValue('google_api_key', Configuration::get('DPDFRANCE_GOOGLE_API_KEY')),
-                'etats_factures'            => OrderState::getOrderStates((int)$this->context->language->id),
-                'dpdfrance_etape_expedition'=> (int)Configuration::get('DPDFRANCE_ETAPE_EXPEDITION'),
-                'dpdfrance_etape_expediee'  => (int)Configuration::get('DPDFRANCE_ETAPE_EXPEDIEE'),
-                'dpdfrance_etape_livre'     => (int)Configuration::get('DPDFRANCE_ETAPE_LIVRE'),
-                'auto_update'               => (int)Configuration::get('DPDFRANCE_AUTO_UPDATE'),
-                'dpdfrance_ad_valorem'      => (int)Configuration::get('DPDFRANCE_AD_VALOREM'),
-                'dpdfrance_retour_option'   => (int)Configuration::get('DPDFRANCE_RETOUR_OPTION'),
-                'optupdate'                 => array($this->l('Disabled'), $this->l('Enabled')),
-                'optvd'                     => array($this->l('Integrated parcel insurance service (23 € / kg)'), $this->l('Ad Valorem insurance service')),
-                'optretour'                 => array('0' => $this->l('No returns'), '4' => $this->l('Prepared'), '3' => $this->l('On Demand')),
-                'ps_version'                => (float)_PS_VERSION_,
-                'form_submit_url'           => $_SERVER['REQUEST_URI'],
-                'dpdfrance_data_sent'       => Configuration::get('DPDFRANCE_DATA_SENT'),
+                'mypudo_url'                   => Tools::getValue('mypudo_url', Configuration::get('DPDFRANCE_RELAIS_MYPUDO_URL')),
+                'supp_iles'                    => Tools::getValue('supp_iles', Configuration::get('DPDFRANCE_SUPP_ILES')),
+                'supp_montagne'                => Tools::getValue('supp_montagne', Configuration::get('DPDFRANCE_SUPP_MONTAGNE')),
+                'google_api_key'               => Tools::getValue('google_api_key', Configuration::get('DPDFRANCE_GOOGLE_API_KEY')),
+                'etats_factures'               => OrderState::getOrderStates((int)$this->context->language->id),
+                'dpdfrance_etape_expedition'   => (int)Configuration::get('DPDFRANCE_ETAPE_EXPEDITION'),
+                'dpdfrance_etape_expediee'     => (int)Configuration::get('DPDFRANCE_ETAPE_EXPEDIEE'),
+                'dpdfrance_etape_livre'        => (int)Configuration::get('DPDFRANCE_ETAPE_LIVRE'),
+                'auto_update'                  => (int)Configuration::get('DPDFRANCE_AUTO_UPDATE'),
+                'marketplace_mode'             => (int)Configuration::get('DPDFRANCE_MARKETPLACE_MODE'),
+                'dpdfrance_ad_valorem'         => (int)Configuration::get('DPDFRANCE_AD_VALOREM'),
+                'dpdfrance_retour_option'      => (int)Configuration::get('DPDFRANCE_RETOUR_OPTION'),
+                'optupdate'                    => array($this->l('Disabled'), $this->l('Enabled')),
+                'optmarketplace'               => array($this->l('Disabled'), $this->l('Enabled')),
+                'optvd'                        => array($this->l('Integrated parcel insurance service (23 € / kg)'), $this->l('Ad Valorem insurance service')),
+                'optretour'                    => array('0' => $this->l('No returns'), '4' => $this->l('Prepared'), '3' => $this->l('On Demand')),
+                'ps_version'                   => (float)_PS_VERSION_,
+                'form_submit_url'              => $_SERVER['REQUEST_URI'],
                 ));
             return $this->display(__FILE__, 'views/templates/admin/config.tpl');
         }
@@ -581,7 +594,7 @@ class DPDFrance extends CarrierModule
     {
         /* Check if last tracking call is more than 1 hour old */
         if (time() - (int)Configuration::get('DPDFRANCE_LAST_TRACKING') > 3600 && (int)Configuration::get('DPDFRANCE_AUTO_UPDATE') == 1) {
-            $cron_url = _MODULE_DIR_.'dpdfrance/cron.php?token='.Tools::encrypt('dpdfrance/cron').'&shop='.(int) $this->context->shop->id.'&employee='.(int) $this->context->employee->id;
+            $cron_url = _MODULE_DIR_.'dpdfrance/cron.php?token='.Tools::encrypt('dpdfrance/cron').'&shop='.(int)Tools::substr(Context::getContext()->cookie->shopContext, 2).'&employee='.(int) $this->context->employee->id;
             return '<script type="text/javascript">
                     $(document).ready(function() {
                         $.get("'.$cron_url.'");
@@ -687,11 +700,11 @@ class DPDFrance extends CarrierModule
 
         if (Tools::getValue('action')=='search') {
             $address_details = array(
-                'address1' => $params['address1'],
-                'postcode' => $params['postcode'],
-                'city'     => $params['city'],
+                'address1'   => $params['address1'],
+                'postcode'   => $params['postcode'],
+                'city'       => $params['city'],
                 'id_country' => (int) $address->id_country,
-                'cart_id' => (int) $cart->id,
+                'cart_id'    => (int) $cart->id,
                 'id_address' => (int) $cart->id_address_delivery,
             );
         } else {
@@ -813,6 +826,7 @@ class DPDFrance extends CarrierModule
                     $new_address->add();
                     $id_address_delivery = (int)$new_address->id;
                 }
+
                 // Update order
                 $order->id_address_delivery = $id_address_delivery;
                 $order->update();
@@ -848,6 +862,7 @@ class DPDFrance extends CarrierModule
                     $new_address->add();
                     $id_address_delivery = (int)$new_address->id;
                 }
+
                 // Update order
                 $order->id_address_delivery = $id_address_delivery;
                 $order->update();
@@ -1181,5 +1196,19 @@ class DPDFrance extends CarrierModule
                 need_range = 1,
                 external_module_name = "dpdfrance"
             WHERE  id_carrier = '.(int)$id_carrier);
+    }
+
+    /* When marketplace mode is activated, change tracking URLs */
+    public function setMarketplaceUrls($enabled)
+    {
+        if ($enabled) {
+            $url = 'http://www.dpd.fr/traces_@';
+        } else {
+            $url = 'http://www.dpd.fr/tracer_@';
+        }
+        Db::getInstance()->execute('
+            UPDATE  '._DB_PREFIX_.'carrier 
+            SET     url = "'.$url.'"
+            WHERE   external_module_name = "dpdfrance"');
     }
 }

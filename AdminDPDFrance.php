@@ -65,8 +65,8 @@ class AdminDPDFrance extends AdminTab
             FROM `'._DB_PREFIX_.'country`
             WHERE `id_country` = \''.pSQL($idcountry).'\'';
         $result=Db::getInstance('_PS_USE_SQL_SLAVE_')->getRow($sql);
-        $isops=array('DE', 'AD', 'AT', 'BE', 'BA', 'BG', 'HR', 'DK', 'ES', 'EE', 'FI', 'FR', 'GB', 'GR', 'GG', 'HU', 'IM', 'IE', 'IT', 'JE', 'LV', 'LI', 'LT', 'LU', 'NO', 'NL', 'PL', 'PT', 'CZ', 'RO', 'RS', 'SK', 'SI', 'SE', 'CH');
-        $isoep=array('D', 'AND', 'A', 'B', 'BA', 'BG', 'CRO', 'DK', 'E', 'EST', 'SF', 'F', 'GB', 'GR', 'GG', 'H', 'IM', 'IRL', 'I', 'JE', 'LET', 'LIE', 'LIT', 'L', 'N', 'NL', 'PL', 'P', 'CZ', 'RO', 'RS', 'SK', 'SLO', 'S', 'CH');
+        $isops=array('DE', 'AD', 'AT', 'BE', 'BA', 'BG', 'HR', 'DK', 'ES', 'EE', 'FI', 'FR', 'GB', 'GR', 'GG', 'HU', 'IM', 'IE', 'IT', 'JE', 'LV', 'LI', 'LT', 'LU', 'MC', 'NO', 'NL', 'PL', 'PT', 'CZ', 'RO', 'RS', 'SK', 'SI', 'SE', 'CH');
+        $isoep=array('D', 'AND', 'A', 'B', 'BA', 'BG', 'CRO', 'DK', 'E', 'EST', 'SF', 'F', 'GB', 'GR', 'GG', 'H', 'IM', 'IRL', 'I', 'JE', 'LET', 'LIE', 'LIT', 'L', 'F', 'N', 'NL', 'PL', 'P', 'CZ', 'RO', 'RS', 'SK', 'SLO', 'S', 'CH');
         if (in_array($result['iso_code'], $isops)) {
             // If the ISO code is in Europe, then convert it to DPD Station format
             $code_iso=str_replace($isops, $isoep, $result['iso_code']);
@@ -146,11 +146,10 @@ class AdminDPDFrance extends AdminTab
         if (!$service) {
             $address_invoice=new Address($order->id_address_invoice, (int) $lang_id);
             $address_delivery=new Address($order->id_address_delivery, (int) $lang_id);
-            $relay_id=Tools::substr($address_delivery->company, -7, 6);
             $code_pays_dest=self::getIsoCodebyIdCountry((int) $address_delivery->id_country);
             $tel_dest=(($address_delivery->phone_mobile)?$address_delivery->phone_mobile:(($address_invoice->phone_mobile)?$address_invoice->phone_mobile:(($address_delivery->phone)?$address_delivery->phone:(($address_invoice->phone)?$address_invoice->phone:''))));
             $mobile=self::formatGSM($tel_dest, $code_pays_dest);
-            if (preg_match('/P\d{5}/i', $relay_id)) {
+            if (preg_match('/P\d{5}/i', $address_delivery->company)) {
                 $service='REL';
             } elseif ($mobile&&$code_pays_dest=='F'&&$order->id_carrier!=Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID', null, null, (int) $order->id_shop)) {
                 $service='PRE';
@@ -160,30 +159,59 @@ class AdminDPDFrance extends AdminTab
     }
 
     /* Sync order status with parcel status, adds tracking number */
-    public function syncShipments($id_shop, $id_employee)
+    public function syncShipments($current_shop, $id_employee)
     {
         /* Check if last tracking call is more than 1 hour old */
         if (time() - (int)Configuration::get('DPDFRANCE_LAST_TRACKING') < 3600) {
             die('DPD France parcel tracking update is done once an hour, please try again the next hour.');
         }
         Configuration::updateValue('DPDFRANCE_LAST_TRACKING', time());
-        if ($id_shop==0) {
+
+        if ($current_shop==0) {
             $id_shop_sql='';
             $id_shop_cfg=null;
         } else {
-            $id_shop_sql='AND O.id_shop= '.(int) $id_shop;
-            $id_shop_cfg=(int) $id_shop;
+            $id_shop_sql='AND O.id_shop= '.(int) $current_shop;
+            $id_shop_cfg=(int) $current_shop;
         }
-        if (Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, (int) $id_shop_cfg)) {
-            $predict_carrier_log='CA.id_carrier IN ('.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, $id_shop_cfg), 1)))).') OR ';
+
+        $predict_carrier_log = $classic_carrier_log = $relais_carrier_log = $predict_carrier_sql = $classic_carrier_sql = $relais_carrier_sql = '';
+
+        if (Configuration::get('DPDFRANCE_MARKETPLACE_MODE')) {
+            $europe_carrier_sql = 'CA.name LIKE \'%%\'';
+        } else {
+            $europe_carrier_sql = 'CA.name LIKE \'%DPD%\'';
         }
-        if (Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, $id_shop_cfg)) {
-            $classic_carrier_log='CA.id_carrier IN ('.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, $id_shop_cfg), 1)))).') OR ';
+
+        if (version_compare(_PS_VERSION_, '1.5.0.0', '>=') && $current_shop == 0 && Shop::isFeatureActive()) {
+            foreach (Shop::getShops(true) as $shop) {
+                if (Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, $shop['id_shop'])) {
+                    $predict_carrier_log.=Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID', null, null, $shop['id_shop']).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, $shop['id_shop']), 1))));
+                    $predict_carrier_sql = 'CA.id_carrier IN ('.$predict_carrier_log.') OR ';
+                }
+                if (Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, $shop['id_shop'])) {
+                    $classic_carrier_log.=Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID', null, null, $shop['id_shop']).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, $shop['id_shop']), 1))));
+                    $classic_carrier_sql = 'CA.id_carrier IN ('.$classic_carrier_log.') OR ';
+                }
+                if (Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, $shop['id_shop'])) {
+                    $relais_carrier_log.=Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID', null, null, $shop['id_shop']).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, $shop['id_shop']), 1))));
+                    $relais_carrier_sql = 'CA.id_carrier IN ('.$relais_carrier_log.') OR ';
+                }
+            }
+        } else {
+            if (Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, $id_shop_cfg)) {
+                $predict_carrier_log=Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID', null, null, $id_shop_cfg).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, $id_shop_cfg), 1))));
+                $predict_carrier_sql = 'CA.id_carrier IN ('.$predict_carrier_log.') OR ';
+            }
+            if (Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, $id_shop_cfg)) {
+                $classic_carrier_log=Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID', null, null, $id_shop_cfg).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, $id_shop_cfg), 1))));
+                $classic_carrier_sql = 'CA.id_carrier IN ('.$classic_carrier_log.') OR ';
+            }
+            if (Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, $id_shop_cfg)) {
+                $relais_carrier_log=Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID', null, null, $id_shop_cfg).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, $id_shop_cfg), 1))));
+                $relais_carrier_sql = 'CA.id_carrier IN ('.$relais_carrier_log.') OR ';
+            }
         }
-        if (Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, $id_shop_cfg)) {
-            $relais_carrier_log='CA.id_carrier IN ('.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, $id_shop_cfg), 1)))).') OR ';
-        }
-        $europe_carrier_log='CA.name LIKE "%DPD%"';
 
         $sql14='SELECT  O.id_order as reference, O.id_carrier as id_carrier, O.id_order as id_order, O.shipping_number as shipping_number
                 FROM    '._DB_PREFIX_.'orders AS O, '._DB_PREFIX_.'carrier AS CA
@@ -194,7 +222,7 @@ class AdminDPDFrance extends AdminTab
                         LIMIT    1)
                 NOT IN  ('.(int) Configuration::get('DPDFRANCE_ETAPE_LIVRE', null, null, $id_shop_cfg).',0,5,6,7,8) AND
                         CA.id_carrier=O.id_carrier AND
-                        ('.$predict_carrier_log.$classic_carrier_log.$relais_carrier_log.$europe_carrier_log.')
+                        ('.$predict_carrier_sql.$classic_carrier_sql.$relais_carrier_sql.$europe_carrier_sql.')
                 ORDER BY id_order DESC
                 LIMIT 500';
 
@@ -202,7 +230,7 @@ class AdminDPDFrance extends AdminTab
                 FROM    '._DB_PREFIX_.'orders AS O, '._DB_PREFIX_.'carrier AS CA
                 WHERE   CA.id_carrier=O.id_carrier '.$id_shop_sql.' AND O.current_state
                 NOT IN  ('.(int) Configuration::get('DPDFRANCE_ETAPE_LIVRE', null, null, $id_shop_cfg).',0,5,6,7,8) AND
-                        ('.$predict_carrier_log.$classic_carrier_log.$relais_carrier_log.$europe_carrier_log.')
+                        ('.$predict_carrier_sql.$classic_carrier_sql.$relais_carrier_sql.$europe_carrier_sql.')
                 ORDER BY id_order DESC
                 LIMIT 500';
 
@@ -211,6 +239,7 @@ class AdminDPDFrance extends AdminTab
         } else {
             $orderlist=Db::getInstance()->ExecuteS($sql15);
         }
+
         if (!empty($orderlist)) {
             $statuslist=array();
             foreach ($orderlist as $orderinfos) {
@@ -336,8 +365,14 @@ class AdminDPDFrance extends AdminTab
                                     }
                                     $customer = new Customer((int)$order->id_customer);
                                     $carrier = new Carrier((int)$order->id_carrier, (int)Context::getContext()->language->id);
-                                    $url = 'http://www.dpd.fr/tracer_' . $internalref . '_' . $depot_code . $compte_chargeur;
-                                    $order->shipping_number = $internalref . '_' . $depot_code . $compte_chargeur;
+
+                                    if (Configuration::get('DPDFRANCE_MARKETPLACE_MODE')) {
+                                        $url = 'http://www.dpd.fr/traces_' . $shipmentnumber;
+                                        $order->shipping_number = $shipmentnumber;
+                                    } else {
+                                        $url = 'http://www.dpd.fr/tracer_' . $internalref . '_' . $depot_code . $compte_chargeur;
+                                        $order->shipping_number = $internalref . '_' . $depot_code . $compte_chargeur;
+                                    }
                                     Db::getInstance()->execute('UPDATE ' . _DB_PREFIX_ . 'orders SET shipping_number = "' . pSQL($order->shipping_number) . '" WHERE id_order = "' . $id_order . '"');
                                     if (_PS_VERSION_ >= '1.5') {
                                         Db::getInstance()->execute('UPDATE ' . _DB_PREFIX_ . 'order_carrier SET tracking_number = "' . pSQL($order->shipping_number) . '" WHERE id_order = "' . $id_order . '"');
@@ -510,22 +545,21 @@ class AdminDPDFrance extends AdminTab
                                     break;
                             }
 
-                            $url = 'http://www.dpd.fr/tracer_'.$internalref_cleaned.'_'.$depot_code.$compte_chargeur;
-
                             $customer = new Customer((int)$order->id_customer);
-
-                            $order->shipping_number = $internalref_cleaned.'_'.$depot_code.$compte_chargeur;
-                            Db::getInstance()->execute('UPDATE '._DB_PREFIX_.'orders SET shipping_number = "'.pSQL($order->shipping_number).'" WHERE id_order = "'.$id_order.'"');
-                            if (_PS_VERSION_ >= '1.5') {
-                                Db::getInstance()->execute('UPDATE '._DB_PREFIX_.'order_carrier SET tracking_number = "'.pSQL($order->shipping_number).'" WHERE id_order = "'.$id_order.'"');
+                            if (!Configuration::get('DPDFRANCE_MARKETPLACE_MODE')) {
+                                $order->shipping_number = $internalref_cleaned.'_'.$depot_code.$compte_chargeur;
+                                Db::getInstance()->execute('UPDATE '._DB_PREFIX_.'orders SET shipping_number = "'.pSQL($order->shipping_number).'" WHERE id_order = "'.$id_order.'"');
+                                if (_PS_VERSION_ >= '1.5') {
+                                    Db::getInstance()->execute('UPDATE '._DB_PREFIX_.'order_carrier SET tracking_number = "'.pSQL($order->shipping_number).'" WHERE id_order = "'.$id_order.'"');
+                                }
+                                $order->update();
                             }
-                            $order->update();
-
                             $history = new OrderHistory();
                             $history->id_order = (int)$id_order;
                             $history->changeIdOrderState(Configuration::get('DPDFRANCE_ETAPE_EXPEDIEE', null, null, (int)$order->id_shop), $id_order);
                             $history->id_employee = (int)Context::getContext()->employee->id;
                             $carrier = new Carrier((int)$order->id_carrier, (int)Context::getContext()->language->id);
+                            $url = 'http://www.dpd.fr/tracer_'.$internalref_cleaned.'_'.$depot_code.$compte_chargeur;
                             if (_PS_VERSION_ < '1.5') {
                                 $template_vars = array('{followup}' => $url, '{firstname}' => $customer->firstname, '{lastname}' => $customer->lastname, '{id_order}' => (int)$order->id);
                             } else {
@@ -619,7 +653,11 @@ class AdminDPDFrance extends AdminTab
                             $code_pays_dest     = self::getIsoCodebyIdCountry((int)$address_delivery->id_country);
                             $instr_liv_cleaned  = str_replace(array("\r\n", "\n", "\r", "\t"), ' ', $address_delivery->other);
                             $service            = self::getService($order, Context::getContext()->language->id);
-                            $relay_id           = Tools::substr($address_delivery->company, -7, 6);
+                            $relay_id           = '';
+                            preg_match('/P\d{5}/i', $address_delivery->company, $matches, PREG_OFFSET_CAPTURE);
+                            if ($matches) {
+                                $relay_id=$matches[0][0];
+                            }
                             $tel_dest           = Db::getInstance()->getValue('SELECT gsm_dest FROM '._DB_PREFIX_.'dpdfrance_shipping WHERE id_cart ="'.$order->id_cart.'"');
                             if ($tel_dest == '') {
                                 $tel_dest = (($address_delivery->phone_mobile) ? $address_delivery->phone_mobile : (($address_invoice->phone_mobile) ? $address_invoice->phone_mobile : (($address_delivery->phone) ? $address_delivery->phone : (($address_invoice->phone) ? $address_invoice->phone : ''))));
@@ -725,21 +763,48 @@ class AdminDPDFrance extends AdminTab
             $statuses_array[$status['id_order_state']] = $status['name'];
         }
         $fieldlist = array('O.`id_order`', 'O.`id_cart`', 'AD.`lastname`', 'AD.`firstname`', 'AD.`postcode`', 'AD.`city`', 'CL.`iso_code`', 'C.`email`', 'CA.`name`');
-        $orders = AdminDPDFrance::getAllOrders((int)Tools::substr(Context::getContext()->cookie->shopContext, 2));
+
+        $current_shop = (int)Tools::substr(Context::getContext()->cookie->shopContext, 2);
+        $orders = self::getAllOrders($current_shop);
         $liste_expeditions = 'O.id_order IN ('.implode(',', $orders).')';
 
-        $predict_carrier_log = $classic_carrier_log = $relais_carrier_log = $europe_carrier_log = '';
+        $predict_carrier_log = $classic_carrier_log = $relais_carrier_log = $predict_carrier_sql = $classic_carrier_sql = $relais_carrier_sql = '';
 
-        if (Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, (int) Context::getContext()->shop->id)) {
-            $predict_carrier_log='CA.id_carrier IN ('.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, (int) Context::getContext()->shop->id), 1)))).') OR ';
+        if (Configuration::get('DPDFRANCE_MARKETPLACE_MODE')) {
+            $europe_carrier_sql = 'CA.name LIKE \'%%\'';
+        } else {
+            $europe_carrier_sql = 'CA.name LIKE \'%DPD%\'';
         }
-        if (Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, (int) Context::getContext()->shop->id)) {
-            $classic_carrier_log='CA.id_carrier IN ('.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, (int) Context::getContext()->shop->id), 1)))).') OR ';
+
+        if (version_compare(_PS_VERSION_, '1.5.0.0', '>=') && $current_shop == 0 && Shop::isFeatureActive()) {
+            foreach (Shop::getShops(true) as $shop) {
+                if (Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, $shop['id_shop'])) {
+                    $predict_carrier_log.=Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID', null, null, $shop['id_shop']).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, $shop['id_shop']), 1))));
+                    $predict_carrier_sql = 'CA.id_carrier IN ('.$predict_carrier_log.') OR ';
+                }
+                if (Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, $shop['id_shop'])) {
+                    $classic_carrier_log.=Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID', null, null, $shop['id_shop']).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, $shop['id_shop']), 1))));
+                    $classic_carrier_sql = 'CA.id_carrier IN ('.$classic_carrier_log.') OR ';
+                }
+                if (Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, $shop['id_shop'])) {
+                    $relais_carrier_log.=Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID', null, null, $shop['id_shop']).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, $shop['id_shop']), 1))));
+                    $relais_carrier_sql = 'CA.id_carrier IN ('.$relais_carrier_log.') OR ';
+                }
+            }
+        } else {
+            if (Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, $current_shop)) {
+                $predict_carrier_log=Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID', null, null, $current_shop).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, $current_shop), 1))));
+                $predict_carrier_sql = 'CA.id_carrier IN ('.$predict_carrier_log.') OR ';
+            }
+            if (Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, $current_shop)) {
+                $classic_carrier_log=Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID', null, null, $current_shop).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, $current_shop), 1))));
+                $classic_carrier_sql = 'CA.id_carrier IN ('.$classic_carrier_log.') OR ';
+            }
+            if (Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, $current_shop)) {
+                $relais_carrier_log=Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID', null, null, $current_shop).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, $current_shop), 1))));
+                $relais_carrier_sql = 'CA.id_carrier IN ('.$relais_carrier_log.') OR ';
+            }
         }
-        if (Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, (int) Context::getContext()->shop->id)) {
-            $relais_carrier_log='CA.id_carrier IN ('.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, (int) Context::getContext()->shop->id), 1)))).') OR ';
-        }
-        $europe_carrier_log = 'CA.name LIKE \'%DPD%\'';
 
         if (!empty($orders)) {
             $sql = 'SELECT  '.implode(', ', $fieldlist).'
@@ -752,11 +817,12 @@ class AdminDPDFrance extends AdminTab
                             C.id_customer=O.id_customer AND 
                             CL.id_country=AD.id_country AND 
                             CA.id_carrier=O.id_carrier AND 
-                            ('.$predict_carrier_log.$classic_carrier_log.$relais_carrier_log.$europe_carrier_log.') AND
+                            ('.$predict_carrier_sql.$classic_carrier_sql.$relais_carrier_sql.$europe_carrier_sql.') AND
                             ('.$liste_expeditions.')
                     ORDER BY id_order DESC';
 
             $orderlist = Db::getInstance()->ExecuteS($sql);
+
             if (!empty($orderlist)) {
                 foreach ($orderlist as $order_var) {
                     $order = new Order($order_var['id_order']);
@@ -797,7 +863,12 @@ class AdminDPDFrance extends AdminTab
                             $type = 'Relais<img src="../modules/dpdfrance/views/img/admin/service_relais.png" title="Relais"/>';
                             $compte_chargeur = Configuration::get('DPDFRANCE_RELAIS_SHIPPER_CODE', null, null, (int)$order->id_shop);
                             $depot_code = Configuration::get('DPDFRANCE_RELAIS_DEPOT_CODE', null, null, (int)$order->id_shop);
-                            $address = '<a class="popup" href="http://www.dpd.fr/dpdrelais/id_'.Tools::substr($address_delivery->company, -7, 6).'" target="_blank">'.$address_delivery->company.'<br/>'.$address_delivery->postcode.' '.$address_delivery->city.'</a>';
+                            $relay_id='';
+                            preg_match('/P\d{5}/i', $address_delivery->company, $matches, PREG_OFFSET_CAPTURE);
+                            if ($matches) {
+                                $relay_id=$matches[0][0];
+                            }
+                            $address = '<a class="popup" href="http://www.dpd.fr/dpdrelais/id_'.$relay_id.'" target="_blank">'.$address_delivery->company.'<br/>'.$address_delivery->postcode.' '.$address_delivery->city.'</a>';
                             break;
                         default:
                             $code_pays_dest = self::getIsoCodebyIdCountry((int)$address_delivery->id_country);
@@ -841,10 +912,11 @@ class AdminDPDFrance extends AdminTab
 
         // Assign smarty variables and fetches template
         Context::getContext()->smarty->assign(array(
+            'psVer'         => _PS_VERSION_,
             'stream'        => $stream,
             'token'         => $this->token,
             'order_info'    => $order_info,
-            'dpdfrance_retour_option' => (int)Configuration::get('DPDFRANCE_RETOUR_OPTION', null, null, (int)Context::getContext()->shop->id),
+            'dpdfrance_retour_option' => (int)Configuration::get('DPDFRANCE_RETOUR_OPTION', null, null, $current_shop),
         ));
         echo $this->fetchTemplate('/views/templates/admin/', 'AdminDPDFrance');
     }

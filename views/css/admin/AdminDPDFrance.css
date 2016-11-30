@@ -72,14 +72,15 @@ div.js-marquee strong {
 }
 
 #tableFilter {
-    height: 5px;
-    padding: 10px;
+    height: 25px;
+    padding: 0px 10px;
     width: 50%;
     color: #808285 !important;
     font-family: "DPDPlutoSansLight";
     font-size : 11px;
     border-style: none;
     background-color: #e6e7e7;
+    margin: 0px;
 }
 
 #filtericon {
@@ -229,7 +230,7 @@ td.retour {
 }
 
 td.poids {
-    width: 80px;
+    width: 85px;
     font-size: 12px;
     text-align:center;
     border-color: #bfbfbf;
@@ -241,7 +242,7 @@ td.poids {
 }
 
 td.poids input {
-    width: 40px;
+    width: 35px;
     text-align: right;
 }
 
@@ -345,10 +346,15 @@ th.hcheckadvalorem {
     border-width: 0;
 }
 
+th.hretour {
+    text-align: center;
+}
+
 th.hpoids {
     width: 80px;
     font-size: 12px;
     border-width: 0;
+    text-align: center;
 }
 
 th.hstatutcommande {

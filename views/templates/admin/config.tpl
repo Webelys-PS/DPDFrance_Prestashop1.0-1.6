@@ -102,80 +102,96 @@ function dpdfrance_attr_carrier(element) {
 
             <!-- DPD Relais -->
             <div id="service_relais">
-                <label>{l s='DPD Relais' mod='dpdfrance'}</label>
-                <span>{l s='(France)' mod='dpdfrance'}</span>
+                <label>{l s='DPD Relais' mod='dpdfrance'} {l s='(France)' mod='dpdfrance'}</label>
                 <div id="service_relais_img"></div>
-
-                <span>{l s='Depot code - Contract number' mod='dpdfrance'}<br/>{l s='(i.e.: 013 - 12345)' mod='dpdfrance'}</span><br/><br/>
-                <input type="text" size="3" name="relais_depot_code" class="relais_depot_code" value="{$relais_depot_code|escape:'htmlall':'UTF-8'}" /> - 
-                <input type="text" size="5" name="relais_shipper_code" class="relais_shipper_code" value="{$relais_shipper_code|escape:'htmlall':'UTF-8'}" /><br/><br/>
-
-                <span>{l s='Carrier assignation' mod='dpdfrance'}</span><br/><br/>
-                <select name="dpdfrance_relais_carrier_id"><option value="0">{l s='None - Disable this carrier' mod='dpdfrance'}</option>
-                {foreach from=$carriers item=carrier} 
-                    {if $carrier.id_carrier == $dpdfrance_relais_carrier_id}
-                        <option value="{$carrier.id_carrier|escape:'htmlall':'UTF-8'}" selected>{$carrier.id_carrier|escape:'htmlall':'UTF-8'} - {$carrier.name|escape:'htmlall':'UTF-8'}</option>
-                    {else}
-                        <option value="{$carrier.id_carrier|escape:'htmlall':'UTF-8'}">{$carrier.id_carrier|escape:'htmlall':'UTF-8'} - {$carrier.name|escape:'htmlall':'UTF-8'}</option>
-                    {/if}
-                {/foreach}
-                </select><br/><br/>
-
-                <span>{l s='Carrier creation' mod='dpdfrance'}</span><br/><br/>
-                <input type="submit" name="submitCreateCarrierRelais" value="{l s='Create DPD Relais carrier' mod='dpdfrance'}" class="button"/> 
+                
+                <div id="service_relais_contract">
+                    {l s='Depot code - Contract number' mod='dpdfrance'}<br/>{l s='(i.e.: 013 - 12345)' mod='dpdfrance'}<br/><br/>
+                    <input type="text" size="3" name="relais_depot_code" class="relais_depot_code" value="{$relais_depot_code|escape:'htmlall':'UTF-8'}" /> - 
+                    <input type="text" size="5" name="relais_shipper_code" class="relais_shipper_code" value="{$relais_shipper_code|escape:'htmlall':'UTF-8'}" /><br/><br/>
+                </div>
+                <div id="service_next_img"></div>
+                <div id="service_relais_addcarrier">
+                    {l s='Carrier creation' mod='dpdfrance'}<br/><br/>
+                    <input type="submit" name="submitCreateCarrierRelais" value="{l s='Create DPD Relais carrier' mod='dpdfrance'}" class="button"/>
+                </div>
+                <div id="service_next_img"></div>
+                <div id="service_relais_selectcarrier">
+                    {l s='Carrier assignation' mod='dpdfrance'}<br/><br/>
+                    <select name="dpdfrance_relais_carrier_id"><option value="0">{l s='None - Disable this carrier' mod='dpdfrance'}</option>
+                    {foreach from=$carriers item=carrier} 
+                        {if $carrier.id_carrier == $dpdfrance_relais_carrier_id}
+                            <option value="{$carrier.id_carrier|escape:'htmlall':'UTF-8'}" selected>{$carrier.id_carrier|escape:'htmlall':'UTF-8'} - {$carrier.name|escape:'htmlall':'UTF-8'}</option>
+                        {else}
+                            <option value="{$carrier.id_carrier|escape:'htmlall':'UTF-8'}">{$carrier.id_carrier|escape:'htmlall':'UTF-8'} - {$carrier.name|escape:'htmlall':'UTF-8'}</option>
+                        {/if}
+                    {/foreach}
+                    </select>
+                </div>
             </div>
-
+<br/>
             <!-- DPD Predict -->
             <div id="service_predict">
-                <label>{l s='DPD Predict' mod='dpdfrance'}</label>
-                <span>{l s='(France)' mod='dpdfrance'}</span>
+                <label>{l s='DPD Predict' mod='dpdfrance'} {l s='(France)' mod='dpdfrance'}</label>
                 <div id="service_predict_img"></div>
 
-                <span>{l s='Depot code - Contract number' mod='dpdfrance'}<br/>{l s='(i.e.: 013 - 12345)' mod='dpdfrance'}</span><br/><br/>
-                <input type="text" size="3" name="predict_depot_code" class="predict_depot_code" value="{$predict_depot_code|escape:'htmlall':'UTF-8'}" /> - 
-                <input type="text" size="5" name="predict_shipper_code" class="predict_shipper_code" value="{$predict_shipper_code|escape:'htmlall':'UTF-8'}" /><br/><br/>
-
-                <span>{l s='Carrier assignation' mod='dpdfrance'}</span><br/><br/>
-                <select name="dpdfrance_predict_carrier_id"><option value="0">{l s='None - Disable this carrier' mod='dpdfrance'}</option>
-                {foreach from=$carriers item=carrier} 
-                    {if $carrier.id_carrier == $dpdfrance_predict_carrier_id}
-                        <option value="{$carrier.id_carrier|escape:'htmlall':'UTF-8'}" selected>{$carrier.id_carrier|escape:'htmlall':'UTF-8'} - {$carrier.name|escape:'htmlall':'UTF-8'}</option>
-                    {else}
-                        <option value="{$carrier.id_carrier|escape:'htmlall':'UTF-8'}">{$carrier.id_carrier|escape:'htmlall':'UTF-8'} - {$carrier.name|escape:'htmlall':'UTF-8'}</option>
-                    {/if}
-                {/foreach}
-                </select><br/><br/>
-
-                <span>{l s='Carrier creation' mod='dpdfrance'}</span><br/><br/>
-                <input type="submit" name="submitCreateCarrierPredict" value="{l s='Create DPD Predict carrier' mod='dpdfrance'}" class="button"/> 
+                <div id="service_predict_contract">
+                    {l s='Depot code - Contract number' mod='dpdfrance'}<br/>{l s='(i.e.: 013 - 12345)' mod='dpdfrance'}<br/><br/>
+                    <input type="text" size="3" name="predict_depot_code" class="predict_depot_code" value="{$predict_depot_code|escape:'htmlall':'UTF-8'}" /> - 
+                    <input type="text" size="5" name="predict_shipper_code" class="predict_shipper_code" value="{$predict_shipper_code|escape:'htmlall':'UTF-8'}" /><br/><br/>
+                </div>
+                <div id="service_next_img"></div>
+                <div id="service_predict_addcarrier">
+                    {l s='Carrier creation' mod='dpdfrance'}<br/><br/>
+                    <input type="submit" name="submitCreateCarrierPredict" value="{l s='Create DPD Predict carrier' mod='dpdfrance'}" class="button"/> 
+                </div>
+                <div id="service_next_img"></div>
+                <div id="service_predict_selectcarrier">
+                    {l s='Carrier assignation' mod='dpdfrance'}<br/><br/>
+                    <select name="dpdfrance_predict_carrier_id"><option value="0">{l s='None - Disable this carrier' mod='dpdfrance'}</option>
+                    {foreach from=$carriers item=carrier} 
+                        {if $carrier.id_carrier == $dpdfrance_predict_carrier_id}
+                            <option value="{$carrier.id_carrier|escape:'htmlall':'UTF-8'}" selected>{$carrier.id_carrier|escape:'htmlall':'UTF-8'} - {$carrier.name|escape:'htmlall':'UTF-8'}</option>
+                        {else}
+                            <option value="{$carrier.id_carrier|escape:'htmlall':'UTF-8'}">{$carrier.id_carrier|escape:'htmlall':'UTF-8'} - {$carrier.name|escape:'htmlall':'UTF-8'}</option>
+                        {/if}
+                    {/foreach}
+                    </select>
+                </div>
             </div>
-
+<br/>
             <!-- DPD Classic -->
             <div id="service_classic">
-                <label>{l s='DPD Classic' mod='dpdfrance'}</label>
-                <label>{l s='Europe & Intercontinental' mod='dpdfrance'}</label>
-                <span>{l s='(France : delivery at workplace)' mod='dpdfrance'}</span><br/>
+                <label>{l s='DPD Classic' mod='dpdfrance'}<br/>
+                {l s='Europe & Intercontinental' mod='dpdfrance'} {l s='(France : delivery at workplace)' mod='dpdfrance'}</label>
 
                 <div id="service_classic_img"></div>
 
-                <span>{l s='Depot code - Contract number' mod='dpdfrance'}<br/>{l s='(i.e.: 013 - 12345)' mod='dpdfrance'}</span><br/><br/>
-                <input type="text" size="3" name="classic_depot_code" class="classic_depot_code" value="{$classic_depot_code|escape:'htmlall':'UTF-8'}" /> - 
-                <input type="text" size="5" name="classic_shipper_code" class="classic_shipper_code" value="{$classic_shipper_code|escape:'htmlall':'UTF-8'}" /><br/><br/>
+                <div id="service_classic_contract">
+                    {l s='Depot code - Contract number' mod='dpdfrance'}<br/>{l s='(i.e.: 013 - 12345)' mod='dpdfrance'}<br/><br/>
+                    <input type="text" size="3" name="classic_depot_code" class="classic_depot_code" value="{$classic_depot_code|escape:'htmlall':'UTF-8'}" /> - 
+                    <input type="text" size="5" name="classic_shipper_code" class="classic_shipper_code" value="{$classic_shipper_code|escape:'htmlall':'UTF-8'}" /><br/><br/>
+                </div>
+                <div id="service_next_img"></div>
+                <div id="service_classic_addcarrier">
+                    {l s='Carrier creation' mod='dpdfrance'}<br/><br/>
+                    <input type="submit" name="submitCreateCarrierClassic" value="{l s='Create DPD Classic carrier' mod='dpdfrance'}" class="button"/><br/>
+                    <input type="submit" name="submitCreateCarrierWorld" value="{l s='Create DPD Intercontinental carrier' mod='dpdfrance'}" class="button"/><br/>
+                </div>
+                <div id="service_next_img"></div>
+                <div id="service_classic_selectcarrier">
+                    {l s='Carrier assignation' mod='dpdfrance'}<br/><br/>
+                    <select name="dpdfrance_classic_carrier_id"><option value="0">{l s='None - Disable this carrier' mod='dpdfrance'}</option>
+                    {foreach from=$carriers item=carrier} 
+                        {if $carrier.id_carrier == $dpdfrance_classic_carrier_id}
+                            <option value="{$carrier.id_carrier|escape:'htmlall':'UTF-8'}" selected>{$carrier.id_carrier|escape:'htmlall':'UTF-8'} - {$carrier.name|escape:'htmlall':'UTF-8'}</option>
+                        {else}
+                            <option value="{$carrier.id_carrier|escape:'htmlall':'UTF-8'}">{$carrier.id_carrier|escape:'htmlall':'UTF-8'} - {$carrier.name|escape:'htmlall':'UTF-8'}</option>
+                        {/if}
+                    {/foreach}
+                    </select>
+                </div>
 
-                <span>{l s='Carrier assignation' mod='dpdfrance'}</span><br/><br/>
-                <select name="dpdfrance_classic_carrier_id"><option value="0">{l s='None - Disable this carrier' mod='dpdfrance'}</option>
-                {foreach from=$carriers item=carrier} 
-                    {if $carrier.id_carrier == $dpdfrance_classic_carrier_id}
-                        <option value="{$carrier.id_carrier|escape:'htmlall':'UTF-8'}" selected>{$carrier.id_carrier|escape:'htmlall':'UTF-8'} - {$carrier.name|escape:'htmlall':'UTF-8'}</option>
-                    {else}
-                        <option value="{$carrier.id_carrier|escape:'htmlall':'UTF-8'}">{$carrier.id_carrier|escape:'htmlall':'UTF-8'} - {$carrier.name|escape:'htmlall':'UTF-8'}</option>
-                    {/if}
-                {/foreach}
-                </select><br/><br/>
-
-                <span>{l s='Carrier creation' mod='dpdfrance'}</span><br/><br/>
-                <input type="submit" name="submitCreateCarrierClassic" value="{l s='Create DPD Classic carrier' mod='dpdfrance'}" class="button"/> 
-                <input type="submit" name="submitCreateCarrierWorld" value="{l s='Create DPD Intercontinental carrier' mod='dpdfrance'}" class="button"/><br/>
             </div>
 
             <div class="notabene">{l s='Please contact your DPD sales representative to get your contract numbers and depot code.' mod='dpdfrance'}</div><br/><br/>
@@ -189,13 +205,19 @@ function dpdfrance_attr_carrier(element) {
         <!-- Tab Options supplémentaires -->
         <div id="options_supp" style="display:none;">
             <br/><span class="section_title_alt">{l s='Advanced settings' mod='dpdfrance'}</span><br/><br/>
-            <label>{l s='DPD Relais WebService URL' mod='dpdfrance'}</label><div class="margin-form"><input type="text" size="48" name="mypudo_url" value="{$mypudo_url|escape:'htmlall':'UTF-8'}" /><br/>{l s='Caution! Critical setting' mod='dpdfrance'}</div>
+
+            <label>{l s='DPD Relais WebService URL' mod='dpdfrance'}</label>
+            <div class="margin-form">
+                <input type="text" size="48" name="mypudo_url" value="{$mypudo_url|escape:'htmlall':'UTF-8'}" />
+                <br/>
+                <a style="color: #dc0042; font-size: 12px;" href="javascript:void(0)" onclick="window.open(&quot;../modules/dpdfrance/docs/readme_dpdfrance_prestashop.pdf#page=7&quot;, &quot;s&quot;, &quot;width= 640, height= 900, left=0, top=0, resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=no, copyhistory=no&quot;);">{l s='Caution! Critical setting' mod='dpdfrance'}</a>
+            </div>
 
             {if $ps_version >= '1.4'}
-                <label>{l s='Coastal islands & Corsica overcost' mod='dpdfrance'}</label><div class="margin-form"><input type="text" size="3" name="supp_iles" value="{$supp_iles|escape:'htmlall':'UTF-8'}" />{l s=' € (-1 to disable delivery to these areas)' mod='dpdfrance'}</div>
+                <label>{l s='Coastal islands & Corsica overcost' mod='dpdfrance'}</label><div class="margin-form"><input type="text" size="3" name="supp_iles" value="{$supp_iles|escape:'htmlall':'UTF-8'}" />{l s=' € (-1 to disable delivery to these areas)' mod='dpdfrance'}</div><br/>
                 <label>{l s='Mountain areas overcost' mod='dpdfrance'}</label><div class="margin-form"><input type="text" size="3" name="supp_montagne" value="{$supp_montagne|escape:'htmlall':'UTF-8'}" />{l s=' € (-1 to disable delivery to these areas)' mod='dpdfrance'}</div>
             {/if}
-
+            <br/>
             <label>{l s='Google Maps API Key' mod='dpdfrance'}</label>
             <div class="margin-form">
                 <input type="text" size="48" name="google_api_key" value="{$google_api_key|escape:'htmlall':'UTF-8'}" />
@@ -221,7 +243,8 @@ function dpdfrance_attr_carrier(element) {
                         <option value="{$value.id_order_state|escape:'htmlall':'UTF-8'}">{$value.name|escape:'htmlall':'UTF-8'}</option>
                     {/if}
                 {/foreach}
-                </select><br/>{l s='Orders in this state will be selected by default for exporting.' mod='dpdfrance'}<br/>
+                </select>
+                <br/>{l s='Orders in this state will be selected by default for exporting.' mod='dpdfrance'}<br/>
             </div>
             
             <label>{l s='Shipped status' mod='dpdfrance'}<br/></label>
@@ -234,7 +257,8 @@ function dpdfrance_attr_carrier(element) {
                         <option value="{$value.id_order_state|escape:'htmlall':'UTF-8'}">{$value.name|escape:'htmlall':'UTF-8'}</option>
                     {/if}
                 {/foreach}
-                </select><br/>{l s='Once parcel trackings are generated, orders will be updated to this state.' mod='dpdfrance'}<br/>
+                </select>
+                <br/>{l s='Once parcel trackings are generated, orders will be updated to this state.' mod='dpdfrance'}<br/>
             </div>
 
             <label>{l s='Delivered status' mod='dpdfrance'}<br/></label>
@@ -247,7 +271,8 @@ function dpdfrance_attr_carrier(element) {
                         <option value="{$value.id_order_state|escape:'htmlall':'UTF-8'}">{$value.name|escape:'htmlall':'UTF-8'}</option>
                     {/if}
                 {/foreach}
-                </select><br/>{l s='Once parcels are delivered, orders will be updated to this state.' mod='dpdfrance'}<br/>
+                </select>
+                <br/>{l s='Once parcels are delivered, orders will be updated to this state.' mod='dpdfrance'}<br/>
             </div>
 
             <label>{l s='Automatic update of statuses' mod='dpdfrance'}<br/></label>
@@ -264,6 +289,20 @@ function dpdfrance_attr_carrier(element) {
                 <br/>{l s='Order statuses will be automatically updated depending on parcel delivery status.' mod='dpdfrance'}<br/>
             </div>
 
+            <label>{l s='Marketplace mode' mod='dpdfrance'}<br/></label>
+            <div class="margin-form">
+               <select name="marketplace_mode">
+                {foreach from=$optmarketplace item=option key=key} 
+                    {if $key == $marketplace_mode}
+                        <option value="{$key|escape:'htmlall':'UTF-8'}" selected>{$option|escape:'htmlall':'UTF-8'}</option>
+                    {else}
+                        <option value="{$key|escape:'htmlall':'UTF-8'}">{$option|escape:'htmlall':'UTF-8'}</option>
+                    {/if}
+                {/foreach}
+                </select>
+                <br/>{l s='Enables export of all orders & parcel number based tracking if automatic status update is enabled.' mod='dpdfrance'}<br/>
+            </div>
+
             <label>{l s='Parcel insurance service' mod='dpdfrance'}<br/></label>
             <div class="margin-form">
                 <select name="ad_valorem">
@@ -274,7 +313,8 @@ function dpdfrance_attr_carrier(element) {
                         <option value="{$key|escape:'htmlall':'UTF-8'}">{$option|escape:'htmlall':'UTF-8'}</option>
                     {/if}
                 {/foreach}
-                </select><br/>{l s='Ad Valorem : Please refer to your pricing conditions.' mod='dpdfrance'}<br/>
+                </select>
+                <br/>{l s='Ad Valorem : Please refer to your pricing conditions.' mod='dpdfrance'}<br/>
             </div>
 
             <label>{l s='DPD Returns service' mod='dpdfrance'}<br/></label>
@@ -287,7 +327,8 @@ function dpdfrance_attr_carrier(element) {
                         <option value="{$key|escape:'htmlall':'UTF-8'}">{$option|escape:'htmlall':'UTF-8'}</option>
                     {/if}
                 {/foreach}
-                </select><br/>{l s='DPD Returns options : Please refer to your pricing conditions.' mod='dpdfrance'}<br/>
+                </select>
+                <br/>{l s='DPD Returns options : Please refer to your pricing conditions.' mod='dpdfrance'}<br/>
             </div>
 
             <center><a size="6" name="next" class="button" href="javascript:void(0)" onclick="$(&quot;#onglet3&quot;).click();">{l s='Previous' mod='dpdfrance'}</a> 

@@ -73,6 +73,10 @@ div.notabene
     font-size: 12px;
 }
 
+div.notabene a {
+    font-family: DPDPlutoSansRegular;
+}
+
 #modes_transport label
 {
     margin-top:5px;
@@ -385,63 +389,61 @@ span.section_title_alt
     left: 41%;
     position: relative;
 }
+
+#service_next_img {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 #service_relais
 {
     background-color:#FFF;
-    float:left;
     border-style: none;
-    height: 400px;
+    height: 130px;
     margin:5px;
     padding:10px;
     text-align:center;
-    width:230px;
+    width:100%;
 }
 
 #service_relais label
 {
     font-family:DPDPlutoSansLight;
     text-align:center;
-    width:96%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    padding-bottom: 20px;
 }
 
-#service_predict
+#service_relais_img
 {
-    background-color:#FFF;
-    float:left;
-    border-style: none;
-    height: 400px;
-    margin:5px;
-    padding:10px;
-    text-align:center;
-    width:230px;
-}
-
-#service_predict label
-{
-    font-family:DPDPlutoSansLight;
-    text-align:center;
-    width:96%;
-}
-
-#service_classic
-{
-    background-color:#FFF;
-    float:left;
-    border-style: none;
-    height: 400px;
-    margin:5px;
-    padding:10px;
-    text-align:center;
-    width:230px;
-}
-
-#service_classic label
-{
-    font-family:DPDPlutoSansLight;
-    text-align:center;
-    width:96%;
+    background:url(../../img/front/relais/carrier_logo.jpg) no-repeat center;
+    height: 72px;
+    width: 96px;
+    float: left;
     padding: 0;
     margin: 0;
+}
+
+#service_relais_contract {
+    height: 100px;
+    width: 190px;
+    float: left;
+}
+
+#service_relais_addcarrier {
+    height: 100px;
+    width: 230px;
+    margin: 0;
+    padding: 0;
+    float: left;
+}
+
+#service_relais_selectcarrier {
+    height: 100px;
+    width: 220px;
+    float: left;
 }
 
 #service_relais select
@@ -450,10 +452,111 @@ span.section_title_alt
     width:95%;
 }
 
+#service_predict
+{
+    background-color:#FFF;
+    border-style: none;
+    height: 130px;
+    margin:5px;
+    padding:10px;
+    text-align:center;
+    width:100%;
+}
+#service_predict label
+{
+    font-family:DPDPlutoSansLight;
+    text-align:center;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    padding-bottom: 20px;
+}
+
+#service_predict_img
+{
+    background:url(../../img/front/predict/carrier_logo.jpg) no-repeat center;
+    height: 72px;
+    width: 96px;
+    float: left;
+    padding: 0;
+    margin: 0;
+}
+
+#service_predict_contract {
+    height: 100px;
+    width: 190px;
+    float: left;
+}
+
+#service_predict_addcarrier {
+    height: 100px;
+    width: 230px;
+    margin: 0;
+    padding: 0;
+    float: left;
+}
+
+#service_predict_selectcarrier {
+    height: 100px;
+    width: 220px;
+    float: left;
+}
+
 #service_predict select
 {
     font-family:DPDPlutoSansLight;
     width:95%;
+}
+
+#service_classic
+{
+    background-color:#FFF;
+    border-style: none;
+    height: 150px;
+    margin:5px;
+    padding:10px;
+    text-align:center;
+    width:100%;
+}
+
+#service_classic label
+{
+    font-family:DPDPlutoSansLight;
+    text-align:center;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    padding-bottom: 20px;
+}
+
+#service_classic_img
+{
+    background:url(../../img/front/classic/carrier_logo.jpg) no-repeat center;
+    height: 72px;
+    width: 96px;
+    float: left;
+    padding: 0;
+    margin: 0;
+}
+
+#service_classic_contract {
+    height: 100px;
+    width: 190px;
+    float: left;
+}
+
+#service_classic_addcarrier {
+    height: 100px;
+    width: 230px;
+    margin: 0;
+    padding: 0;
+    float: left;
+}
+
+#service_classic_selectcarrier {
+    height: 100px;
+    width: 220px;
+    float: left;
 }
 
 #service_classic select
@@ -462,48 +565,21 @@ span.section_title_alt
     width:95%;
 }
 
-#service_relais_img
+#service_next_img
 {
-    background:url(../../img/front/relais/carrier_logo.jpg) no-repeat center;
-    height:96px;
-    margin: 0 20px 15px 20px;
+    background:url(../../img/admin/next_icon.png) no-repeat center;
+    height:100px;
+    width: 20px;
+    float: left;
+    padding: 0 3px;
+    margin: 0;
 }
-
-#service_predict_img
-{
-    background:url(../../img/front/predict/carrier_logo.jpg) no-repeat center;
-    height:96px;
-    margin: 0 20px 15px 20px;
-}
-
-#service_classic_img
-{
-    background:url(../../img/front/classic/carrier_logo.jpg) no-repeat center;
-    height:96px;
-    margin: 0 20px 5px 20px;
-}
-
 #modes_transport
 {
     font-family:DPDPlutoSansLight;
     margin:auto;
     text-align:center;
     width:790px;
-}
-
-#service_relais span
-{
-    font-family:DPDPlutoSansLight;
-}
-
-#service_predict span
-{
-    font-family:DPDPlutoSansLight;
-}
-
-#service_classic span
-{
-    font-family:DPDPlutoSansLight;
 }
 
 #donnees_exp_wrap label
@@ -536,6 +612,11 @@ div.margin-form input
 }
 
 div.margin-form
+{
+    font-family:DPDPlutoSansLight;
+}
+
+div.margin-form a
 {
     font-family:DPDPlutoSansLight;
 }

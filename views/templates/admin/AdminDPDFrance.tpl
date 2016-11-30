@@ -122,7 +122,7 @@
                     <tr>
                         <th class="hcheckexport"><input type="checkbox" onchange="checkallboxes(this)"/></th>
                         <th class="hid">ID</th>
-                        <th class="href">{l s='Reference' mod='dpdfrance'}</th>
+                        {if $psVer >= 1.5}<th class="href">{l s='Reference' mod='dpdfrance'}</th>{/if}
                         <th class="hdate">{l s='Date of order' mod='dpdfrance'}</th>
                         <th class="hnom">{l s='Recipient' mod='dpdfrance'}</th>
                         <th class="htype">{l s='Service' mod='dpdfrance'}</th>
@@ -138,7 +138,7 @@
         {foreach from=$order_info item=order}
             <tr>
                 <td><input class="checkbox" type="checkbox" name="checkbox[]" {$order.checked|escape:'htmlall':'UTF-8'} value="{$order.id|escape:'htmlall':'UTF-8'}"></td><td class="id">{$order.id|escape:'htmlall':'UTF-8'}</td>
-                <td class="ref">{$order.reference|escape:'htmlall':'UTF-8'}</td>
+                {if $psVer >= 1.5}<td class="ref">{$order.reference|escape:'htmlall':'UTF-8'}</td>{/if}
                 <td class="date">{$order.date|escape:'htmlall':'UTF-8'}</td>
                 <td class="nom">{$order.nom|escape:'htmlall':'UTF-8'}</td>
                 <td class="type">{$order.type|escape:'quotes':'UTF-8'}</td>
