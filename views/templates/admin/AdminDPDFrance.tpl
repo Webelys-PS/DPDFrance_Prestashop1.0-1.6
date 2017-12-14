@@ -1,5 +1,5 @@
 {**
- * 2007-2016 PrestaShop
+ * 2007-2017 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -18,7 +18,7 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  * @author    DPD France S.A.S. <support.ecommerce@dpd.fr>
- * @copyright 2016 DPD France S.A.S.
+ * @copyright 2017 DPD France S.A.S.
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  *}
 
@@ -103,7 +103,7 @@
 </script>
 {/literal}
 
-{if $stream !== 'error'}
+{if !isset($stream.error) || (isset($stream.error) && !$stream.error)}
     <fieldset id="fieldset_rss"><legend><a href="javascript:void(0)" onclick="$(&quot;#zonemarquee&quot;).toggle(&quot;fast&quot;, function() {literal}{}{/literal});"><img src="../modules/dpdfrance/views/img/admin/rss_icon.png" />{l s='DPD News (show/hide)' mod='dpdfrance'}</a></legend>
     <div id="zonemarquee"><div id="marquee" class="marquee">
     {foreach from=$stream item=item key=key}
@@ -114,8 +114,8 @@
 
 <fieldset id="fieldset_grid"><legend><img src="../modules/dpdfrance/views/img/admin/admin.png"/>{l s='DPD deliveries management' mod='dpdfrance'}</legend>
 
-{if $order_info !== 'error'}
-    <input id="tableFilter" value="{l s='Search something, separate values with ; ' mod='dpdfrance'}"/><img id="filtericon" src="../modules/dpdfrance/views/img/admin/search.png"/><br/><br/>
+{if !isset($order_info.error) || (isset($order_info.error) && !$order_info.error)}
+    <input id="tableFilter" placeholder="{l s='Search something, separate values with ; ' mod='dpdfrance'}"/><img id="filtericon" src="../modules/dpdfrance/views/img/admin/search.png"/><br/><br/>
         <form id="exportform" action="index.php?tab=AdminDPDFrance&token={$token|escape:'htmlall':'UTF-8'}" method="POST" enctype="multipart/form-data">
         <body><table>
                 <thead>
@@ -148,7 +148,7 @@
                 <td class="advalorem"><input class="advalorem" type="checkbox" name="advalorem[]" {$order.advalorem_checked|escape:'htmlall':'UTF-8'} value="{$order.id|escape:'htmlall':'UTF-8'}"></td>
                 {if $dpdfrance_retour_option !== 0}<td class="retour"><input class="retour" type="checkbox" name="retour[]" {$order.retour_checked|escape:'htmlall':'UTF-8'} value="{$order.id|escape:'htmlall':'UTF-8'}"></td>{/if}
                 <td class="statutcommande" align="center">{$order.statut|escape:'quotes':'UTF-8'}</td>
-                <td class="statutcolis" align="center"><a href="javascript:void(0)" onclick="window.open('http://www.dpd.fr/tracer_{$order.reference|escape:'htmlall':'UTF-8'}_{$order.depot_code|escape:'htmlall':'UTF-8'}{$order.shipper_code|escape:'htmlall':'UTF-8'}','','width=1024,height=768,top=30,left=20')">{$order.dernier_statut_colis|escape:'quotes':'UTF-8'}</a></td>
+                <td class="statutcolis" align="center"><a href="javascript:void(0)" onclick="window.open('http://www.dpd.fr/tracex_{$order.reference|escape:'htmlall':'UTF-8'}_{$order.depot_code|escape:'htmlall':'UTF-8'}{$order.shipper_code|escape:'htmlall':'UTF-8'}','','width=1024,height=768,top=30,left=20')">{$order.dernier_statut_colis|escape:'quotes':'UTF-8'}</a></td>
             </tr>
         {/foreach}
     </tbody></table>

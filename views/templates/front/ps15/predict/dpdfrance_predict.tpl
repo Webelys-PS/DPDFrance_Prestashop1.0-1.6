@@ -1,5 +1,5 @@
 {**
- * 2007-2016 PrestaShop
+ * 2007-2017 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -18,12 +18,13 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  * @author    DPD France S.A.S. <support.ecommerce@dpd.fr>
- * @copyright 2016 DPD France S.A.S.
+ * @copyright 2017 DPD France S.A.S.
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  *}
 
 <script type="text/javascript">
 {literal}
+
 function dpdfrance_predict_redirect()
 {
     if (!$("input[name*='delivery_option[']:checked").val()) {
@@ -32,13 +33,11 @@ function dpdfrance_predict_redirect()
         checkedCarrier = $("input[name*='delivery_option[']:checked").val().substr(0,$("input[name*='delivery_option[']:checked").val().indexOf(','));
     }
     if (checkedCarrier != dpdfrancePredictCarrierId) {
-        $("#form").attr("action", baseDir+'index.php?controller=order');
         $("#tr_carrier_predict").fadeOut('fast');
         if (document.getElementById("tr_carrier_predict"))
             $("#tr_carrier_predict").remove();
         $("#dpdfrance_predict_container").remove();
     } else {
-        $("#form").attr("action", baseDir+'modules/dpdfrance/validation.php?dpdfrance_carrier=' + checkedCarrier);
         if (document.getElementById("div_dpdfrance_predict_block"))
             document.getElementById('div_dpdfrance_predict_block').style.display = "";
         $("#tr_carrier_predict").html(dpdfrance_predict_response);
@@ -48,29 +47,11 @@ function dpdfrance_predict_redirect()
 
 $(document).ready(function()
 {
-    $('[name=processCarrier]').removeAttr('disabled')
+    if (opc == 0) {
+        $('[name=processCarrier]').removeAttr('disabled')
+        $("#dpdfrance_predict_container").remove();
+    }
     $('[name=dpdfrance_wait]').remove();
-    $("#dpdfrance_predict_container").remove();
-    $("a.dpdfrance_more").click(function() {
-        $.fancybox({
-            'padding'       : 0,
-            'autoScale'     : false,
-            'openEffect'    : 'elastic',
-            'closeEffect'   : 'elastic',
-            'openSpeed'     : 150,
-            'closeSpeed'    : 150,
-            'title'         : this.title,
-            'width'         : 720,
-            'height'        : 435,
-            'href'          : this.href.replace(new RegExp("watch\\?v=", "i"), 'v/') + '&autoplay=1',
-            'type'          : 'swf',
-            'swf'           : {
-                'wmode'             : 'transparent',
-                'allowfullscreen'   : 'true'
-                }
-        });
-        return false;
-    });
     carrier_block = $('input[class=delivery_option_radio]:checked').parents('div.delivery_option');
     $(carrier_block).append(
         '<div>'
@@ -89,7 +70,15 @@ $(document).ready(function()
         dpdfrance_predict_redirect();
     });
     dpdfrance_predict_redirect();
+
+    $("#input_dpdfrance_predict_gsm_dest").keyup(function() {
+        dpdfrance_checkGSM();
+    });
+    if ($("#div_dpdfrance_predict_block").is(":visible")) {
+        dpdfrance_checkGSM();
+    }
 });
+
 {/literal}
 </script>
 
@@ -108,7 +97,7 @@ $(document).ready(function()
             <p><h2>{l s='How does it work?' mod='dpdfrance'}</h2></p>
             <ul>
                 <li>{l s='Once your order is ready for shipment, you will receive an SMS proposing various days and time windows for your delivery.' mod='dpdfrance'}</li>
-                <li>{l s='You choose the moment which suits you best for the delivery by replying to the SMS (no extra cost) or through our website' mod='dpdfrance'} <a href="http://www.dpd.fr/destinataires" target="_blank">dpd.fr</a></li>
+                <li>{l s='You choose the moment which suits you best for the delivery by replying to the SMS (no extra cost) or through our website' mod='dpdfrance'} <a href="http://destinataires.dpd.fr" target="_blank">dpd.fr</a></li>
                 <li>{l s='On the day of delivery, a text message will remind you the selected time window.' mod='dpdfrance'}</li>
             </ul>
         </div>
@@ -122,6 +111,9 @@ $(document).ready(function()
 
     <div id="div_dpdfrance_predict_gsm">
         {l s='Get all the advantages of DPD\'s Predict service by providing a french GSM number here ' mod='dpdfrance'} 
-        <input type='text' name="dpdfrance_predict_gsm_dest" id="input_dpdfrance_predict_gsm_dest" value="{$dpdfrance_predict_gsm_dest|escape:'htmlall':'UTF-8'}"></input><div id="dpdfrance_predict_gsm_button" onclick="$(&quot;[name='processCarrier']&quot;).click();">></div>
+        <input type='text' name="dpdfrance_predict_gsm_dest" id="input_dpdfrance_predict_gsm_dest" maxlength="12" value="{$dpdfrance_predict_gsm_dest|escape:'htmlall':'UTF-8'}"></input><div id="dpdfrance_predict_gsm_button" onclick="$(&quot;[name='processCarrier']&quot;).click();">></div>
     </div>
+
+    <div id="dpdfrance_predict_error" class="warnmsg" style="display:none;">{l s='It seems that the GSM number you provided is incorrect. Please provide a french GSM number, starting with 06 or 07, on 10 consecutive digits.' mod='dpdfrance'}</div>
+
 </div>

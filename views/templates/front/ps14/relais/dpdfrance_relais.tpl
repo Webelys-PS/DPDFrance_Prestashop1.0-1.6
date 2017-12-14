@@ -1,5 +1,5 @@
 {**
- * 2007-2016 PrestaShop
+ * 2007-2017 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -18,49 +18,32 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  * @author    DPD France S.A.S. <support.ecommerce@dpd.fr>
- * @copyright 2016 DPD France S.A.S.
+ * @copyright 2017 DPD France S.A.S.
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  *}
 
 <script type="text/javascript">
 {literal}
-function dpdfrance_relais_redirect()
-{
-    if (!$("input[name*='delivery_option[']:checked").val()) {
-        checkedCarrier = 0;
-    } else {
-        checkedCarrier = $("input[name*='delivery_option[']:checked").val().substr(0,$("input[name*='delivery_option[']:checked").val().indexOf(','));
-    }
-    if (checkedCarrier != dpdfranceRelaisCarrierId) {
-        $("#form").attr("action", '{/literal}{if $ssl}{$base_dir_ssl|escape:'htmlall':'UTF-8'}{else}{$base_dir|escape:'htmlall':'UTF-8'}{/if}{literal}index.php?controller=order');
-        $("#tr_carrier_dpdfrance_relais").fadeOut('fast');
-        if (document.getElementById("tr_carrier_dpdfrance_relais"))
-            $("#tr_carrier_dpdfrance_relais").remove();
-        $("#dpdfrance_relais_container").remove();
-    } else {
-        $("#form").attr("action", '{/literal}{if $ssl}{$base_dir_ssl|escape:'htmlall':'UTF-8'}{else}{$base_dir|escape:'htmlall':'UTF-8'}{/if}{literal}modules/dpdfrance/validation.php?dpdfrance_carrier=' + checkedCarrier);
-        if (document.getElementById("dpdfrance_relais_point_table"))
-            document.getElementById('dpdfrance_relais_point_table').style.display = "";
-        $("#tr_carrier_dpdfrance_relais").html(dpdfrance_relais_response);
-        $("#tr_carrier_dpdfrance_relais").fadeIn('fast');
-    }
-}
 
 function dpdfrance_relais_ajaxupdate(address, zipcode, city, action)
 {
     if ((zipcode && zipcode.length >= 5 && action == 'search') || action == 'reset') {
-        $('#dpdfrance_reset_submit').after(' <img src="{/literal}{if $ssl}{$base_dir_ssl|escape:'htmlall':'UTF-8'}{else}{$base_dir|escape:'htmlall':'UTF-8'}{/if}{literal}modules/dpdfrance/views/img/front/relais/loader.gif"/>');
-        $.ajax('{/literal}{if $ssl}{$base_dir_ssl|escape:'htmlall':'UTF-8'}{else}{$base_dir|escape:'htmlall':'UTF-8'}{/if}{literal}modules/dpdfrance/ajax.php?action_ajax_dpdfrance=ajaxUpdatePoints', {
+        $('#dpdfrance_reset_submit').after(' <img src="{/literal}{$dpdfrance_base_dir|escape:'htmlall':'UTF-8'}{literal}/views/img/front/relais/loader.gif"/>');
+        $.ajax('{/literal}{$dpdfrance_base_dir|escape:'htmlall':'UTF-8'}{literal}/ajax.php?action_ajax_dpdfrance=ajaxUpdatePoints', {
             data: {
-                'address': address,
-                'zipcode': zipcode,
-                'city': city,
-                'action': action,
-                'cart_id': cart_id
+                'address'           : address,
+                'zipcode'           : zipcode,
+                'city'              : city,
+                'action'            : action,
+                'dpdfrance_cart_id' : dpdfrance_cart_id,
+                'dpdfrance_token'   : dpdfrance_token,
             },
             success: function(data) {
                 var $html = $(data);
                 $('#dpdfrance_relais_point_table').html($html);
+                $('#dpdfrance_relais_point_table').children('table').fadeIn('fast', function() {
+                    dpdfrance_checkPudo();
+                });
             }
         });
     } else {
@@ -70,50 +53,56 @@ function dpdfrance_relais_ajaxupdate(address, zipcode, city, action)
 
 $(document).ready(function()
 {
-    $('[name=dpdfrance_wait]').remove();
-    carrier_block = $('input[class=delivery_option_radio]:checked').parents('div.delivery_option');
-    $(carrier_block).append(
-        '<div>'
-            +'<table id="dpdfrance_relais_container" class="dpdfrance_relais_container" width="100%">'
-                +'<tr>'
-                +    '<td style="display:none;" id="id_carrier' + dpdfranceRelaisCarrierId + '" value="'+dpdfranceRelaisCarrierId+'" />'
-                +'</tr>'
-            +'</table>'
-        +'</div>');
-    
-    $('#id_carrier' + {/literal}{$dpdfrance_relais_carrier_id|escape:'javascript':'UTF-8'}{literal}).parent().parent().after("<tr><td colspan='4' style='padding:0; display:none;' id='tr_carrier_dpdfrance_relais'></td></tr>");
-
+    $('#id_carrier' + {/literal}{$dpdfrance_relais_carrier_id|escape:'javascript':'UTF-8'}{literal}).parent().parent().after("<tr><td colspan='4' style='padding:0; display:none' id='tr_carrier_dpdfrance_relais'></td></tr>");
     dpdfrance_relais_response = $('#dpdfrance_relais_point_table');
+    checkedCarrier = $("input[name*='id_carrier']:checked").val();
 
-    $("input[name*='delivery_option[']").change(function() {
-        dpdfrance_relais_redirect();
-    });
-    dpdfrance_relais_redirect();
-});
+    if ($('#id_carrier' + {/literal}{$dpdfrance_relais_carrier_id|escape:'javascript':'UTF-8'}{literal}).attr('checked')){
+        checkedCarrier = $("input[name*='id_carrier']:checked").val();
+        document.getElementById('dpdfrance_relais_point_table').style.display = "";
+        $("#tr_carrier_dpdfrance_relais").html(dpdfrance_relais_response);
+        $("#tr_carrier_dpdfrance_relais").fadeIn('fast', function() {
+            dpdfrance_checkPudo();
+        });
+    }
 
-/* Hack de la librairie Uniform pour PS 1.6 : supprime les div qui entourent les boutons radio */
-if (psVer >= 1.6)
-{
-    $(window).load(function(){
-        $(".dpdfrance_radiopr").each(function() {
-            radio = $(this).children('div').children('span').html();
-            label = $(this).children('label').prop('outerHTML');
-            $(this).html(radio).append(label);
+    $('#id_carrier' + {/literal}{$dpdfrance_relais_carrier_id|escape:'javascript':'UTF-8'}{literal}).click(function(){
+        checkedCarrier = $("input[name*='id_carrier']:checked").val();
+        document.getElementById('dpdfrance_relais_point_table').style.display = "";
+        $("#tr_carrier_dpdfrance_relais").html(dpdfrance_relais_response);
+        $("#tr_carrier_dpdfrance_relais").fadeIn('fast', function() {
+            dpdfrance_checkPudo();
         });
     });
-}
+
+    $("input[name='id_carrier']").change(function(){
+        checkedCarrier = $("input[name*='id_carrier']:checked").val();
+        if (!$('#id_carrier' + {/literal}{$dpdfrance_relais_carrier_id|escape:'javascript':'UTF-8'}{literal}).attr('checked'))
+            $("#tr_carrier_dpdfrance_relais").fadeOut('fast');
+    });
+});
+
 {/literal}
 </script>
 
 <div id="dpdfrance_relais_filter" onclick="
-var i = 1;
-for (i=1; i<6; i++){
-    document.getElementById('dpdfrance_relais_filter').style.display='none';
-    document.getElementById('dpdfrance_relaydetail'+i).style.display='none';
-}">
+    var i = 1;
+    for (i=1; i<6; i++){
+        document.getElementById('dpdfrance_relais_filter').style.display='none';
+        document.getElementById('dpdfrance_relaydetail'+i).style.display='none';
+        $('#header').css('z-index',10);
+    }
+">
 </div>
 
-<table align="center" id="dpdfrance_relais_point_table" class="dpdfrance_relaistable" style="display:;">
+<noscript>
+    <tr>
+        <td colspan="5"><div class="dpdfrance_relais_error"><strong>{l s='It seems that your browser doesn\'t allow Javascript execution, therefore DPD Relais is not available. Please change browser settings, or try another browser.' mod='dpdfrance'}</strong></div></td>
+    </tr><br/>
+    <div style="display:none;">
+</noscript>
+
+<table align="center" id="dpdfrance_relais_point_table" class="dpdfrance_relaistable" style="display:none;">
 
 {if isset($error)}
     <tr>
@@ -125,19 +114,17 @@ for (i=1; i<6; i++){
             <td colspan="5" style="padding:0px;"><div class="dpdfrance_relais_error"><p>{l s='It seems that you haven\'t selected a DPD Pickup point, please pick one from this list' mod='dpdfrance'}</p></div></td>
         </tr>
     {/if}
-    
+
     <tr>
         <td colspan="5" style="padding:0px;">
             <div id="dpdfrance_div_relais_header"><p>{l s='Please select your DPD Relais parcelshop among this list' mod='dpdfrance'}</p></div>
-            {if $ssl == 0 || $ssl_everywhere == 1}
                 <div id="dpdfrance_div_relais_srch_link"><span onMouseOver="javascript:this.style.cursor='pointer';javascript:this.style.textDecoration='underline';" onMouseOut="javascript:this.style.cursor='auto';javascript:this.style.textDecoration='none';" onClick="$('#dpdfrance_div_relais_srch_panel').slideToggle();">{l s='Search for Pickup points near another address' mod='dpdfrance'}</span>
                 <div id="dpdfrance_div_relais_srch_panel" style="display:none;">
                     <input type="text" id="dpdfrance_search_address" placeholder="{l s='Address' mod='dpdfrance'}" /><br/>
-                    <input type="text" id="dpdfrance_search_zipcode" placeholder="{l s='Postcode' mod='dpdfrance'}" /> <input type="text" id="dpdfrance_search_city" placeholder="{l s='City' mod='dpdfrance'}" />
-                    <button type="button" id="dpdfrance_search_submit" name="dpdfrance_search_submit" onclick="dpdfrance_relais_ajaxupdate($('#dpdfrance_search_address').val(), $('#dpdfrance_search_zipcode').val(), $('#dpdfrance_search_city').val(), 'search');">{l s='Search' mod='dpdfrance'}</button>
-                    <button type="button" id="dpdfrance_reset_submit" name="dpdfrance_reset_submit" onclick="dpdfrance_relais_ajaxupdate($('#dpdfrance_search_address').val(), $('#dpdfrance_search_zipcode').val(), $('#dpdfrance_search_city').val(), 'reset');">{l s='Reset' mod='dpdfrance'}</button>
+                    <input type="text" id="dpdfrance_search_zipcode" maxlength="5" placeholder="{l s='Postcode' mod='dpdfrance'}" /> <input type="text" id="dpdfrance_search_city" placeholder="{l s='City' mod='dpdfrance'}" />
+                <button type="button" id="dpdfrance_search_submit" name="dpdfrance_search_submit" onclick="dpdfrance_relais_ajaxupdate($('#dpdfrance_search_address').val(), $('#dpdfrance_search_zipcode').val(), $('#dpdfrance_search_city').val(), 'search', dpdfrance_cart_id);">{l s='Search' mod='dpdfrance'}</button>
+                <button type="button" id="dpdfrance_reset_submit" name="dpdfrance_reset_submit" onclick="dpdfrance_relais_ajaxupdate($('#dpdfrance_search_address').val(), $('#dpdfrance_search_zipcode').val(), $('#dpdfrance_search_city').val(), 'reset', dpdfrance_cart_id);">{l s='Reset' mod='dpdfrance'}</button>
                 </div>
-            {/if}
         </td>
     </tr>
 
@@ -149,24 +136,23 @@ for (i=1; i<6; i++){
 
 {foreach from=$dpdfrance_relais_points item=points name=dpdfranceRelaisLoop} 
 
-<tr class="dpdfrance_lignepr" onclick="document.getElementById('{$points.relay_id|escape:'htmlall':'UTF-8'}').checked=true">
+<tr class="dpdfrance_lignepr" onclick="dpdfrance_registerPudo('{$points.relay_id|escape:'htmlall':'UTF-8'}');document.getElementById('{$points.relay_id|escape:'htmlall':'UTF-8'}').checked=true;">
         <td align="left" class="dpdfrance_logorelais"></td>
         <td align="left" class="dpdfrance_adressepr"><b>{$points.shop_name|escape:'htmlall':'UTF-8'}</b><br/>{$points.address1|escape:'htmlall':'UTF-8'}<br/>{$points.postal_code|escape:'htmlall':'UTF-8'} {$points.city|escape:'htmlall':'UTF-8'}<br/></td>
         <td align="right" class="dpdfrance_distancepr">{$points.distance|escape:'htmlall':'UTF-8'} km</td>
         <td align="center" class="dpdfrance_popinpr">
             <span onMouseOver="javascript:this.style.cursor='pointer';" onMouseOut="javascript:this.style.cursor='auto';"
-                onClick="openDpdfranceDialog('dpdfrance_relaydetail{$smarty.foreach.dpdfranceRelaisLoop.index+1|escape:'htmlall':'UTF-8'}','map_canvas{$smarty.foreach.dpdfranceRelaisLoop.index+1|escape:'htmlall':'UTF-8'}',{$points.coord_lat|escape:'htmlall':'UTF-8'},{$points.coord_long|escape:'htmlall':'UTF-8'},'{if $ssl}{$base_dir_ssl|escape:'htmlall':'UTF-8'}{else}{$base_dir|escape:'htmlall':'UTF-8'}{/if}')">
+                onClick="openDpdfranceDialog('dpdfrance_relaydetail{$smarty.foreach.dpdfranceRelaisLoop.index+1|escape:'htmlall':'UTF-8'}','map_canvas{$smarty.foreach.dpdfranceRelaisLoop.index+1|escape:'htmlall':'UTF-8'}',{$points.coord_lat|escape:'htmlall':'UTF-8'},{$points.coord_long|escape:'htmlall':'UTF-8'},'{$dpdfrance_base_dir|escape:'htmlall':'UTF-8'}')">
                 <u>{l s='More details' mod='dpdfrance'}</u>
             </span>
         </td>
         <td align="center" class="dpdfrance_radiopr">
-        <form method='post' action='{if $ssl}{$base_dir_ssl|escape:'htmlall':'UTF-8'}{else}{$base_dir|escape:'htmlall':'UTF-8'}{/if}modules/dpdfrance/validation.php?dpdfrance_carrier={$dpdfrance_relais_carrier_id|escape:'javascript':'UTF-8'}'>
         {if $dpdfrance_selectedrelay == $points.relay_id}
-            <input type='submit' name="dpdfrance_relay_id_opc" id="{$points.relay_id|escape:'htmlall':'UTF-8'}" value="{$points.relay_id|escape:'htmlall':'UTF-8'}" class="dpdfrance_relais_buttonok" onMouseOver="javascript:this.style.cursor='pointer';" onMouseOut="javascript:this.style.cursor='auto';"></input>
+            <input type="radio" name="dpdfrance_relay_id" id="{$points.relay_id|escape:'htmlall':'UTF-8'}" value="{$points.relay_id|escape:'htmlall':'UTF-8'}" checked="checked">
         {else}
-            <input type='submit' name="dpdfrance_relay_id_opc" id="{$points.relay_id|escape:'htmlall':'UTF-8'}" value="{$points.relay_id|escape:'htmlall':'UTF-8'}" class="dpdfrance_relais_buttonchoose" onMouseOver="javascript:this.style.cursor='pointer';" onMouseOut="javascript:this.style.cursor='auto';"></input>
+            <input type="radio" name="dpdfrance_relay_id" id="{$points.relay_id|escape:'htmlall':'UTF-8'}" value="{$points.relay_id|escape:'htmlall':'UTF-8'}" {if $smarty.foreach.dpdfranceRelaisLoop.first} checked="checked" {/if}>
         {/if}
-        </form>
+            <label for="{$points.relay_id|escape:'htmlall':'UTF-8'}"><span><span></span></span><b>ICI</b></label>
         </td>
 </tr>
 
@@ -174,10 +160,11 @@ for (i=1; i<6; i++){
 
     <div class="dpdfrance_relaisboxclose" onclick="
         document.getElementById('dpdfrance_relaydetail{$smarty.foreach.dpdfranceRelaisLoop.index+1|escape:'htmlall':'UTF-8'}').style.display='none';
-        document.getElementById('dpdfrance_relais_filter').style.display='none'">
-        <img src="{if $ssl}{$base_dir_ssl|escape:'htmlall':'UTF-8'}{else}{$base_dir|escape:'htmlall':'UTF-8'}{/if}modules/dpdfrance/views/img/front/relais/box-close.png"/>
+        document.getElementById('dpdfrance_relais_filter').style.display='none';
+        $('#header').css('z-index',10);">
+        <img src="{$dpdfrance_base_dir|escape:'htmlall':'UTF-8'}/views/img/front/relais/box-close.png"/>
     </div>
-
+    
     <div class="dpdfrance_relaisboxcarto" id="map_canvas{$smarty.foreach.dpdfranceRelaisLoop.index+1|escape:'htmlall':'UTF-8'}"></div>
 
     <div id="relaisboxbottom" class="dpdfrance_relaisboxbottom">
@@ -293,7 +280,7 @@ for (i=1; i<6; i++){
                 <h5>{l s='Distance in km' mod='dpdfrance'} : </h5>{$points.distance|escape:'htmlall':'UTF-8'} km <br/>
                 <h5>{l s='DPD Relais code' mod='dpdfrance'} : </h5>{$points.relay_id|escape:'htmlall':'UTF-8'} <br/>
                 {if isset($points.closing_period[0])}
-                    <h4><img src="{if $ssl}{$base_dir_ssl|escape:'htmlall':'UTF-8'}{else}{$base_dir|escape:'htmlall':'UTF-8'}{/if}modules/dpdfrance/views/img/front/relais/warning.png"/> {l s='Closing period' mod='dpdfrance'} : </h4>{$points.closing_period[0]|escape:'htmlall':'UTF-8'} <br/>
+                    <h4><img src="{$dpdfrance_base_dir|escape:'htmlall':'UTF-8'}/views/img/front/relais/warning.png"/> {l s='Closing period' mod='dpdfrance'} : </h4>{$points.closing_period[0]|escape:'htmlall':'UTF-8'} <br/>
                 {/if}
                 {if isset($points.closing_period[1])}
                     <h4></h4>{$points.closing_period[1]|escape:'htmlall':'UTF-8'} <br/>
@@ -307,5 +294,5 @@ for (i=1; i<6; i++){
 {/foreach}
 
 {/if}
- 
 </table>
+<noscript></div></noscript>

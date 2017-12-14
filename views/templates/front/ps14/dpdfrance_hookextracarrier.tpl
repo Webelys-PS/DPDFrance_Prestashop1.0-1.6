@@ -1,5 +1,5 @@
 {**
- * 2007-2016 PrestaShop
+ * 2007-2017 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -18,30 +18,14 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  * @author    DPD France S.A.S. <support.ecommerce@dpd.fr>
- * @copyright 2016 DPD France S.A.S.
+ * @copyright 2017 DPD France S.A.S.
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  *}
 
 {if $opc == 0}
-    {include file="$dpdfrance_tpl_path/relais/dpdfrance_relais_std.tpl"}
-    {include file="$dpdfrance_tpl_path/predict/dpdfrance_predict_std.tpl"}
+    {include file="$dpdfrance_tpl_path/relais/dpdfrance_relais.tpl"}
+    {include file="$dpdfrance_tpl_path/predict/dpdfrance_predict.tpl"}
 {else}
     {include file="$dpdfrance_tpl_path/relais/dpdfrance_relais_opc.tpl"}
     {include file="$dpdfrance_tpl_path/predict/dpdfrance_predict_opc.tpl"}
 {/if}
-
-<script type="text/javascript">
-{literal}
-
-$(document).ready(function(){
-    $("input[name='id_carrier']").change(function(){
-        checkedCarrier = $("input[name*='id_carrier']:checked").val();
-        if ($('#id_carrier' + {/literal}{$dpdfrance_relais_carrier_id|escape:'javascript':'UTF-8'}{literal}).attr('checked') || $('#id_carrier' + {/literal}{$dpdfrance_predict_carrier_id|escape:'javascript':'UTF-8'}{literal}).attr('checked'))
-            $("#form").attr("action", baseDir+'modules/dpdfrance/validation.php?dpdfrance_carrier=' + checkedCarrier);
-        else
-            $("#form").attr("action", baseDir+'order.php');
-    });
-});
-
-{/literal}
-</script>

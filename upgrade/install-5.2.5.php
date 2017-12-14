@@ -1,5 +1,6 @@
-{**
- * 2007-2016 PrestaShop
+<?php
+/**
+ * 2007-2017 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -18,16 +19,25 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  * @author    DPD France S.A.S. <support.ecommerce@dpd.fr>
- * @copyright 2016 DPD France S.A.S.
+ * @copyright 2017 DPD France S.A.S.
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
- *}
+ */
 
-<script type="text/javascript">
-{literal}
-$(document).ready(function() 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
+function upgrade_module_5_2_5($module)
 {
-    document.getElementById('opc_payment_methods-content').style.display = "block";
-    document.getElementById('HOOK_PAYMENT').style.display = "block";
-});
-{/literal}
-</script>
+    if (Configuration::get('DPDFRANCE_MARKETPLACE_MODE') == 1) {
+        Configuration::updateValue('DPDFRANCE_AUTO_UPDATE', 2);
+    }
+
+    if (_PS_VERSION_ >= 1.4) {
+        Tools::clearCache();
+        if (_PS_VERSION_ >= 1.5) {
+            Tools::clearSmartyCache();
+        }
+    }
+    return true;
+}

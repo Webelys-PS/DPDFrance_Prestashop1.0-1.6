@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2016 PrestaShop
+ * 2007-2017 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -19,16 +19,12 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  * @author    DPD France S.A.S. <support.ecommerce@dpd.fr>
- * @copyright 2016 DPD France S.A.S.
+ * @copyright 2017 DPD France S.A.S.
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
 
 if (!defined('_PS_VERSION_')) {
     exit;
-}
-
-if (_PS_VERSION_ >= '1.7') {
-    die('This version of the DPD France module only works on Prestashop 1.0 to 1.6. Please install the suitable module for your Prestashop version.');
 }
 
 /* Class extension for Prestashop 1.3 and lower */
@@ -45,7 +41,7 @@ class DPDFrance extends CarrierModule
     private $config_carrier_relais = array(
         'name'                  => 'Livraison en relais Pickup',
         'id_tax_rules_group'    => 0,
-        'url'                   => 'http://www.dpd.fr/tracer_@',
+        'url'                   => 'http://www.dpd.fr/tracex_@',
         'active'                => true,
         'deleted'               => 0,
         'shipping_handling'     => false,
@@ -66,7 +62,7 @@ class DPDFrance extends CarrierModule
     private $config_carrier_predict = array(
         'name'                  => 'Livraison à domicile Predict sur rendez-vous',
         'id_tax_rules_group'    => 0,
-        'url'                   => 'http://www.dpd.fr/tracer_@',
+        'url'                   => 'http://www.dpd.fr/tracex_@',
         'active'                => true,
         'deleted'               => 0,
         'shipping_handling'     => false,
@@ -87,7 +83,7 @@ class DPDFrance extends CarrierModule
     private $config_carrier_classic = array(
         'name'                  => 'Livraison sur lieu de travail',
         'id_tax_rules_group'    => 0,
-        'url'                   => 'http://www.dpd.fr/tracer_@',
+        'url'                   => 'http://www.dpd.fr/tracex_@',
         'active'                => true,
         'deleted'               => 0,
         'shipping_handling'     => false,
@@ -108,7 +104,7 @@ class DPDFrance extends CarrierModule
     public $config_carrier_world = array(
         'name'                  => 'Livraison internationale par DPD',
         'id_tax_rules_group'    => 0,
-        'url'                   => 'http://www.dpd.fr/tracer_@',
+        'url'                   => 'http://www.dpd.fr/tracex_@',
         'active'                => true,
         'deleted'               => 0,
         'shipping_handling'     => false,
@@ -144,9 +140,11 @@ class DPDFrance extends CarrierModule
     public function getOrderShippingCost($params, $shipping_cost)
     {
         if (!$this->context->cart instanceof Cart) {
-            $this->context->cart=new Cart((int) $params->id);
+            $this->context->cart = new Cart((int) $params->id);
         }
-        if ($this->context->country->iso_code!='FR') {
+        $address = new Address((int) $this->context->cart->id_address_delivery);
+        $iso_code = Country::getIsoById((int) $address->id_country);
+        if ($iso_code != 'FR') {
             return $shipping_cost;
         }
         $zone_iles=array('17111', '17123', '17190', '17310', '17370', '17410', '17480', '17550', '17580', '17590', '17630', '17650', '17670', '17740', '17840', '17880', '17940', '22870', '29242', '29253', '29259', '29980', '29990', '56360', '56590', '56780', '56840', '85350');
@@ -187,7 +185,7 @@ class DPDFrance extends CarrierModule
         } else {
             $this->tab='shipping_logistics';
         }
-        $this->version = '5.2.3';
+        $this->version = '5.2.5';
         $this->author = 'DPD France S.A.S.';
         $this->module_key = '41c64060327b5afada101ff25bd38850';
         $this->need_instance = 1;
@@ -205,7 +203,7 @@ class DPDFrance extends CarrierModule
 
         /* Backward compatibility */
         if (version_compare(_PS_VERSION_, '1.5.0.0 ', '<')) {
-            require_once(_PS_MODULE_DIR_.$this->name.'/backward_compatibility/backward.php');
+            require(_PS_MODULE_DIR_.$this->name.'/backward_compatibility/backward.php');
         }
         if (Configuration::get('DPDFRANCE_PARAM') == 0) {
             $this->warning = $this->l('Please proceed to the configuration of the DPD plugin');
@@ -217,6 +215,11 @@ class DPDFrance extends CarrierModule
 
     public function install()
     {
+        // Prevent installation wrong PS version
+        if (_PS_VERSION_ >= '1.7') {
+            $this->_errors[] = $this->l('This version of the DPD France module is not compatible with Prestashop 1.7+. Please download the module corresponding to your Prestashop version.');
+            return false;
+        }
         if (!parent::install()
         || !$this->installModuleTab('AdminDPDFrance', 'DPD France', Tab::getIdFromClassName('AdminOrders'))
         || !$this->registerHookByVersion()
@@ -314,12 +317,12 @@ class DPDFrance extends CarrierModule
     public function installConfigDB()
     {
         // Database alteration : stretching the shipping_number field from 32 to 64 chars.
-        $sql = 'ALTER TABLE `'._DB_PREFIX_.'orders` CHANGE `shipping_number`  `shipping_number` VARCHAR( 64 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL';
+        $sql = 'ALTER TABLE `'._DB_PREFIX_.'orders` CHANGE `shipping_number` `shipping_number` VARCHAR(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL';
         Db::getInstance()->Execute($sql);
 
         $query = Db::getInstance()->Execute('CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'dpdfrance_shipping` (
-        `id_customer` int(10) unsigned DEFAULT NULL,
-        `id_cart` int(10) unsigned DEFAULT NULL,
+        `id_customer` int(10) unsigned NOT NULL,
+        `id_cart` int(10) unsigned NOT NULL,
         `id_carrier` int(5) unsigned DEFAULT NULL,
         `service` varchar(3) DEFAULT NULL,
         `relay_id` varchar(8) DEFAULT NULL,
@@ -329,8 +332,9 @@ class DPDFrance extends CarrierModule
         `postcode` varchar(10) DEFAULT NULL,
         `city` varchar(100) DEFAULT NULL,
         `id_country` int(11) DEFAULT NULL,
-        `gsm_dest` varchar(14) DEFAULT NULL) 
-        ENGINE=MyISAM DEFAULT CHARSET=utf8;');
+        `gsm_dest` varchar(14) DEFAULT NULL,
+        PRIMARY KEY(id_cart))
+        ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;');
 
         if (!$query) {
             return false;
@@ -359,7 +363,7 @@ class DPDFrance extends CarrierModule
                 }
             }
         }
-        $sql = 'UPDATE '._DB_PREFIX_.'country SET id_zone='.(int)$id_zone_france.' WHERE iso_code = \'FR\' and active = 1';
+        $sql = 'UPDATE '._DB_PREFIX_.'country SET id_zone='.(int) $id_zone_france.' WHERE iso_code = \'FR\' and active = 1';
         if (!Db::getInstance()->Execute($sql)) {
             return false;
         }
@@ -474,65 +478,65 @@ class DPDFrance extends CarrierModule
             Configuration::updateValue('DPDFRANCE_GSM_EXP', Tools::getValue('gsm_exp'));
 
             // Log ID DPD Relais
-            if (!in_array((int)Tools::getValue('dpdfrance_relais_carrier_id'), explode('|', Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG')))) {
-                Configuration::updateValue('DPDFRANCE_RELAIS_CARRIER_LOG', Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG').'|'.(int)Tools::getValue('dpdfrance_relais_carrier_id'));
+            if (!in_array((int) Tools::getValue('dpdfrance_relais_carrier_id'), explode('|', Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG')))) {
+                Configuration::updateValue('DPDFRANCE_RELAIS_CARRIER_LOG', Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG').'|'.(int) Tools::getValue('dpdfrance_relais_carrier_id'));
             }
             // DPD Relais carrier reassignment
-            if ((int)Tools::getValue('dpdfrance_relais_carrier_id') != (int)Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID')) {
-                Configuration::updateValue('DPDFRANCE_RELAIS_CARRIER_ID', (int)Tools::getValue('dpdfrance_relais_carrier_id'));
+            if ((int) Tools::getValue('dpdfrance_relais_carrier_id') != (int) Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID')) {
+                Configuration::updateValue('DPDFRANCE_RELAIS_CARRIER_ID', (int) Tools::getValue('dpdfrance_relais_carrier_id'));
                 if (version_compare(_PS_VERSION_, '1.4.0.0 ', '>=')) {
-                    $this->reaffectationCarrier((int)Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID'));
+                    $this->reaffectationCarrier((int) Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID'));
                 }
             }
             Configuration::updateValue('DPDFRANCE_RELAIS_DEPOT_CODE', Tools::getValue('relais_depot_code'));
             Configuration::updateValue('DPDFRANCE_RELAIS_SHIPPER_CODE', ltrim(Tools::getValue('relais_shipper_code'), '0'));
 
             // Log ID DPD Predict
-            if (!in_array((int)Tools::getValue('dpdfrance_predict_carrier_id'), explode('|', Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG')))) {
-                Configuration::updateValue('DPDFRANCE_PREDICT_CARRIER_LOG', Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG').'|'.(int)Tools::getValue('dpdfrance_predict_carrier_id'));
+            if (!in_array((int) Tools::getValue('dpdfrance_predict_carrier_id'), explode('|', Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG')))) {
+                Configuration::updateValue('DPDFRANCE_PREDICT_CARRIER_LOG', Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG').'|'.(int) Tools::getValue('dpdfrance_predict_carrier_id'));
             }
             // DPD Predict carrier reassignment
-            if ((int)Tools::getValue('dpdfrance_predict_carrier_id') != (int)Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID')) {
-                Configuration::updateValue('DPDFRANCE_PREDICT_CARRIER_ID', (int)Tools::getValue('dpdfrance_predict_carrier_id'));
+            if ((int) Tools::getValue('dpdfrance_predict_carrier_id') != (int) Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID')) {
+                Configuration::updateValue('DPDFRANCE_PREDICT_CARRIER_ID', (int) Tools::getValue('dpdfrance_predict_carrier_id'));
                 if (version_compare(_PS_VERSION_, '1.4.0.0 ', '>=')) {
-                    $this->reaffectationCarrier((int)Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID'));
+                    $this->reaffectationCarrier((int) Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID'));
                 }
             }
             Configuration::updateValue('DPDFRANCE_PREDICT_DEPOT_CODE', Tools::getValue('predict_depot_code'));
             Configuration::updateValue('DPDFRANCE_PREDICT_SHIPPER_CODE', ltrim(Tools::getValue('predict_shipper_code'), '0'));
 
             // Log ID DPD Classic
-            if (!in_array((int)Tools::getValue('dpdfrance_classic_carrier_id'), explode('|', Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG')))) {
-                Configuration::updateValue('DPDFRANCE_CLASSIC_CARRIER_LOG', Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG').'|'.(int)Tools::getValue('dpdfrance_classic_carrier_id'));
+            if (!in_array((int) Tools::getValue('dpdfrance_classic_carrier_id'), explode('|', Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG')))) {
+                Configuration::updateValue('DPDFRANCE_CLASSIC_CARRIER_LOG', Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG').'|'.(int) Tools::getValue('dpdfrance_classic_carrier_id'));
             }
 
             // DPD Classic carrier reassignment
-            if ((int)Tools::getValue('dpdfrance_classic_carrier_id') != (int)Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID')) {
-                Configuration::updateValue('DPDFRANCE_CLASSIC_CARRIER_ID', (int)Tools::getValue('dpdfrance_classic_carrier_id'));
+            if ((int) Tools::getValue('dpdfrance_classic_carrier_id') != (int) Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID')) {
+                Configuration::updateValue('DPDFRANCE_CLASSIC_CARRIER_ID', (int) Tools::getValue('dpdfrance_classic_carrier_id'));
                 if (version_compare(_PS_VERSION_, '1.4.0.0 ', '>=')) {
-                    $this->reaffectationCarrier((int)Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID'));
+                    $this->reaffectationCarrier((int) Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID'));
                 }
             }
             Configuration::updateValue('DPDFRANCE_CLASSIC_DEPOT_CODE', Tools::getValue('classic_depot_code'));
             Configuration::updateValue('DPDFRANCE_CLASSIC_SHIPPER_CODE', ltrim(Tools::getValue('classic_shipper_code'), '0'));
 
             Configuration::updateValue('DPDFRANCE_RELAIS_MYPUDO_URL', preg_replace('/\s+/', '', Tools::getValue('mypudo_url')));
-            Configuration::updateValue('DPDFRANCE_SUPP_ILES', (float)Tools::getValue('supp_iles'));
-            Configuration::updateValue('DPDFRANCE_SUPP_MONTAGNE', (float)Tools::getValue('supp_montagne'));
-            Configuration::updateValue('DPDFRANCE_GOOGLE_API_KEY', Tools::getValue('google_api_key'));
+            Configuration::updateValue('DPDFRANCE_SUPP_ILES', (float) Tools::getValue('supp_iles'));
+            Configuration::updateValue('DPDFRANCE_SUPP_MONTAGNE', (float) Tools::getValue('supp_montagne'));
+            Configuration::updateValue('DPDFRANCE_GOOGLE_API_KEY', preg_replace('/\s+/', '', Tools::getValue('google_api_key')));
 
-            Configuration::updateValue('DPDFRANCE_ETAPE_EXPEDITION', (int)Tools::getValue('id_expedition'));
-            Configuration::updateValue('DPDFRANCE_ETAPE_EXPEDIEE', (int)Tools::getValue('id_expedie'));
-            Configuration::updateValue('DPDFRANCE_ETAPE_LIVRE', (int)Tools::getValue('id_livre'));
-            Configuration::updateValue('DPDFRANCE_AUTO_UPDATE', (int)Tools::getValue('auto_update'));
+            Configuration::updateValue('DPDFRANCE_ETAPE_EXPEDITION', (int) Tools::getValue('id_expedition'));
+            Configuration::updateValue('DPDFRANCE_ETAPE_EXPEDIEE', (int) Tools::getValue('id_expedie'));
+            Configuration::updateValue('DPDFRANCE_ETAPE_LIVRE', (int) Tools::getValue('id_livre'));
+            Configuration::updateValue('DPDFRANCE_MARKETPLACE_MODE', (int) Tools::getValue('marketplace_mode'));
 
-            if ((int)Tools::getValue('marketplace_mode') != (int)Configuration::get('DPDFRANCE_MARKETPLACE_MODE')) {
-                Configuration::updateValue('DPDFRANCE_MARKETPLACE_MODE', (int)Tools::getValue('marketplace_mode'));
-                $this->setMarketplaceUrls((int)Configuration::get('DPDFRANCE_MARKETPLACE_MODE'));
+            if ((int) Tools::getValue('auto_update') != (int) Configuration::get('DPDFRANCE_AUTO_UPDATE')) {
+                Configuration::updateValue('DPDFRANCE_AUTO_UPDATE', (int) Tools::getValue('auto_update'));
+                $this->setTrackingURLs((int) Configuration::get('DPDFRANCE_AUTO_UPDATE'));
             }
 
-            Configuration::updateValue('DPDFRANCE_AD_VALOREM', (int)Tools::getValue('ad_valorem'));
-            Configuration::updateValue('DPDFRANCE_RETOUR_OPTION', (int)Tools::getValue('retour'));
+            Configuration::updateValue('DPDFRANCE_AD_VALOREM', (int) Tools::getValue('ad_valorem'));
+            Configuration::updateValue('DPDFRANCE_RETOUR_OPTION', (int) Tools::getValue('retour'));
 
             Configuration::updateValue('DPDFRANCE_PARAM', 1);
 
@@ -569,37 +573,32 @@ class DPDFrance extends CarrierModule
                 'supp_iles'                    => Tools::getValue('supp_iles', Configuration::get('DPDFRANCE_SUPP_ILES')),
                 'supp_montagne'                => Tools::getValue('supp_montagne', Configuration::get('DPDFRANCE_SUPP_MONTAGNE')),
                 'google_api_key'               => Tools::getValue('google_api_key', Configuration::get('DPDFRANCE_GOOGLE_API_KEY')),
-                'etats_factures'               => OrderState::getOrderStates((int)$this->context->language->id),
-                'dpdfrance_etape_expedition'   => (int)Configuration::get('DPDFRANCE_ETAPE_EXPEDITION'),
-                'dpdfrance_etape_expediee'     => (int)Configuration::get('DPDFRANCE_ETAPE_EXPEDIEE'),
-                'dpdfrance_etape_livre'        => (int)Configuration::get('DPDFRANCE_ETAPE_LIVRE'),
-                'auto_update'                  => (int)Configuration::get('DPDFRANCE_AUTO_UPDATE'),
-                'marketplace_mode'             => (int)Configuration::get('DPDFRANCE_MARKETPLACE_MODE'),
-                'dpdfrance_ad_valorem'         => (int)Configuration::get('DPDFRANCE_AD_VALOREM'),
-                'dpdfrance_retour_option'      => (int)Configuration::get('DPDFRANCE_RETOUR_OPTION'),
-                'optupdate'                    => array($this->l('Disabled'), $this->l('Enabled')),
+                'etats_factures'               => OrderState::getOrderStates((int) $this->context->language->id),
+                'dpdfrance_etape_expedition'   => (int) Configuration::get('DPDFRANCE_ETAPE_EXPEDITION'),
+                'dpdfrance_etape_expediee'     => (int) Configuration::get('DPDFRANCE_ETAPE_EXPEDIEE'),
+                'dpdfrance_etape_livre'        => (int) Configuration::get('DPDFRANCE_ETAPE_LIVRE'),
+                'auto_update'                  => (int) Configuration::get('DPDFRANCE_AUTO_UPDATE'),
+                'marketplace_mode'             => (int) Configuration::get('DPDFRANCE_MARKETPLACE_MODE'),
+                'dpdfrance_ad_valorem'         => (int) Configuration::get('DPDFRANCE_AD_VALOREM'),
+                'dpdfrance_retour_option'      => (int) Configuration::get('DPDFRANCE_RETOUR_OPTION'),
+                'optupdate'                    => array($this->l('Disabled'), $this->l('Enabled - Tracking links by reference'), $this->l('Enabled - Tracking links by parcel no.')),
                 'optmarketplace'               => array($this->l('Disabled'), $this->l('Enabled')),
                 'optvd'                        => array($this->l('Integrated parcel insurance service (23 € / kg)'), $this->l('Ad Valorem insurance service')),
                 'optretour'                    => array('0' => $this->l('No returns'), '4' => $this->l('Prepared'), '3' => $this->l('On Demand')),
-                'ps_version'                   => (float)_PS_VERSION_,
+                'ps_version'                   => (float) _PS_VERSION_,
                 'form_submit_url'              => $_SERVER['REQUEST_URI'],
-                ));
+            ));
             return $this->display(__FILE__, 'views/templates/admin/config.tpl');
         }
     }
 
-    
+
     /* Manage to update tracking status of orders */
     public function hookBackOfficeHeader($params)
     {
-        /* Check if last tracking call is more than 1 hour old */
-        if (time() - (int)Configuration::get('DPDFRANCE_LAST_TRACKING') > 3600 && (int)Configuration::get('DPDFRANCE_AUTO_UPDATE') == 1) {
-            $cron_url = _MODULE_DIR_.'dpdfrance/cron.php?token='.Tools::encrypt('dpdfrance/cron').'&shop='.(int)Tools::substr(Context::getContext()->cookie->shopContext, 2).'&employee='.(int) $this->context->employee->id;
-            return '<script type="text/javascript">
-                    $(document).ready(function() {
-                        $.get("'.$cron_url.'");
-                    });
-                    </script>';
+        if ((int) Configuration::get('DPDFRANCE_AUTO_UPDATE')) {
+            $cron_url = _MODULE_DIR_.'dpdfrance/cron.php?token='.Tools::encrypt('dpdfrance/cron').'&employee='.(int) $this->context->employee->id;
+            return '<script type="text/javascript">$(document).ready(function() {$.get("'.$cron_url.'");});</script>';
         }
     }
 
@@ -614,21 +613,97 @@ class DPDFrance extends CarrierModule
             $this->context->controller->addJS($this->_path.'views/js/front/dpdfrance.js');
             $this->context->controller->addJS('https://maps.googleapis.com/maps/api/js?key='.Configuration::get('DPDFRANCE_GOOGLE_API_KEY'));
             $this->context->smarty->assign(array(
-                'ps_version'                        => (float)_PS_VERSION_,
-                'opc'                               => (int)Configuration::get('PS_ORDER_PROCESS_TYPE'),
-                'dpdfrance_relais_carrier_id'       => (int)Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID'),
-                'dpdfrance_predict_carrier_id'      => (int)Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID')));
+                'ps_version'                        => (float) _PS_VERSION_,
+                'opc'                               => (int) Configuration::get('PS_ORDER_PROCESS_TYPE'),
+                'dpdfrance_base_dir'                => __PS_BASE_URI__.'modules/'.$this->name,
+                'dpdfrance_relais_carrier_id'       => (int) Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID'),
+                'dpdfrance_predict_carrier_id'      => (int) Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID'),
+                'dpdfrance_cart'                    => $this->context->cart,
+                'dpdfrance_token'                   => Tools::encrypt('dpdfrance/ajax'),
+            ));
             return $this->display(__FILE__, 'views/templates/front/header.tpl');
         }
     }
- 
+
+    public function ajaxRegisterGsm()
+    {
+        $cart = $this->context->cart;
+        $input_tel=Tools::getValue('gsm_dest');
+        /* Get customer's mobile phone number entered */
+        $elimine=array('00000000', '11111111', '22222222', '33333333', '44444444', '55555555', '66666666', '77777777', '88888888', '99999999', '123465789', '23456789', '98765432');
+        /* Patterns to eliminate */
+        $gsm=str_replace(array(' ', '.', '-', ',', ';', '/', '\\', '(', ')'), '', $input_tel);
+        /* Cleans the input - Result is 10 digits straight */
+        $gsm=str_replace('+33', '0', $gsm);
+        /* Prefix +33 is replaced by a 0 */
+        if (!(bool) preg_match('#^0[6-7]([0-9]{8})$#', $gsm, $res)||(in_array($res[1], $elimine))) {
+            /* Check if prefix is 06 or 07, on 10 digits, and if the 8 following digits are not in the patterns to eliminate */
+            /* Bad number : set error parameter and redirect to carriers page */
+        } else {
+            /* All right, delete previous entry of GSM for this cart and write the new one */
+            Db::getInstance()->delete(_DB_PREFIX_.'dpdfrance_shipping', 'id_cart = "'.pSQL((int) $cart->id).'"');
+            $sql='INSERT IGNORE INTO '._DB_PREFIX_."dpdfrance_shipping
+                            (id_customer, id_cart, id_carrier, service, relay_id, company, address1, address2, postcode, city, id_country, gsm_dest)
+                            VALUES (
+                            '".(int) $cart->id_customer."',
+                            '".(int) $cart->id."',
+                            '".(int) $cart->id_carrier."',
+                            'PRE',
+                            '',
+                            '',
+                            '',
+                            '',
+                            '',
+                            '',
+                            '',
+                            '".pSQL($gsm)."'
+                            )";
+            Db::getInstance()->Execute($sql);
+        }
+    }
+
+    public function ajaxRegisterPudo()
+    {
+        $cart = $this->context->cart;
+        $relay_id = Tools::getValue('pudo_id');
+
+        if (!empty(Context::getContext()->cookie->dpdfrance_relais_cookie) && !empty($relay_id)) {
+            if (version_compare(_PS_VERSION_, '1.4.2.4', '>=')) {
+                $cookiedata = Tools::jsonDecode(Context::getContext()->cookie->dpdfrance_relais_cookie, true);
+            } else {
+                $cookiedata = json_decode(Context::getContext()->cookie->dpdfrance_relais_cookie, true);
+            }
+            $detail_relais = $cookiedata[$relay_id];
+            /* Delete previous entry in database */
+            Db::getInstance()->delete(_DB_PREFIX_.'dpdfrance_shipping', 'id_cart = "'.pSQL((int) $cart->id).'"');
+            $address1 = (isset($detail_relais['address1']) ? $detail_relais['address1'] : '');
+            $address2 = (isset($detail_relais['address2']) ? $detail_relais['address2'] : '');
+            $sql='INSERT IGNORE INTO '._DB_PREFIX_."dpdfrance_shipping
+                    (id_customer, id_cart, id_carrier, service, relay_id, company, address1, address2, postcode, city, id_country, gsm_dest)
+                    VALUES (
+                    '".(int) $cart->id_customer."',
+                    '".(int) $cart->id."',
+                    '".(int) $cart->id_carrier."',
+                    'REL',
+                    '".pSQL($relay_id)."',
+                    '".pSQL($detail_relais['shop_name'])."',
+                    '".pSQL($address1)."',
+                    '".pSQL($address2)."',
+                    '".pSQL($detail_relais['postal_code'])."',
+                    '".pSQL($detail_relais['city'])."',
+                    '".pSQL($detail_relais['id_country'])."',
+                    ''
+                    )";
+            Db::getInstance()->Execute($sql);
+        }
+    }
+
     /* Calls TPL files and executes corresponding actions upon carrier selection */
     public function hookExtraCarrier($params)
     {
         $address=new Address((int) $params['address']->id);
         $address_details = $address->getFields();
-        $delivery_infos = self::getDeliveryInfos((int)$this->context->cart->id);
-
+        $delivery_infos = self::getDeliveryInfos((int) $this->context->cart->id);
         if (version_compare(_PS_VERSION_, '1.5.0.0 ', '<')) {
             $this->context->country->iso_code = Db::getInstance()->getValue('SELECT iso_code FROM '._DB_PREFIX_.'country WHERE id_country = '.$address_details['id_country'].'');
         }
@@ -638,6 +713,7 @@ class DPDFrance extends CarrierModule
             } else {
                 $cookiedata=json_decode(Context::getContext()->cookie->dpdfrance_relais_cookie, true);
             }
+
             /* Search Pickup points near a manually entered address only if same id_address_delivery */
             if (!empty($cookiedata['search']['postcode']) && ($cookiedata['search']['id_address'] == $this->context->cart->id_address_delivery)) {
                 $search=(array)$cookiedata['search'];
@@ -647,46 +723,37 @@ class DPDFrance extends CarrierModule
             }
 
             $this->context->smarty->assign(array(
-                'ps_version'                        => (float)_PS_VERSION_,
-                'opc'                               => (int)Configuration::get('PS_ORDER_PROCESS_TYPE'),
-                'ssl'                               => (int)Configuration::get('PS_SSL_ENABLED'),
-                'ssl_everywhere'                    => (int)Configuration::get('PS_SSL_ENABLED_EVERYWHERE'),
+                'ps_version'                        => (float) _PS_VERSION_,
+                'opc'                               => (int) Configuration::get('PS_ORDER_PROCESS_TYPE'),
+                'ssl'                               => (int) Configuration::get('PS_SSL_ENABLED'),
+                'ssl_everywhere'                    => (int) Configuration::get('PS_SSL_ENABLED_EVERYWHERE'),
+                'gmaps_api_key'                     => Configuration::get('DPDFRANCE_GOOGLE_API_KEY'),
+                'dpdfrance_base_dir'                => __PS_BASE_URI__.'modules/'.$this->name,
                 'dpdfrance_tpl_path'                => str_replace('\\', '/', _PS_MODULE_DIR_).'dpdfrance/views/templates/front/ps14',
                 'dpdfrance_relais_points'           => (!isset($dpdfrance_relais_points['error']) ? $dpdfrance_relais_points : null),
                 'error'                             => (isset($dpdfrance_relais_points['error']) ? $this->l($dpdfrance_relais_points['error']) : null),
-                'dpdfrance_relais_validation_url'   => _MODULE_DIR_.'dpdfrance/validation.php',
-                'dpdfrance_predict_validation_url'  => _MODULE_DIR_.'dpdfrance/validation.php',
                 'dpdfrance_selectedrelay'           => (isset($delivery_infos['relay_id']) ? $delivery_infos['relay_id'] : null),
                 'dpdfrance_relais_status'           => (Tools::getValue('dpdrelais') ? Tools::getValue('dpdrelais') : null),
-                'dpdfrance_relais_carrier_id'       => (int)Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID'),
+                'dpdfrance_relais_carrier_id'       => (int) Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID'),
                 'dpdfrance_predict_gsm_dest'        => (!empty($delivery_infos['gsm_dest']) ? $delivery_infos['gsm_dest'] : $address->phone_mobile),
                 'dpdfrance_predict_status'          => (Tools::getValue('dpdpredict') ? Tools::getValue('dpdpredict') : null),
-                'dpdfrance_predict_carrier_id'      => (int)Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID')));
+                'dpdfrance_predict_carrier_id'      => (int) Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID'),
+                'dpdfrance_token'                   => Tools::encrypt('dpdfrance/ajax'),
+                ));
             if (version_compare(_PS_VERSION_, '1.4.0.0 ', '<')) {
                 // PS 1.3
-                return $this->display(__FILE__, 'views/templates/front/ps13/dpdfrance_hookextracarrier_std.tpl');
+                return $this->display(__FILE__, 'views/templates/front/ps13/dpdfrance_hookextracarrier.tpl');
             }
             if (version_compare(_PS_VERSION_, '1.5.0.0 ', '<')) {
                 // PS 1.4
                 return $this->display(__FILE__, 'views/templates/front/ps14/dpdfrance_hookextracarrier.tpl');
             } else {
                 // PS 1.5+
-                if ((int)Configuration::get('PS_ORDER_PROCESS_TYPE') == 0) {
-                    // STD
-                    if ($this->context->cart->id_carrier == Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID')) {
-                        return $this->display(__FILE__, 'views/templates/front/ps15/relais/dpdfrance_relais_std.tpl');
-                    }
-                    if ($this->context->cart->id_carrier == Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID')) {
-                        return $this->display(__FILE__, 'views/templates/front/ps15/predict/dpdfrance_predict_std.tpl');
-                    }
-                } else {
-                    // OPC
-                    if ($this->context->cart->id_carrier == Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID')) {
-                        return $this->display(__FILE__, 'views/templates/front/ps15/relais/dpdfrance_relais_opc.tpl');
-                    }
-                    if ($this->context->cart->id_carrier == Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID')) {
-                        return $this->display(__FILE__, 'views/templates/front/ps15/predict/dpdfrance_predict_opc.tpl');
-                    }
+                if ($this->context->cart->id_carrier == Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID')) {
+                    return $this->display(__FILE__, 'views/templates/front/ps15/relais/dpdfrance_relais.tpl');
+                }
+                if ($this->context->cart->id_carrier == Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID')) {
+                    return $this->display(__FILE__, 'views/templates/front/ps15/predict/dpdfrance_predict.tpl');
                 }
             }
         }
@@ -694,21 +761,20 @@ class DPDFrance extends CarrierModule
 
     public function ajaxUpdatePoints($params)
     {
-        $cart_id = (int) $params['cart_id'];
-        $cart = new Cart($cart_id);
+        $cart = new Cart((int) $params['dpdfrance_cart_id']);
         $address = new Address((int) $cart->id_address_delivery);
 
         if (Tools::getValue('action')=='search') {
             $address_details = array(
-                'address1'   => $params['address1'],
-                'postcode'   => $params['postcode'],
-                'city'       => $params['city'],
-                'id_country' => (int) $address->id_country,
-                'cart_id'    => (int) $cart->id,
-                'id_address' => (int) $cart->id_address_delivery,
+                'address1'          => $params['address1'],
+                'postcode'          => $params['postcode'],
+                'city'              => $params['city'],
+                'id_country'        => (int) $address->id_country,
+                'dpdfrance_cart_id' => (int) $cart->id,
+                'id_address'        => (int) $cart->id_address_delivery,
             );
         } else {
-            $address_details=$address->getFields();
+            $address_details = $address->getFields();
         }
 
         $delivery_infos = self::getDeliveryInfos((int) $cart->id);
@@ -720,7 +786,6 @@ class DPDFrance extends CarrierModule
         }
         if ($iso_code == 'FR') {
             $dpdfrance_relais_points = $this->getPoints($address_details);
-            $protocol_link = (Configuration::get('PS_SSL_ENABLED') || Tools::usingSecureMode()) ? 'https://' : 'http://';
             $this->context->smarty->assign(array(
                 'opc'                               => (int) Configuration::get('PS_ORDER_PROCESS_TYPE'),
                 'dpdfrance_tpl_path'                => str_replace('\\', '/', _PS_MODULE_DIR_).'dpdfrance/views/templates/front/ps14',
@@ -730,58 +795,25 @@ class DPDFrance extends CarrierModule
                 'dpdfrance_relais_status'           => (Tools::getValue('dpdrelais') ? Tools::getValue('dpdrelais') : null),
                 'dpdfrance_relais_points'           => (!isset($dpdfrance_relais_points['error']) ? $dpdfrance_relais_points : null),
                 'dpdfrance_selectedrelay'           => (isset($delivery_infos['relay_id']) ? $delivery_infos['relay_id'] : null),
-                'ssl'                               => (int)Configuration::get('PS_SSL_ENABLED'),
-                'ssl_everywhere'                    => (int)Configuration::get('PS_SSL_ENABLED_EVERYWHERE'),
-                'base_dir'                          => $protocol_link.Tools::getShopDomain().__PS_BASE_URI__,
-                'base_dir_ssl'                      => $protocol_link.Tools::getShopDomainSsl().__PS_BASE_URI__,
+                'ssl'                               => (int) Configuration::get('PS_SSL_ENABLED'),
+                'ssl_everywhere'                    => (int) Configuration::get('PS_SSL_ENABLED_EVERYWHERE'),
+                'dpdfrance_base_dir'                => __PS_BASE_URI__.'modules/'.$this->name,
                 'dpdfrance_predict_gsm_dest'        => (isset($delivery_infos['gsm_dest'])?$delivery_infos['gsm_dest']:$address->phone_mobile),
                 'dpdfrance_predict_status'          => (Tools::getValue('dpdpredict')?Tools::getValue('dpdpredict'):null),
                 'dpdfrance_predict_carrier_id'      => (int) Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID'),
-                'dpdfrance_relais_validation_url'   => _MODULE_DIR_.'dpdfrance/validation.php',
-                'dpdfrance_predict_validation_url'  => _MODULE_DIR_.'dpdfrance/validation.php',
+                'dpdfrance_token'                   => Tools::encrypt('dpdfrance/ajax'),
             ));
 
             if (version_compare(_PS_VERSION_, '1.4.0.0 ', '<')) {
                 // PS 1.3
-                return $this->display(__FILE__, 'views/templates/front/ps13/dpdfrance_hookextracarrier_std.tpl');
+                return $this->display(__FILE__, 'views/templates/front/ps13/dpdfrance_hookextracarrier.tpl');
             }
             if (version_compare(_PS_VERSION_, '1.5.0.0 ', '<')) {
                 // PS 1.4
                 return $this->display(__FILE__, 'views/templates/front/ps14/dpdfrance_hookextracarrier.tpl');
             } else {
                 // PS 1.5
-                if ((int) Configuration::get('PS_ORDER_PROCESS_TYPE')==0) {
-                    return $this->display(__FILE__, 'views/templates/front/ps15/relais/dpdfrance_relais_std.tpl');
-                } else {
-                    return $this->display(__FILE__, 'views/templates/front/ps15/relais/dpdfrance_relais_opc.tpl');
-                }
-            }
-        }
-    }
-
-    /* In OPC mode, shows or blocks payment methods upon carrier selection and customer data presence */
-    public function hookPaymentTop($params)
-    {
-        if ((int)Configuration::get('PS_ORDER_PROCESS_TYPE') == 1 && $this->context->country->iso_code == 'FR') {
-            switch ($this->context->cart->id_carrier) {
-                case Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID'):
-                    $delivery_infos = self::getDeliveryInfos((int)$this->context->cart->id);
-                    if ($delivery_infos['relay_id']) {
-                        return $this->display(__FILE__, 'views/templates/front/ps15/relais/dpdfrance_showhookpayment_opc.tpl');
-                    } else {
-                        return $this->display(__FILE__, 'views/templates/front/ps15/relais/dpdfrance_relais_error_opc.tpl');
-                    }
-                    break;
-                case Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID'):
-                    $delivery_infos = self::getDeliveryInfos((int)$this->context->cart->id);
-                    if ($delivery_infos['gsm_dest']) {
-                        return $this->display(__FILE__, 'views/templates/front/ps15/predict/dpdfrance_showhookpayment_opc.tpl');
-                    } else {
-                        return $this->display(__FILE__, 'views/templates/front/ps15/predict/dpdfrance_predict_error_opc.tpl');
-                    }
-                    break;
-                default:
-                    return $this->display(__FILE__, 'views/templates/front/ps15/predict/dpdfrance_showhookpayment_opc.tpl');
+                return $this->display(__FILE__, 'views/templates/front/ps15/relais/dpdfrance_relais.tpl');
             }
         }
     }
@@ -789,7 +821,7 @@ class DPDFrance extends CarrierModule
     /* Get delivery information from a Cart ID */
     public static function getDeliveryInfos($id_cart)
     {
-        return Db::getInstance()->getRow('SELECT id_customer, id_cart, service, relay_id, company, address1, address2, postcode, city, id_country, gsm_dest FROM '._DB_PREFIX_.'dpdfrance_shipping WHERE id_cart = '.(int)$id_cart);
+        return Db::getInstance()->getRow('SELECT id_customer, id_cart, service, relay_id, company, address1, address2, postcode, city, id_country, gsm_dest FROM '._DB_PREFIX_.'dpdfrance_shipping WHERE id_cart = '.(int) $id_cart);
     }
 
     /* If DPD France is selected, replaces customer shipping address by pudo's or Predict number*/
@@ -802,7 +834,7 @@ class DPDFrance extends CarrierModule
 
                 // Retrieve default order address and fetch its ID
                 $ps_address = new Address($cart->id_address_delivery);
-                $id_address_delivery = (int)$ps_address->id;
+                $id_address_delivery = (int) $ps_address->id;
 
                 // Retrieve DPD Pickup point selection
                 $address_relais = self::getDeliveryInfos($cart->id);
@@ -824,7 +856,7 @@ class DPDFrance extends CarrierModule
                     $new_address->alias         = 'DPD Relais '.$address_relais['relay_id'];
                     $new_address->deleted       = 1;
                     $new_address->add();
-                    $id_address_delivery = (int)$new_address->id;
+                    $id_address_delivery = (int) $new_address->id;
                 }
 
                 // Update order
@@ -838,7 +870,7 @@ class DPDFrance extends CarrierModule
 
                 // Retrieve default order address and fetch its ID
                 $ps_address = new Address($cart->id_address_delivery);
-                $id_address_delivery = (int)$ps_address->id;
+                $id_address_delivery = (int) $ps_address->id;
 
                 // Retrieve GSM number for Predict
                 $address_predict = self::getDeliveryInfos($cart->id);
@@ -860,7 +892,7 @@ class DPDFrance extends CarrierModule
                     $new_address->alias         = 'DPD Predict '.$address_predict['gsm_dest'];
                     $new_address->deleted       = 1;
                     $new_address->add();
-                    $id_address_delivery = (int)$new_address->id;
+                    $id_address_delivery = (int) $new_address->id;
                 }
 
                 // Update order
@@ -874,46 +906,46 @@ class DPDFrance extends CarrierModule
     public function hookupdateCarrier($params)
     {
         if (version_compare(_PS_VERSION_, '1.5.0.0', '<')) { // PS 1.4- way
-            if ((int)$params['id_carrier'] == (int)Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID', null, null, null)) {
-                Configuration::updateValue('DPDFRANCE_RELAIS_CARRIER_ID', (int)$params['carrier']->id, false, null, null);
-                Configuration::updateValue('DPDFRANCE_RELAIS_CARRIER_LOG', Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, null).'|'.(int)$params['carrier']->id, false, null, null);
+            if ((int) $params['id_carrier'] == (int) Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID', null, null, null)) {
+                Configuration::updateValue('DPDFRANCE_RELAIS_CARRIER_ID', (int) $params['carrier']->id, false, null, null);
+                Configuration::updateValue('DPDFRANCE_RELAIS_CARRIER_LOG', Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, null).'|'.(int) $params['carrier']->id, false, null, null);
             }
-            if ((int)$params['id_carrier'] == (int)Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID', null, null, null)) {
-                Configuration::updateValue('DPDFRANCE_PREDICT_CARRIER_ID', (int)$params['carrier']->id, false, null, null);
-                Configuration::updateValue('DPDFRANCE_PREDICT_CARRIER_LOG', Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, null).'|'.(int)$params['carrier']->id, false, null, null);
+            if ((int) $params['id_carrier'] == (int) Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID', null, null, null)) {
+                Configuration::updateValue('DPDFRANCE_PREDICT_CARRIER_ID', (int) $params['carrier']->id, false, null, null);
+                Configuration::updateValue('DPDFRANCE_PREDICT_CARRIER_LOG', Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, null).'|'.(int) $params['carrier']->id, false, null, null);
             }
-            if ((int)$params['id_carrier'] == (int)Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID', null, null, null)) {
-                Configuration::updateValue('DPDFRANCE_CLASSIC_CARRIER_ID', (int)$params['carrier']->id, false, null, null);
-                Configuration::updateValue('DPDFRANCE_CLASSIC_CARRIER_LOG', Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, null).'|'.(int)$params['carrier']->id, false, null, null);
+            if ((int) $params['id_carrier'] == (int) Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID', null, null, null)) {
+                Configuration::updateValue('DPDFRANCE_CLASSIC_CARRIER_ID', (int) $params['carrier']->id, false, null, null);
+                Configuration::updateValue('DPDFRANCE_CLASSIC_CARRIER_LOG', Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, null).'|'.(int) $params['carrier']->id, false, null, null);
             }
         } else { // PS 1.5+ way
             if (Shop::isFeatureActive()) {
                 foreach (Shop::getShops(true) as $shop) {
-                    if ((int)$params['id_carrier'] == (int)Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID', null, $shop['id_shop_group'], $shop['id_shop'])) {
-                        Configuration::updateValue('DPDFRANCE_RELAIS_CARRIER_ID', (int)$params['carrier']->id, false, $shop['id_shop_group'], $shop['id_shop']);
-                        Configuration::updateValue('DPDFRANCE_RELAIS_CARRIER_LOG', Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, $shop['id_shop_group'], $shop['id_shop']).'|'.(int)$params['carrier']->id, false, $shop['id_shop_group'], $shop['id_shop']);
+                    if ((int) $params['id_carrier'] == (int) Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID', null, $shop['id_shop_group'], $shop['id_shop'])) {
+                        Configuration::updateValue('DPDFRANCE_RELAIS_CARRIER_ID', (int) $params['carrier']->id, false, $shop['id_shop_group'], $shop['id_shop']);
+                        Configuration::updateValue('DPDFRANCE_RELAIS_CARRIER_LOG', Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, $shop['id_shop_group'], $shop['id_shop']).'|'.(int) $params['carrier']->id, false, $shop['id_shop_group'], $shop['id_shop']);
                     }
-                    if ((int)$params['id_carrier'] == (int)Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID', null, $shop['id_shop_group'], $shop['id_shop'])) {
-                        Configuration::updateValue('DPDFRANCE_PREDICT_CARRIER_ID', (int)$params['carrier']->id, false, $shop['id_shop_group'], $shop['id_shop']);
-                        Configuration::updateValue('DPDFRANCE_PREDICT_CARRIER_LOG', Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, $shop['id_shop_group'], $shop['id_shop']).'|'.(int)$params['carrier']->id, false, $shop['id_shop_group'], $shop['id_shop']);
+                    if ((int) $params['id_carrier'] == (int) Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID', null, $shop['id_shop_group'], $shop['id_shop'])) {
+                        Configuration::updateValue('DPDFRANCE_PREDICT_CARRIER_ID', (int) $params['carrier']->id, false, $shop['id_shop_group'], $shop['id_shop']);
+                        Configuration::updateValue('DPDFRANCE_PREDICT_CARRIER_LOG', Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, $shop['id_shop_group'], $shop['id_shop']).'|'.(int) $params['carrier']->id, false, $shop['id_shop_group'], $shop['id_shop']);
                     }
-                    if ((int)$params['id_carrier'] == (int)Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID', null, $shop['id_shop_group'], $shop['id_shop'])) {
-                        Configuration::updateValue('DPDFRANCE_CLASSIC_CARRIER_ID', (int)$params['carrier']->id, false, $shop['id_shop_group'], $shop['id_shop']);
-                        Configuration::updateValue('DPDFRANCE_CLASSIC_CARRIER_LOG', Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, $shop['id_shop_group'], $shop['id_shop']).'|'.(int)$params['carrier']->id, false, $shop['id_shop_group'], $shop['id_shop']);
+                    if ((int) $params['id_carrier'] == (int) Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID', null, $shop['id_shop_group'], $shop['id_shop'])) {
+                        Configuration::updateValue('DPDFRANCE_CLASSIC_CARRIER_ID', (int) $params['carrier']->id, false, $shop['id_shop_group'], $shop['id_shop']);
+                        Configuration::updateValue('DPDFRANCE_CLASSIC_CARRIER_LOG', Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, $shop['id_shop_group'], $shop['id_shop']).'|'.(int) $params['carrier']->id, false, $shop['id_shop_group'], $shop['id_shop']);
                     }
                 }
             } else {
-                if ((int)$params['id_carrier'] == (int)Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID', null, null, null)) {
-                    Configuration::updateValue('DPDFRANCE_RELAIS_CARRIER_ID', (int)$params['carrier']->id, false, null, null);
-                    Configuration::updateValue('DPDFRANCE_RELAIS_CARRIER_LOG', Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, null).'|'.(int)$params['carrier']->id, false, null, null);
+                if ((int) $params['id_carrier'] == (int) Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID', null, null, null)) {
+                    Configuration::updateValue('DPDFRANCE_RELAIS_CARRIER_ID', (int) $params['carrier']->id, false, null, null);
+                    Configuration::updateValue('DPDFRANCE_RELAIS_CARRIER_LOG', Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, null).'|'.(int) $params['carrier']->id, false, null, null);
                 }
-                if ((int)$params['id_carrier'] == (int)Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID', null, null, null)) {
-                    Configuration::updateValue('DPDFRANCE_PREDICT_CARRIER_ID', (int)$params['carrier']->id, false, null, null);
-                    Configuration::updateValue('DPDFRANCE_PREDICT_CARRIER_LOG', Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, null).'|'.(int)$params['carrier']->id, false, null, null);
+                if ((int) $params['id_carrier'] == (int) Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID', null, null, null)) {
+                    Configuration::updateValue('DPDFRANCE_PREDICT_CARRIER_ID', (int) $params['carrier']->id, false, null, null);
+                    Configuration::updateValue('DPDFRANCE_PREDICT_CARRIER_LOG', Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, null).'|'.(int) $params['carrier']->id, false, null, null);
                 }
-                if ((int)$params['id_carrier'] == (int)Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID', null, null, null)) {
-                    Configuration::updateValue('DPDFRANCE_CLASSIC_CARRIER_ID', (int)$params['carrier']->id, false, null, null);
-                    Configuration::updateValue('DPDFRANCE_CLASSIC_CARRIER_LOG', Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, null).'|'.(int)$params['carrier']->id, false, null, null);
+                if ((int) $params['id_carrier'] == (int) Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID', null, null, null)) {
+                    Configuration::updateValue('DPDFRANCE_CLASSIC_CARRIER_ID', (int) $params['carrier']->id, false, null, null);
+                    Configuration::updateValue('DPDFRANCE_CLASSIC_CARRIER_LOG', Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, null).'|'.(int) $params['carrier']->id, false, null, null);
                 }
             }
         }
@@ -928,7 +960,7 @@ class DPDFrance extends CarrierModule
         $str = preg_replace('/[\x{00E7}\x{0107}\x{0109}\x{010B}\x{010D}}]/u', 'c', $str);
         $str = preg_replace('/[\x{010E}\x{0110}]/u', 'D', $str);
         $str = preg_replace('/[\x{010F}\x{0111}]/u', 'd', $str);
-        $str = preg_replace('/[\x{00C8}\x{00C9}\x{00CA}\x{00CB}\x{0112}\x{0114}\x{0116}\x{0118}\x{011A}]/u', 'E', $str);
+        $str = preg_replace('/[\x{00C8}\x{00C9}\x{00CA}\x{00CB}\x{0112}\x{0114}\x{0116}\x{0118}\x{011A}\x{20AC}]/u', 'E', $str);
         $str = preg_replace('/[\x{00E8}\x{00E9}\x{00EA}\x{00EB}\x{0113}\x{0115}\x{0117}\x{0119}\x{011B}]/u', 'e', $str);
         $str = preg_replace('/[\x{00CC}\x{00CD}\x{00CE}\x{00CF}\x{0128}\x{012A}\x{012C}\x{012E}\x{0130}]/u', 'I', $str);
         $str = preg_replace('/[\x{00EC}\x{00ED}\x{00EE}\x{00EF}\x{0129}\x{012B}\x{012D}\x{012F}\x{0131}]/u', 'i', $str);
@@ -948,7 +980,7 @@ class DPDFrance extends CarrierModule
         $str = preg_replace('/[\x{00E6}]/u', 'ae', $str);
         $str = preg_replace('/[\x{0152}]/u', 'OE', $str);
         $str = preg_replace('/[\x{0153}]/u', 'oe', $str);
-        $str = preg_replace('/[\x{0022}\x{0025}\x{0026}\x{0027}\x{00A1}\x{00A2}\x{00A3}\x{00A4}\x{00A5}\x{00A6}\x{00A7}\x{00A8}\x{00AA}\x{00AB}\x{00AC}\x{00AD}\x{00AE}\x{00AF}\x{00B0}\x{00B1}\x{00B2}\x{00B3}\x{00B4}\x{00B5}\x{00B6}\x{00B7}\x{00B8}\x{00BA}\x{00BB}\x{00BC}\x{00BD}\x{00BE}\x{00BF}]/u', ' ', $str);
+        $str = preg_replace('/[^\p{L}\p{N}]/u', ' ', $str);
         $str = Tools::strtoupper($str);
         return $str;
     }
@@ -999,14 +1031,15 @@ class DPDFrance extends CarrierModule
             } else {
                 $relais_items = $xml->PUDO_ITEMS;
                 // Prepare cookie
-                $cookiedata = '';
+                $cookiedata = array();
                 $cookiedata['search'] = $input;
+
                 // Loop through each pudo
                 $i = 0;
                 foreach ($relais_items->PUDO_ITEM as $item) {
                     $point = array();
                     $item = (array)$item;
-                    
+
                     $zone_iles=array('17111', '17123', '17190', '17310', '17370', '17410', '17480', '17550', '17580', '17590', '17630', '17650', '17670', '17740', '17840', '17880', '17940', '22870', '29242', '29253', '29259', '29980', '29990', '56360', '56590', '56780', '56840', '85350');
                     $zone_montagne=array('04120', '04130', '04140', '04160', '04170', '04200', '04240', '04260', '04300', '04310', '04330', '04360', '04370', '04400', '04510', '04530', '04600', '04700', '04850', '05100', '05110', '05120', '05130', '05150', '05160', '05170', '05200', '05220', '05240', '05250', '05260', '05290', '05300', '05310', '05320', '05330', '05340', '05350', '05400', '05460', '05470', '05500', '05560', '05600', '05700', '05800', '06140', '06380', '06390', '06410', '06420', '06430', '06450', '06470', '06530', '06540', '06620', '06710', '06750', '06910', '09110', '09140', '09300', '09460', '25120', '25140', '25240', '25370', '25450', '25500', '25650', '30570', '31110', '38112', '38114', '38142', '38190', '38250', '38350', '38380', '38410', '38580', '38660', '38700', '38750', '38860', '38880', '39220', '39310', '39400', '63113', '63210', '63240', '63610', '63660', '63690', '63840', '63850', '64440', '64490', '64560', '64570', '65110', '65120', '65170', '65200', '65240', '65400', '65510', '65710', '66210', '66760', '66800', '68140', '68610', '68650', '73110', '73120', '73130', '73140', '73150', '73160', '73170', '73190', '73210', '73220', '73230', '73250', '73260', '73270', '73300', '73320', '73340', '73350', '73390', '73400', '73440', '73450', '73460', '73470', '73500', '73530', '73550', '73590', '73600', '73620', '73630', '73640', '73710', '73720', '73870', '74110', '74120', '74170', '74220', '74230', '74260', '74310', '74340', '74350', '74360', '74390', '74400', '74420', '74430', '74440', '74450', '74470', '74480', '74660', '74740', '74920', '83111', '83440', '83530', '83560', '83630', '83690', '83830', '83840', '84390', '88310', '88340', '88370', '88400', '90200');
                     if (((float) Configuration::get('DPDFRANCE_SUPP_ILES')<0)&&(in_array($item['ZIPCODE'], $zone_iles)||(Tools::substr($item['ZIPCODE'], 0, 2)=='20'))) {
@@ -1015,7 +1048,7 @@ class DPDFrance extends CarrierModule
                     if ((float) Configuration::get('DPDFRANCE_SUPP_MONTAGNE')<0&&in_array($item['ZIPCODE'], $zone_montagne)) {
                         continue;
                     }
-                    
+
                     $point['relay_id']       = $item['PUDO_ID'];
                     $point['shop_name']      = self::stripAccents($item['NAME']);
                     $point['address1']       = self::stripAccents($item['ADDRESS1']);
@@ -1036,8 +1069,8 @@ class DPDFrance extends CarrierModule
                     $cookiedata[$point['relay_id']] = $point;
 
                     $point['distance']       = number_format($item['DISTANCE'] / 1000, 2);
-                    $point['coord_lat']      = (float)strtr($item['LATITUDE'], ',', '.');
-                    $point['coord_long']     = (float)strtr($item['LONGITUDE'], ',', '.');
+                    $point['coord_lat']      = (float) strtr($item['LATITUDE'], ',', '.');
+                    $point['coord_long']     = (float) strtr($item['LONGITUDE'], ',', '.');
                     $days = array(1=>'monday', 2=>'tuesday', 3=>'wednesday', 4=>'thursday', 5=>'friday', 6=>'saturday', 7=>'sunday');
                     if (count($item['OPENING_HOURS_ITEMS']->OPENING_HOURS_ITEM) > 0) {
                         foreach ($item['OPENING_HOURS_ITEMS']->OPENING_HOURS_ITEM as $oh_item) {
@@ -1144,7 +1177,7 @@ class DPDFrance extends CarrierModule
         if ($carrier->add()) {
             $groups = Group::getgroups(true);
             foreach ($groups as $group) {
-                Db::getInstance()->execute('INSERT INTO '._DB_PREFIX_.'carrier_group VALUE (\''.(int)$carrier->id.'\',\''.(int)$group['id_group'].'\')');
+                Db::getInstance()->execute('INSERT INTO '._DB_PREFIX_.'carrier_group VALUE (\''.(int) $carrier->id.'\',\''.(int) $group['id_group'].'\')');
             }
             // Price range creation
             $range_price = new RangePrice();
@@ -1170,9 +1203,9 @@ class DPDFrance extends CarrierModule
             }
             $res = Db::getInstance()->ExecuteS($sql);
             foreach ($res as $zone) {
-                Db::getInstance()->execute('INSERT INTO '._DB_PREFIX_.'carrier_zone  (id_carrier, id_zone) VALUE (\''.(int)$carrier->id.'\',\''.(int)$zone['id_zone'].'\')');
-                Db::getInstance()->execute('INSERT INTO '._DB_PREFIX_.'delivery (id_carrier, id_range_price, id_range_weight, id_zone, price) VALUE (\''.(int)$carrier->id.'\',\''.(int)$range_price->id.'\',NULL,\''.(int)$zone['id_zone'].'\',\'5.95\')');
-                Db::getInstance()->execute('INSERT INTO '._DB_PREFIX_.'delivery (id_carrier, id_range_price, id_range_weight, id_zone, price) VALUE (\''.(int)$carrier->id.'\',NULL,\''.(int)$range_weight->id.'\',\''.(int)$zone['id_zone'].'\',\'5.95\')');
+                Db::getInstance()->execute('INSERT INTO '._DB_PREFIX_.'carrier_zone  (id_carrier, id_zone) VALUE (\''.(int) $carrier->id.'\',\''.(int) $zone['id_zone'].'\')');
+                Db::getInstance()->execute('INSERT INTO '._DB_PREFIX_.'delivery (id_carrier, id_range_price, id_range_weight, id_zone, price) VALUE (\''.(int) $carrier->id.'\',\''.(int) $range_price->id.'\',NULL,\''.(int) $zone['id_zone'].'\',\'5.95\')');
+                Db::getInstance()->execute('INSERT INTO '._DB_PREFIX_.'delivery (id_carrier, id_range_price, id_range_weight, id_zone, price) VALUE (\''.(int) $carrier->id.'\',NULL,\''.(int) $range_weight->id.'\',\''.(int) $zone['id_zone'].'\',\'5.95\')');
             }
             // Logo copy
             if (in_array($type, array('relais','predict','classic','world'))) {
@@ -1189,26 +1222,26 @@ class DPDFrance extends CarrierModule
     public function reaffectationCarrier($id_carrier)
     {
         Db::getInstance()->execute('
-            UPDATE '._DB_PREFIX_.'carrier 
+            UPDATE '._DB_PREFIX_.'carrier
             SET shipping_handling = 0,
                 is_module = 1,
                 shipping_external = 1,
                 need_range = 1,
                 external_module_name = "dpdfrance"
-            WHERE  id_carrier = '.(int)$id_carrier);
+            WHERE  id_carrier = '.(int) $id_carrier);
     }
 
-    /* When marketplace mode is activated, change tracking URLs */
-    public function setMarketplaceUrls($enabled)
+    /* When auto update by parcel no. mode is activated, change tracking URLs */
+    public function setTrackingURLs($mode)
     {
-        if ($enabled) {
+        if ($mode == 2) {
             $url = 'http://www.dpd.fr/traces_@';
         } else {
-            $url = 'http://www.dpd.fr/tracer_@';
+            $url = 'http://www.dpd.fr/tracex_@';
         }
         Db::getInstance()->execute('
-            UPDATE  '._DB_PREFIX_.'carrier 
-            SET     url = "'.$url.'"
-            WHERE   external_module_name = "dpdfrance"');
+            UPDATE  '._DB_PREFIX_.'carrier
+            SET     url = "'.pSQL($url).'"
+            WHERE   url LIKE "%dpd.fr/trace%"');
     }
 }

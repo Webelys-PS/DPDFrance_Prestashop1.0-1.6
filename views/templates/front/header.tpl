@@ -1,5 +1,5 @@
 {**
- * 2007-2016 PrestaShop
+ * 2007-2017 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -18,7 +18,7 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  * @author    DPD France S.A.S. <support.ecommerce@dpd.fr>
- * @copyright 2016 DPD France S.A.S.
+ * @copyright 2017 DPD France S.A.S.
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  *}
 
@@ -27,5 +27,7 @@
     var dpdfrancePredictCarrierId = "{$dpdfrance_predict_carrier_id|escape:'javascript':'UTF-8'}";
     var psVer = parseFloat("{$ps_version|escape:'javascript':'UTF-8'}");
     var opc = "{$opc|escape:'javascript':'UTF-8'}";
-    var cart_id = "{$cart->id|escape:'javascript':'UTF-8'}";
+    var dpdfrance_cart_id = "{$dpdfrance_cart->id|escape:'javascript':'UTF-8'}";
+    var dpdfrance_base_dir = "{$dpdfrance_base_dir|escape:'javascript':'UTF-8'}";
+    var dpdfrance_token = "{$dpdfrance_token|escape:'javascript':'UTF-8'}";
 </script>

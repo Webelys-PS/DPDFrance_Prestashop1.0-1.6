@@ -1,5 +1,5 @@
 {**
- * 2007-2016 PrestaShop
+ * 2007-2017 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -18,7 +18,7 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  * @author    DPD France S.A.S. <support.ecommerce@dpd.fr>
- * @copyright 2016 DPD France S.A.S.
+ * @copyright 2017 DPD France S.A.S.
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  *}
 
@@ -54,8 +54,9 @@ if (badIE == false){
                 $.when($('#dpdfrance_div_relais_header,#dpdfrance_lignerelais0,#dpdfrance_lignerelais1,#dpdfrance_lignerelais2,#dpdfrance_lignerelais3,#dpdfrance_lignerelais4').show('fast')).done(function()
                 {
                     $("#tr_carrier_dpdfrance_relais").html(dpdfrance_relais_response);
-                    $("#tr_carrier_dpdfrance_relais").fadeIn('slow');
-                    $("#submit_relais_opc").attr("action", baseDir+'modules/dpdfrance/validation.php?dpdfrance_carrier=' + checkedCarrier);
+                    $("#tr_carrier_dpdfrance_relais").fadeIn('fast', function() {
+                        dpdfrance_checkPudo();
+                    });
                 });
             }
 
@@ -64,8 +65,9 @@ if (badIE == false){
                 $.when($('#dpdfrance_div_relais_header,#dpdfrance_lignerelais0,#dpdfrance_lignerelais1,#dpdfrance_lignerelais2,#dpdfrance_lignerelais3,#dpdfrance_lignerelais4').show('fast')).done(function()
                 {
                     $("#tr_carrier_dpdfrance_relais").html(dpdfrance_relais_response);
-                    $("#tr_carrier_dpdfrance_relais").fadeIn('slow');
-                    $("#submit_relais_opc").attr("action", baseDir+'modules/dpdfrance/validation.php?dpdfrance_carrier=' + checkedCarrier);
+                    $("#tr_carrier_dpdfrance_relais").fadeIn('fast', function() {
+                        dpdfrance_checkPudo();
+                    });
                 });
             });
 
@@ -79,10 +81,10 @@ if (badIE == false){
         else
         {
             if ($('#id_carrier' + {/literal}{$dpdfrance_relais_carrier_id|escape:'javascript':'UTF-8'}{literal}).attr('checked'))
-                $("#dpdfrance_div_relais_header").fadeIn('slow');
+                $("#dpdfrance_div_relais_header").fadeIn('fast');
 
             $('#id_carrier' + {/literal}{$dpdfrance_relais_carrier_id|escape:'javascript':'UTF-8'}{literal}).click(function(){
-                $("#dpdfrance_div_relais_header").fadeIn('slow');
+                $("#dpdfrance_div_relais_header").fadeIn('fast');
             });
 
             $("input[name='id_carrier']").change(function(){
@@ -113,15 +115,14 @@ else
                 document.getElementById('dpdfrance_lignerelais2').style.display = "";
                 document.getElementById('dpdfrance_lignerelais3').style.display = "";
                 document.getElementById('dpdfrance_lignerelais4').style.display = "";
-                $('#dpdfrance_div_relais_header').fadeIn('fast', function() {});
-                $("#submit_relais_opc").attr("action", baseDir+'modules/dpdfrance/validation.php?dpdfrance_carrier=' + checkedCarrier);
+                $('#dpdfrance_div_relais_header').fadeIn('fast');
             }else{
                 document.getElementById('dpdfrance_lignerelais0').style.display = "none";
                 document.getElementById('dpdfrance_lignerelais1').style.display = "none";
                 document.getElementById('dpdfrance_lignerelais2').style.display = "none";
                 document.getElementById('dpdfrance_lignerelais3').style.display = "none";
                 document.getElementById('dpdfrance_lignerelais4').style.display = "none";
-                $('#dpdfrance_div_relais_header').fadeOut('fast', function() {});
+                $('#dpdfrance_div_relais_header').fadeOut('fast');
             }
 
             $('#id_carrier' + {/literal}{$dpdfrance_relais_carrier_id|escape:'javascript':'UTF-8'}{literal}).click(function(){
@@ -130,8 +131,7 @@ else
                 document.getElementById('dpdfrance_lignerelais2').style.display = "";
                 document.getElementById('dpdfrance_lignerelais3').style.display = "";
                 document.getElementById('dpdfrance_lignerelais4').style.display = "";
-                $('#dpdfrance_div_relais_header').fadeIn('fast', function() {});
-                $("#submit_relais_opc").attr("action", baseDir+'modules/dpdfrance/validation.php?dpdfrance_carrier=' + checkedCarrier);
+                $('#dpdfrance_div_relais_header').fadeIn('fast');
             });
 
             $("input[name='id_carrier']").change(function(){
@@ -141,28 +141,43 @@ else
                     document.getElementById('dpdfrance_lignerelais2').style.display = "none";
                     document.getElementById('dpdfrance_lignerelais3').style.display = "none";
                     document.getElementById('dpdfrance_lignerelais4').style.display = "none";
-                    $('#dpdfrance_div_relais_header').fadeOut('fast', function() {});
+                    $('#dpdfrance_div_relais_header').fadeOut('fast');
                 }
             });
         }
         else
         {
-            if ($('#id_carrier' + {/literal}{$dpdfrance_relais_carrier_id|escape:'javascript':'UTF-8'}{literal}).attr('checked'))
-                $("#dpdfrance_div_relais_header").fadeIn('slow');
+            if ($('#id_carrier' + {/literal}{$dpdfrance_relais_carrier_id|escape:'javascript':'UTF-8'}{literal}).attr('checked')) {
+                $("#dpdfrance_div_relais_header").fadeIn('fast', function() {
+                    dpdfrance_checkPudo();
+                });
+            }
 
-            $('#id_carrier' + {/literal}{$dpdfrance_relais_carrier_id|escape:'javascript':'UTF-8'}{literal}).click(function(){
-                $("#dpdfrance_div_relais_header").fadeIn('slow');
+            $('#id_carrier' + {/literal}{$dpdfrance_relais_carrier_id|escape:'javascript':'UTF-8'}{literal}).click(function() {
+                $("#dpdfrance_div_relais_header").fadeIn('fast', function() {
+                    dpdfrance_checkPudo();
+                });
             });
 
-            $("input[name='id_carrier']").change(function(){
-                if (!$('#id_carrier' + {/literal}{$dpdfrance_relais_carrier_id|escape:'javascript':'UTF-8'}{literal}).attr('checked'))
-                    $("#dpdfrance_div_relais_header").fadeOut('fast');
+            $("input[name='id_carrier']").change(function() {
+                if (!$('#id_carrier' + {/literal}{$dpdfrance_relais_carrier_id|escape:'javascript':'UTF-8'}{literal}).attr('checked')) {
+                    $("#dpdfrance_div_relais_header").fadeIn('fast', function() {
+                        dpdfrance_checkPudo();
+                    });
+                }
             });
         }
     });
 {/literal}
 }
 </script>
+
+<noscript>
+    <tr>
+        <td colspan="5"><div class="dpdfrance_relais_error"><strong>{l s='It seems that your browser doesn\'t allow Javascript execution, therefore DPD Relais is not available. Please change browser settings, or try another browser.' mod='dpdfrance'}</strong></div></td>
+    </tr><br/>
+    <div style="display:none;">
+</noscript>
 
 <tr id="dpdfrance_div_relais_header" style="display:none;">
     {if isset($error)}
@@ -190,7 +205,7 @@ else
 </tr>
 
 {foreach from=$dpdfrance_relais_points item=points name=dpdfranceRelaisLoop}
-<tr id="dpdfrance_lignerelais" class="dpdfrance_lignepr" style="display:none;">
+<tr id="dpdfrance_lignerelais" class="dpdfrance_lignepr" style="display:none;" onclick="dpdfrance_registerPudo('{$points.relay_id|escape:'htmlall':'UTF-8'}'); document.getElementById('{$points.relay_id|escape:'htmlall':'UTF-8'}').checked=true;">
     <td align="left" class="dpdfrance_logorelais" id="dpdfrance_logorelais">
     </td>
 
@@ -205,14 +220,13 @@ else
         </a>
     </td>
 
-    <td align="right" class="dpdfrance_relais_radio radio">
-        <form method='post' action='{if $ssl}{$base_dir_ssl|escape:'htmlall':'UTF-8'}{else}{$base_dir|escape:'htmlall':'UTF-8'}{/if}modules/dpdfrance/validation.php?dpdfrance_carrier={$dpdfrance_relais_carrier_id|escape:'javascript':'UTF-8'}'>
+    <td align="right" class="dpdfrance_radiopr">
             {if $dpdfrance_selectedrelay == $points.relay_id}
-                <input type='submit' name="dpdfrance_relay_id_opc" id="{$points.relay_id|escape:'htmlall':'UTF-8'}" value="{$points.relay_id|escape:'htmlall':'UTF-8'}" class="dpdfrance_relais_buttonok" onMouseOver="javascript:this.style.cursor='pointer';" onMouseOut="javascript:this.style.cursor='auto';">                </input>
+            <input type="radio" name="dpdfrance_relay_id" onclick="dpdfrance_registerPudo('{$points.relay_id|escape:'htmlall':'UTF-8'}')" id="{$points.relay_id|escape:'htmlall':'UTF-8'}" value="{$points.relay_id|escape:'htmlall':'UTF-8'}" checked="checked">
             {else}
-                <input type='submit' name="dpdfrance_relay_id_opc" id="{$points.relay_id|escape:'htmlall':'UTF-8'}" value="{$points.relay_id|escape:'htmlall':'UTF-8'}" class="dpdfrance_relais_buttonchoose" onMouseOver="javascript:this.style.cursor='pointer';" onMouseOut="javascript:this.style.cursor='auto';">                </input>
+            <input type="radio" name="dpdfrance_relay_id" onclick="dpdfrance_registerPudo('{$points.relay_id|escape:'htmlall':'UTF-8'}')" id="{$points.relay_id|escape:'htmlall':'UTF-8'}" value="{$points.relay_id|escape:'htmlall':'UTF-8'}" {if $smarty.foreach.dpdfranceRelaisLoop.first} checked="checked" {/if}>
             {/if}
-        </form>
+            <label for="{$points.relay_id|escape:'htmlall':'UTF-8'}"><span><span></span></span><b>ICI</b></label>
     </td>
 </tr>
 
@@ -223,3 +237,4 @@ else
 {/if}
 </div>
 </td>
+<noscript></div></noscript>

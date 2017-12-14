@@ -1,5 +1,5 @@
 {**
- * 2007-2016 PrestaShop
+ * 2007-2017 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -18,7 +18,7 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  * @author    DPD France S.A.S. <support.ecommerce@dpd.fr>
- * @copyright 2016 DPD France S.A.S.
+ * @copyright 2017 DPD France S.A.S.
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  *}
 
@@ -107,8 +107,8 @@ function dpdfrance_attr_carrier(element) {
                 
                 <div id="service_relais_contract">
                     {l s='Depot code - Contract number' mod='dpdfrance'}<br/>{l s='(i.e.: 013 - 12345)' mod='dpdfrance'}<br/><br/>
-                    <input type="text" size="3" name="relais_depot_code" class="relais_depot_code" value="{$relais_depot_code|escape:'htmlall':'UTF-8'}" /> - 
-                    <input type="text" size="5" name="relais_shipper_code" class="relais_shipper_code" value="{$relais_shipper_code|escape:'htmlall':'UTF-8'}" /><br/><br/>
+                    <input type="text" size="3" maxlength="3" name="relais_depot_code" class="relais_depot_code" value="{$relais_depot_code|escape:'htmlall':'UTF-8'}" /> - 
+                    <input type="text" size="5" maxlength="5" name="relais_shipper_code" class="relais_shipper_code" value="{$relais_shipper_code|escape:'htmlall':'UTF-8'}" /><br/><br/>
                 </div>
                 <div id="service_next_img"></div>
                 <div id="service_relais_addcarrier">
@@ -137,8 +137,8 @@ function dpdfrance_attr_carrier(element) {
 
                 <div id="service_predict_contract">
                     {l s='Depot code - Contract number' mod='dpdfrance'}<br/>{l s='(i.e.: 013 - 12345)' mod='dpdfrance'}<br/><br/>
-                    <input type="text" size="3" name="predict_depot_code" class="predict_depot_code" value="{$predict_depot_code|escape:'htmlall':'UTF-8'}" /> - 
-                    <input type="text" size="5" name="predict_shipper_code" class="predict_shipper_code" value="{$predict_shipper_code|escape:'htmlall':'UTF-8'}" /><br/><br/>
+                    <input type="text" size="3" maxlength="3" name="predict_depot_code" class="predict_depot_code" value="{$predict_depot_code|escape:'htmlall':'UTF-8'}" /> - 
+                    <input type="text" size="5" maxlength="5" name="predict_shipper_code" class="predict_shipper_code" value="{$predict_shipper_code|escape:'htmlall':'UTF-8'}" /><br/><br/>
                 </div>
                 <div id="service_next_img"></div>
                 <div id="service_predict_addcarrier">
@@ -169,8 +169,8 @@ function dpdfrance_attr_carrier(element) {
 
                 <div id="service_classic_contract">
                     {l s='Depot code - Contract number' mod='dpdfrance'}<br/>{l s='(i.e.: 013 - 12345)' mod='dpdfrance'}<br/><br/>
-                    <input type="text" size="3" name="classic_depot_code" class="classic_depot_code" value="{$classic_depot_code|escape:'htmlall':'UTF-8'}" /> - 
-                    <input type="text" size="5" name="classic_shipper_code" class="classic_shipper_code" value="{$classic_shipper_code|escape:'htmlall':'UTF-8'}" /><br/><br/>
+                    <input type="text" size="3" maxlength="3" name="classic_depot_code" class="classic_depot_code" value="{$classic_depot_code|escape:'htmlall':'UTF-8'}" /> - 
+                    <input type="text" size="5" maxlength="5" name="classic_shipper_code" class="classic_shipper_code" value="{$classic_shipper_code|escape:'htmlall':'UTF-8'}" /><br/><br/>
                 </div>
                 <div id="service_next_img"></div>
                 <div id="service_classic_addcarrier">
@@ -275,7 +275,7 @@ function dpdfrance_attr_carrier(element) {
                 <br/>{l s='Once parcels are delivered, orders will be updated to this state.' mod='dpdfrance'}<br/>
             </div>
 
-            <label>{l s='Automatic update of statuses' mod='dpdfrance'}<br/></label>
+            <label>{l s='Auto update of status and tracking links' mod='dpdfrance'}<br/></label>
             <div class="margin-form">
                <select name="auto_update">
                 {foreach from=$optupdate item=option key=key} 
@@ -286,10 +286,10 @@ function dpdfrance_attr_carrier(element) {
                     {/if}
                 {/foreach}
                 </select>
-                <br/>{l s='Order statuses will be automatically updated depending on parcel delivery status.' mod='dpdfrance'}<br/>
+                <br/>{l s='Order statuses and tracking links will be automatically updated following parcel delivery.' mod='dpdfrance'}<br/>
             </div>
 
-            <label>{l s='Marketplace mode' mod='dpdfrance'}<br/></label>
+            <label>{l s='Allow management of non-DPD orders' mod='dpdfrance'}<br/></label>
             <div class="margin-form">
                <select name="marketplace_mode">
                 {foreach from=$optmarketplace item=option key=key} 
@@ -300,7 +300,7 @@ function dpdfrance_attr_carrier(element) {
                     {/if}
                 {/foreach}
                 </select>
-                <br/>{l s='Enables export of all orders & parcel number based tracking if automatic status update is enabled.' mod='dpdfrance'}<br/>
+                <br/>{l s='All orders will be manageable regardless of the carrier, useful when using marketplace connectors.' mod='dpdfrance'}<br/>
             </div>
 
             <label>{l s='Parcel insurance service' mod='dpdfrance'}<br/></label>

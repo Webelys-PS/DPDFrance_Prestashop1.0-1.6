@@ -1,5 +1,5 @@
 /**
- * 2007-2016 PrestaShop
+ * 2007-2017 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -18,7 +18,7 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  * @author    DPD France S.A.S. <support.ecommerce@dpd.fr>
- * @copyright 2016 DPD France S.A.S.
+ * @copyright 2017 DPD France S.A.S.
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
 
@@ -129,6 +129,7 @@ div.dpdfrance_relais_error
     padding: 7px 10px 7px 14px;
     line-height: 12px;
     font-size: 13px;
+    text-align: left;
 }
 
 #dpdfrance_div_relais_srch_panel {
@@ -193,6 +194,7 @@ div.dpdfrance_relais_error
     height: 25px;
     padding: 1px 6px;
     font-family: DPDPlutoSansLight;
+    cursor:pointer;
 }
 
 #dpdfrance_reset_submit {
@@ -206,9 +208,10 @@ div.dpdfrance_relais_error
     height: 25px;
     padding: 1px 6px;
     font-family: DPDPlutoSansLight;
+    cursor:pointer;
 }
 
-tr.dpdfrance_lignepr
+.dpdfrance_lignepr
 {
     height:60px;
     display:inline-block;
@@ -249,6 +252,7 @@ td.dpdfrance_adressepr
     text-align: left !important;
     vertical-align: middle !important;
     border-style: none !important;
+    line-height: 16px;
 }
 
 td.dpdfrance_adressepr b
@@ -309,6 +313,8 @@ td.dpdfrance_radiopr
     text-align: left !important;
     vertical-align: middle !important;
     border-style: none !important;
+    font-family: DPDPlutoSansRegular;
+    font-weight: 700;
 }
 
 td.dpdfrance_radiopr label span:hover
@@ -318,38 +324,6 @@ td.dpdfrance_radiopr label span:hover
 
 td.dpdfrance_relais_radio.radio {
     border-width: 0;
-}
-input.dpdfrance_relais_buttonok
-{
-    width:35px;
-    height:25px;
-    margin-top:0;
-    margin-left:15px;
-    margin-right:15px;
-    border:none;
-    background:transparent url(../../img/front/relais/relais_button_ok.png) no-repeat center;
-    font-size:0;
-    line-height:0;
-    overflow:hidden;
-    text-indent:-999px;
-    display:block;
-}
-
-input.dpdfrance_relais_buttonchoose
-{
-    cursor:pointer;
-    width:35px;
-    height:25px;
-    margin-top:0;
-    margin-left:15px;
-    margin-right:15px;
-    border:none;
-    background:transparent url(../../img/front/relais/relais_button_choose.png) no-repeat center;
-    font-size:0;
-    line-height:0;
-    overflow:hidden;
-    text-indent:-999px;
-    display:block;
 }
 
 input[name=dpdfrance_relay_id]:not(old)
@@ -571,6 +545,7 @@ div.dpdfrance_relaisboxhoraires p
     padding-top:5px;
     padding-left:5px;
     line-height:11px;
+    font-size:11px;
     margin:0!important;
 }
 
@@ -665,7 +640,7 @@ div.warnmsg
     color:#a90034!important;
     font-family:DPDPlutoSansRegular !important;
     font-size:13px!important;
-    font-weight:bold;
+    font-weight:700;
     margin:15px 0!important;
     padding:15px 15px 15px 50px !important;
     position:relative!important;
@@ -735,6 +710,8 @@ table.dpdfrance_predict_container
     padding:0;
     font-size:12px;
     font-family:DPDPlutoSansLight;
+    display: inline-block;
+    text-align:left;
 }
 
 #div_dpdfrance_predict_logo
@@ -784,6 +761,7 @@ table.dpdfrance_predict_container
     display:block;
     font-size:13px;
     font-family:DPDPlutoSansRegular;
+    text-align: left;
 }
 
 #input_dpdfrance_predict_gsm_dest
@@ -816,33 +794,7 @@ table.dpdfrance_predict_container
     line-height:25px;
     text-align:center;
     cursor:pointer;
-    font-size:25px;
-    display:inline-block;
-    vertical-align: middle;
-}
-
-#dpdfrance_predict_gsm_button_opc
-{
-    height:25px;
-    width:28px;
-    background:transparent url(../../img/front/predict/dpd_predict_gsm_button_opc_sumbit.png) no-repeat center;
-    text-align:center;
-    cursor:pointer;
-    font-size:0;
-    border-style:none;
-    display:inline-block;
-    vertical-align: middle;
-}
-
-#dpdfrance_predict_gsm_button_opc_ok
-{
-    height:25px;
-    width:28px;
-    background:transparent url(../../img/front/predict/dpd_predict_gsm_button_opc_ok.png) no-repeat center;
-    text-align:center;
-    cursor:pointer;
-    font-size:0;
-    border-style:none;
+    font-size:22px;
     display:inline-block;
     vertical-align: middle;
 }
@@ -974,6 +926,7 @@ a.dpdfrance_more:hover
     {
         padding-left:10px;
         padding-right:10px;
+        text-align: left;
     }
 }
 
