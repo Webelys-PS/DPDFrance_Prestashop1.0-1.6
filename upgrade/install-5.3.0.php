@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2017 PrestaShop
+ * 2007-2018 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -19,7 +19,7 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  * @author    DPD France S.A.S. <support.ecommerce@dpd.fr>
- * @copyright 2017 DPD France S.A.S.
+ * @copyright 2018 DPD France S.A.S.
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
 
@@ -27,7 +27,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-function upgrade_module_5_2_5($module)
+function upgrade_module_5_3_0($module)
 {
     if (Configuration::get('DPDFRANCE_MARKETPLACE_MODE') == 1) {
         Configuration::updateValue('DPDFRANCE_AUTO_UPDATE', 2);

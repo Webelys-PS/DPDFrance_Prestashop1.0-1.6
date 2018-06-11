@@ -154,7 +154,7 @@ $_MODULE['<{dpdfrance}prestashop>dpdfrance_hookextracarrier_ad0802472aecb9e4f633
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_hookextracarrier_e0adc62da3a12b0a8964e63d84238555'] = 'Vous sélectionnez la date et le créneau d\'une heure qui vous conviennent le mieux en répondant directement par SMS (prix d’un SMS standard) ou vous connectant sur l’Espace Destinataire disponible sur';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_hookextracarrier_fb557a1c7589126cc2665934f986c008'] = 'Le jour de la livraison, vous recevez un SMS vous indiquant un créneau réduit à une heure.';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_hookextracarrier_8f2454663107e204f23576c12503d5e4'] = 'Bénéficiez dès maintenant des avantages de la livraison Predict en renseignant votre n° de mobile ici';
-$_MODULE['<{dpdfrance}prestashop>dpdfrance_hookextracarrier_b61e6091002c179e64a0ae5893f188e9'] = 'Le numéro de mobile renseigné semble incorrect. Merci de préciser un numéro de mobile français, commençant par 06 ou 07, sur 10 chiffres consécutifs.';
+$_MODULE['<{dpdfrance}prestashop>dpdfrance_hookextracarrier_b61e6091002c179e64a0ae5893f188e9'] = 'Le numéro de mobile renseigné semble incorrect. Merci de préciser un numéro de mobile avec le préfixe international correspondant (ex. +33)';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_hookextracarrier_ad76d9840b610fee422746ebf39a47d0'] = 'Votre navigateur n\'exécute pas Javascript, par conséquent DPD Relais n\'est pas disponible. Veuillez modifier ce paramètre ou essayer avec un autre navigateur.';
 
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_2d7ced6ede25309b21940a402a0b5192'] = 'Livraison à domicile Predict sur rendez-vous';
@@ -167,7 +167,7 @@ $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_ad0802472aecb9e4f6332a7305a1d
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_e0adc62da3a12b0a8964e63d84238555'] = 'Vous sélectionnez la date et le créneau d\'une heure qui vous conviennent le mieux en répondant directement par SMS (prix d’un SMS standard) ou vous connectant sur l’Espace Destinataire disponible sur';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_fb557a1c7589126cc2665934f986c008'] = 'Le jour de la livraison, vous recevez un SMS vous indiquant un créneau réduit à une heure.';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_8f2454663107e204f23576c12503d5e4'] = 'Bénéficiez des avantages de la livraison Predict en renseignant votre n° de mobile ici';
-$_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_b61e6091002c179e64a0ae5893f188e9'] = 'Le numéro de mobile renseigné semble incorrect. Merci de préciser un numéro de mobile français, commençant par 06 ou 07, sur 10 chiffres consécutifs.';
+$_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_b61e6091002c179e64a0ae5893f188e9'] = 'Le numéro de mobile renseigné semble incorrect. Merci de préciser un numéro de mobile avec le préfixe international correspondant (ex. +33)';
 
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_2d7ced6ede25309b21940a402a0b5192'] = 'Livraison à domicile Predict sur rendez-vous';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_b3f805b88e5e6ee5e41d98c554db7178'] = 'Avec Predict, bénéficiez des avantages suivants';
@@ -178,7 +178,7 @@ $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_359f9e79e746fa9f684e5cda9
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_ad0802472aecb9e4f6332a7305a1d218'] = 'Une fois votre commande préparée, nous vous envoyons un SMS avec plusieurs choix de dates et créneaux horaires de livraison';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_e0adc62da3a12b0a8964e63d84238555'] = 'Vous sélectionnez la date et le créneau de 3h qui vous conviennent le mieux en répondant directement par SMS (prix d’un SMS standard) ou vous connectant sur l’Espace Destinataire disponible sur';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_fb557a1c7589126cc2665934f986c008'] = 'Le jour de la livraison, vous recevez un SMS vous indiquant un créneau réduit à une heure.';
-$_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_b61e6091002c179e64a0ae5893f188e9'] = 'Le numéro de mobile renseigné semble incorrect. Merci de préciser un numéro de mobile français valide, commençant par 06 ou 07, sur 10 chiffres consécutifs.';
+$_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_b61e6091002c179e64a0ae5893f188e9'] = 'Le numéro de mobile renseigné semble incorrect. Merci de préciser un numéro de mobile avec le préfixe international correspondant (ex. +33)';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_8f2454663107e204f23576c12503d5e4'] = 'Bénéficiez des avantages de la livraison Predict en renseignant votre n° de mobile ici';
 
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_relais_de402f3d79891c7d5440f43ab8d1a768'] = 'Merci de sélectionner un relais Pickup pour votre livraison';

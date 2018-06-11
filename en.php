@@ -189,7 +189,7 @@ $_MODULE['<{dpdfrance}prestashop>dpdfrance_hookextracarrier_ad0802472aecb9e4f633
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_hookextracarrier_e0adc62da3a12b0a8964e63d84238555'] = 'You choose the moment which suits you best for the delivery by replying to the SMS (no extra cost) or through our website';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_hookextracarrier_fb557a1c7589126cc2665934f986c008'] = 'On the day of delivery, a text message will specify you a 1-hour time window.';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_hookextracarrier_8f2454663107e204f23576c12503d5e4'] = 'Take advantage of DPD\'s Predict service by providing a french GSM number here here';
-$_MODULE['<{dpdfrance}prestashop>dpdfrance_hookextracarrier_b61e6091002c179e64a0ae5893f188e9'] = 'It seems that the GSM number you provided is incorrect. Please provide a french GSM number, starting with 06 or 07, on 10 consecutive digits.';
+$_MODULE['<{dpdfrance}prestashop>dpdfrance_hookextracarrier_b61e6091002c179e64a0ae5893f188e9'] = 'It seems that the mobile phone number you provided is incorrect. Please provide a mobile phone number starting with the corresponding international prefix (i.e. +33)';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_hookextracarrier_ad76d9840b610fee422746ebf39a47d0'] = 'It seems that your browser doesn\'t allow Javascript execution, therefore DPD Relais is not available. Please change browser settings, or try another browser.';
 
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_2d7ced6ede25309b21940a402a0b5192'] = 'Your Predict delivery by DPD';
@@ -202,7 +202,7 @@ $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_ad0802472aecb9e4f6332a7305a1d
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_e0adc62da3a12b0a8964e63d84238555'] = 'You choose the moment which suits you best for the delivery by replying to the SMS (no extra cost) or through our website';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_fb557a1c7589126cc2665934f986c008'] = 'On the day of delivery, a text message will remind you the selected time window.';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_8f2454663107e204f23576c12503d5e4'] = 'Take advantage of DPD\'s Predict service by providing a french GSM number here';
-$_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_b61e6091002c179e64a0ae5893f188e9'] = 'It seems that the GSM number you provided is incorrect. Please provide a french GSM number, starting with 06 or 07, on 10 consecutive digits.';
+$_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_b61e6091002c179e64a0ae5893f188e9'] = 'It seems that the mobile phone number you provided is incorrect. Please provide a mobile phone number starting with the corresponding international prefix (i.e. +33)';
 
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_2d7ced6ede25309b21940a402a0b5192'] = 'Your Predict delivery by DPD';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_b3f805b88e5e6ee5e41d98c554db7178'] = 'Predict offers you the following benefits';
@@ -213,7 +213,7 @@ $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_359f9e79e746fa9f684e5cda9
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_ad0802472aecb9e4f6332a7305a1d218'] = 'Once your order is ready for shipment, you will receive an SMS proposing various days and time windows for your delivery.';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_e0adc62da3a12b0a8964e63d84238555'] = 'You choose the moment which suits you best for the delivery by replying to the SMS (no extra cost) or through our website';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_fb557a1c7589126cc2665934f986c008'] = 'On the day of delivery, a text message will remind you the selected time window.';
-$_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_b61e6091002c179e64a0ae5893f188e9'] = 'It seems that the GSM number you provided is incorrect. Please provide a french GSM number, starting with 06 or 07, on 10 consecutive digits.';
+$_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_b61e6091002c179e64a0ae5893f188e9'] = 'It seems that the mobile phone number you provided is incorrect. Please provide a mobile phone number starting with the corresponding international prefix (i.e. +33)';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_8f2454663107e204f23576c12503d5e4'] = 'Take advantage of DPD\'s Predict service by providing a french GSM number here here';
 
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_relais_ad76d9840b610fee422746ebf39a47d0'] = 'It seems that your browser doesn\'t allow Javascript execution, therefore DPD Relais is not available. Please change browser settings, or try another browser.';

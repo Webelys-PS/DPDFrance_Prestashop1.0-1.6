@@ -189,7 +189,7 @@ $_MODULE['<{dpdfrance}prestashop>dpdfrance_hookextracarrier_ad0802472aecb9e4f633
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_hookextracarrier_e0adc62da3a12b0a8964e63d84238555'] = 'Eliges el dia y ventana horaria que te conviene responiendo por SMS (sin coste extra) o conectandote a nuestra web';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_hookextracarrier_fb557a1c7589126cc2665934f986c008'] = 'El día de entrega te informaremos por SMS el intervalo de tiempo durante el cual la entrega se llevará a cabo';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_hookextracarrier_8f2454663107e204f23576c12503d5e4'] = 'Asegúrate de obtener todas las ventajas del servicio Predict de DPD proveyendo un número de movil francés aquí';
-$_MODULE['<{dpdfrance}prestashop>dpdfrance_hookextracarrier_b61e6091002c179e64a0ae5893f188e9'] = 'Parece que el número de movil que entraste es incorrecto. Por favor, entra un número de movil francés, empezando por 06 o 07, en 10 dígitos consecutivos.';
+$_MODULE['<{dpdfrance}prestashop>dpdfrance_hookextracarrier_b61e6091002c179e64a0ae5893f188e9'] = 'Parece que el número de movil que entraste es incorrecto. Por favor, teclea un número de movil empezando por el prefijo internacional (p. ej. +34)';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_hookextracarrier_ad76d9840b610fee422746ebf39a47d0'] = 'Parece que tu navegador no permite la ejecución de JavaScript, por lo tanto DPD Relais no está disponible. Por favor, cambia la configuración del navegador o prueba con otro navegador.';
 
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_2d7ced6ede25309b21940a402a0b5192'] = 'Tu entrega Predict por DPD';
@@ -202,7 +202,7 @@ $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_ad0802472aecb9e4f6332a7305a1d
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_e0adc62da3a12b0a8964e63d84238555'] = 'Eliges el dia y ventana horaria que te conviene responiendo por SMS (sin coste extra) o conectandote a nuestra web';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_fb557a1c7589126cc2665934f986c008'] = 'El día de entrega te informaremos por SMS el intervalo de tiempo durante el cual la entrega se llevará a cabo';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_8f2454663107e204f23576c12503d5e4'] = 'Asegúrate de obtener todas las ventajas del servicio Predict de DPD proveyendo un número de movil francés aquí';
-$_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_b61e6091002c179e64a0ae5893f188e9'] = 'Parece que el número de movil que entraste es incorrecto. Por favor, entra un número de movil francés, empezando por 06 o 07, en 10 dígitos consecutivos.';
+$_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_b61e6091002c179e64a0ae5893f188e9'] = 'Parece que el número de movil que entraste es incorrecto. Por favor, teclea un número de movil empezando por el prefijo internacional (p. ej. +34)';
 
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_2d7ced6ede25309b21940a402a0b5192'] = 'Tu entrega Predict por DPD';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_b3f805b88e5e6ee5e41d98c554db7178'] = 'Predict te ofrece las ventajas siguientes';
@@ -213,7 +213,7 @@ $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_359f9e79e746fa9f684e5cda9
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_ad0802472aecb9e4f6332a7305a1d218'] = 'Una vez tu pedido preparado, recibiras un SMS proponiendote varias fechas y ventanas horarias para tu entrega';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_e0adc62da3a12b0a8964e63d84238555'] = 'Eliges el dia y ventana horaria que te conviene responiendo por SMS (sin coste extra) o conectandote a nuestra web';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_fb557a1c7589126cc2665934f986c008'] = 'El día de entrega te informaremos por SMS el intervalo de tiempo durante el cual la entrega se llevará a cabo';
-$_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_b61e6091002c179e64a0ae5893f188e9'] = 'Parece que el número de movil que entraste es incorrecto. Por favor, entra un número de movil francés, empezando por 06 o 07, en 10 dígitos consecutivos.';
+$_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_b61e6091002c179e64a0ae5893f188e9'] = 'Parece que el número de movil que entraste es incorrecto. Por favor, teclea un número de movil empezando por el prefijo internacional (p. ej. +34)';
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_predict_opc_8f2454663107e204f23576c12503d5e4'] = 'Asegúrate de obtener todas las ventajas del servicio Predict de DPD proveyendo un número de movil francés aquí';
 
 $_MODULE['<{dpdfrance}prestashop>dpdfrance_relais_ad76d9840b610fee422746ebf39a47d0'] = 'Parece que tu navegador no permite la ejecución de JavaScript, por lo tanto DPD Relais no está disponible. Por favor, cambia la configuración del navegador o prueba con otro navegador.';

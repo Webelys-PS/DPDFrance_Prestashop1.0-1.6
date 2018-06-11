@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2017 PrestaShop
+ * 2007-2018 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -19,7 +19,7 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  * @author    DPD France S.A.S. <support.ecommerce@dpd.fr>
- * @copyright 2017 DPD France S.A.S.
+ * @copyright 2018 DPD France S.A.S.
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
 
@@ -199,7 +199,7 @@ class AdminDPDFrance extends AdminTab
                         CA.id_carrier=O.id_carrier AND
                         ('.$predict_carrier_sql.$classic_carrier_sql.$relais_carrier_sql.$europe_carrier_sql.')
                 ORDER BY id_order DESC
-                LIMIT 500';
+                LIMIT 1000';
 
         $sql15='SELECT  O.reference as reference, O.id_carrier as id_carrier, O.id_order as id_order, O.shipping_number as shipping_number, O.id_shop as id_shop
                 FROM    '._DB_PREFIX_.'orders AS O, '._DB_PREFIX_.'carrier AS CA
@@ -207,7 +207,7 @@ class AdminDPDFrance extends AdminTab
                 NOT IN  ('.(int) Configuration::get('DPDFRANCE_ETAPE_LIVRE').',0,5,6,7,8) AND
                         ('.$predict_carrier_sql.$classic_carrier_sql.$relais_carrier_sql.$europe_carrier_sql.')
                 ORDER BY id_order DESC
-                LIMIT 500';
+                LIMIT 1000';
                 
         if (_PS_VERSION_<'1.5') {
             $orderlist=Db::getInstance()->ExecuteS($sql14);
@@ -290,7 +290,7 @@ class AdminDPDFrance extends AdminTab
                             if (!is_array($result)) {
                                 $traces=$result->Traces->clsTrace;
                                 $returned_ref=$result->Reference;
-                                if ($internalref === $returned_ref) {
+                                if ($internalref == $returned_ref) {
                                     // Parcels with only one status
                                     if (!is_array($traces)) {
                                         // Exclude CEDI-only parcels
@@ -308,7 +308,7 @@ class AdminDPDFrance extends AdminTab
                                 // Multiple parcels per reference
                                 foreach ($result as $shipment) {
                                     $returned_ref=$shipment->Reference;
-                                    if ($internalref === $returned_ref) {
+                                    if ($internalref == $returned_ref) {
                                         $variables2=array(  'customer_center'=>'3',
                                                             'customer'=>'1064',
                                                             'password'=>'Pr2%5sHg',
@@ -894,7 +894,7 @@ class AdminDPDFrance extends AdminTab
                         default:
                             $code_pays_dest = self::getIsoCodebyIdCountry((int)$address_delivery->id_country);
                             if ($code_pays_dest !== 'F') {
-                                $type = 'Intercontinental<img src="../modules/dpdfrance/views/img/admin/service_world.png" title="Intercontinental"/>';
+                                $type = 'Classic Export<img src="../modules/dpdfrance/views/img/admin/service_world.png" title="Classic Export"/>';
                             } else {
                                 $type = 'Classic<img src="../modules/dpdfrance/views/img/admin/service_dom.png" title="Classic"/>';
                             }
