@@ -185,7 +185,7 @@ class DPDFrance extends CarrierModule
         } else {
             $this->tab='shipping_logistics';
         }
-        $this->version = '5.3.0';
+        $this->version = '5.3.1';
         $this->author = 'DPD France S.A.S.';
         $this->module_key = '41c64060327b5afada101ff25bd38850';
         $this->need_instance = 1;
@@ -610,7 +610,7 @@ class DPDFrance extends CarrierModule
         }
         if (in_array($file, array('order-opc', 'order', 'orderopc'))) {
             $this->context->controller->addCSS($this->_path.'views/css/front/dpdfrance.css');
-            $this->context->controller->addJS($this->_path.'views/js/front/dpdfrance_530.js');
+            $this->context->controller->addJS($this->_path.'views/js/front/dpdfrance_531.js');
             $this->context->controller->addJS('https://maps.googleapis.com/maps/api/js?key='.Configuration::get('DPDFRANCE_GOOGLE_API_KEY'));
             $this->context->smarty->assign(array(
                 'ps_version'                        => (float) _PS_VERSION_,

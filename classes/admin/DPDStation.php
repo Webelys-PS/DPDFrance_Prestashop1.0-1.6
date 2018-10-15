@@ -87,6 +87,8 @@ class DPDStation
         $str=preg_replace('/[\x{00E6}]/u', 'ae', $str);
         $str=preg_replace('/[\x{0152}]/u', 'OE', $str);
         $str=preg_replace('/[\x{0153}]/u', 'oe', $str);
+        $str=preg_replace('/[\x{2105}]/u', 'c/o', $str);
+        $str=preg_replace('/[\x{2116}]/u', 'No', $str);
         $str=preg_replace('/[\x{0022}\x{0025}\x{0026}\x{0027}\x{00A1}\x{00A2}\x{00A3}\x{00A4}\x{00A5}\x{00A6}\x{00A7}\x{00A8}\x{00AA}\x{00AB}\x{00AC}\x{00AD}\x{00AE}\x{00AF}\x{00B0}\x{00B1}\x{00B2}\x{00B3}\x{00B4}\x{00B5}\x{00B6}\x{00B7}\x{00B8}\x{00BA}\x{00BB}\x{00BC}\x{00BD}\x{00BE}\x{00BF}\x{2019}]/u', ' ', $str);
         return $str;
     }

@@ -169,7 +169,7 @@ function dpdfrance_checkGSM()
 
         var gsm_fr = new RegExp(/^((\+33|0)[67])(?:[ _.-]?(\d{2})){4}$/);
         var gsm_de = new RegExp(/^(\+|00)49(15|16|17)(\s?\d{7,8})$/);
-        var gsm_be = new RegExp(/^(\+|00)324(60|[789]\d)(\s?\d{6})$/);
+        var gsm_be = new RegExp(/^(\+|00)324([56789]\d)(\s?\d{6})$/);
         var gsm_at = new RegExp(/^(\+|00)436([56789]\d)(\s?\d{4})$/);
         var gsm_uk = new RegExp(/^(\+|00)447([3456789]\d)(\s?\d{7})$/);
         var gsm_nl = new RegExp(/^(\+|00)316(\s?\d{8})$/);

@@ -27,17 +27,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-function upgrade_module_5_3_0($module)
+function upgrade_module_5_3_1($module)
 {
-    if (Configuration::get('DPDFRANCE_MARKETPLACE_MODE') == 1) {
-        Configuration::updateValue('DPDFRANCE_AUTO_UPDATE', 2);
-    }
-
-    if (_PS_VERSION_ >= 1.4) {
-        Tools::clearCache();
-        if (_PS_VERSION_ >= 1.5) {
-            Tools::clearSmartyCache();
-        }
-    }
-    return true;
+    return ($module->registerHook('backOfficeHeader'));
 }

@@ -107,8 +107,8 @@ function dpdfrance_attr_carrier(element) {
                 
                 <div id="service_relais_contract">
                     {l s='Depot code - Contract number' mod='dpdfrance'}<br/>{l s='(i.e.: 013 - 12345)' mod='dpdfrance'}<br/><br/>
-                    <input type="text" size="3" maxlength="3" name="relais_depot_code" class="relais_depot_code" value="{$relais_depot_code|escape:'htmlall':'UTF-8'}" /> - 
-                    <input type="text" size="5" maxlength="5" name="relais_shipper_code" class="relais_shipper_code" value="{$relais_shipper_code|escape:'htmlall':'UTF-8'}" /><br/><br/>
+                    <input type="text" size="4" maxlength="4" name="relais_depot_code" class="relais_depot_code" value="{$relais_depot_code|escape:'htmlall':'UTF-8'}" /> - 
+                    <input type="text" size="8" maxlength="8" name="relais_shipper_code" class="relais_shipper_code" value="{$relais_shipper_code|escape:'htmlall':'UTF-8'}" /><br/><br/>
                 </div>
                 <div id="service_next_img"></div>
                 <div id="service_relais_addcarrier">
@@ -137,8 +137,8 @@ function dpdfrance_attr_carrier(element) {
 
                 <div id="service_predict_contract">
                     {l s='Depot code - Contract number' mod='dpdfrance'}<br/>{l s='(i.e.: 013 - 12345)' mod='dpdfrance'}<br/><br/>
-                    <input type="text" size="3" maxlength="3" name="predict_depot_code" class="predict_depot_code" value="{$predict_depot_code|escape:'htmlall':'UTF-8'}" /> - 
-                    <input type="text" size="5" maxlength="5" name="predict_shipper_code" class="predict_shipper_code" value="{$predict_shipper_code|escape:'htmlall':'UTF-8'}" /><br/><br/>
+                    <input type="text" size="4" maxlength="4" name="predict_depot_code" class="predict_depot_code" value="{$predict_depot_code|escape:'htmlall':'UTF-8'}" /> - 
+                    <input type="text" size="8" maxlength="8" name="predict_shipper_code" class="predict_shipper_code" value="{$predict_shipper_code|escape:'htmlall':'UTF-8'}" /><br/><br/>
                 </div>
                 <div id="service_next_img"></div>
                 <div id="service_predict_addcarrier">
@@ -169,8 +169,8 @@ function dpdfrance_attr_carrier(element) {
 
                 <div id="service_classic_contract">
                     {l s='Depot code - Contract number' mod='dpdfrance'}<br/>{l s='(i.e.: 013 - 12345)' mod='dpdfrance'}<br/><br/>
-                    <input type="text" size="3" maxlength="3" name="classic_depot_code" class="classic_depot_code" value="{$classic_depot_code|escape:'htmlall':'UTF-8'}" /> - 
-                    <input type="text" size="5" maxlength="5" name="classic_shipper_code" class="classic_shipper_code" value="{$classic_shipper_code|escape:'htmlall':'UTF-8'}" /><br/><br/>
+                    <input type="text" size="4" maxlength="4" name="classic_depot_code" class="classic_depot_code" value="{$classic_depot_code|escape:'htmlall':'UTF-8'}" /> - 
+                    <input type="text" size="8" maxlength="8" name="classic_shipper_code" class="classic_shipper_code" value="{$classic_shipper_code|escape:'htmlall':'UTF-8'}" /><br/><br/>
                 </div>
                 <div id="service_next_img"></div>
                 <div id="service_classic_addcarrier">

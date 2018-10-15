@@ -118,22 +118,97 @@ class AdminDPDFrance extends AdminTab
     }
 
     /* Formats GSM numbers */
-    public static function formatGSM($gsm_dest, $code_iso)
+    public static function formatGSM($tel_dest, $code_pays_dest)
     {
-        if ($code_iso=='F') {
-            $gsm_dest=str_replace(array(' ', '.', '-', ',', ';', '/', '\\', '(', ')'), '', $gsm_dest);
-            $gsm_dest=str_replace('+33', '0', $gsm_dest);
-            if (Tools::substr($gsm_dest, 0, 2)==33) {
-                // Chrome autofill fix
-                $gsm_dest=substr_replace($gsm_dest, '0', 0, 2);
-            }
-            if ((Tools::substr($gsm_dest, 0, 2)==06||Tools::substr($gsm_dest, 0, 2)==07)&&Tools::strlen($gsm_dest)==10) {
-                return $gsm_dest;
-            } else {
-                return false;
-            }
-        } else {
-            return $gsm_dest;
+        $tel_dest=str_replace(array(' ', '.', '-', ',', ';', '/', '\\', '(', ')'), '', $tel_dest);
+        // Chrome autofill fix
+        if (Tools::substr($tel_dest, 0, 2)==33) {
+            $tel_dest=substr_replace($tel_dest, '0', 0, 2);
+        }
+        switch ($code_pays_dest) {
+            case 'F':
+                if (preg_match('/^((\+33|0)[67])(?:[ _.-]?(\d{2})){4}$/', $tel_dest)) {
+                    return $tel_dest;
+                } else {
+                    return false;
+                }
+                break;
+
+            case 'D':
+                if (preg_match('/^(\+|00)49(15|16|17)(\s?\d{7,8})$/', $tel_dest)) {
+                    return $tel_dest;
+                } else {
+                    return false;
+                }
+                break;
+
+            case 'B':
+                if (preg_match('/^(\+|00)324([56789]\d)(\s?\d{6})$/', $tel_dest)) {
+                    return $tel_dest;
+                } else {
+                    return false;
+                }
+                break;
+
+            case 'AT':
+                if (preg_match('/^(\+|00)436([56789]\d)(\s?\d{4})$/', $tel_dest)) {
+                    return $tel_dest;
+                } else {
+                    return false;
+                }
+                break;
+
+            case 'GB':
+                if (preg_match('/^(\+|00)447([3456789]\d)(\s?\d{7})$/', $tel_dest)) {
+                    return $tel_dest;
+                } else {
+                    return false;
+                }
+                break;
+
+            case 'NL':
+                if (preg_match('/^(\+|00)316(\s?\d{8})$/', $tel_dest)) {
+                    return $tel_dest;
+                } else {
+                    return false;
+                }
+                break;
+
+            case 'P':
+                if (preg_match('/^(\+|00)3519(\s?\d{7})$/', $tel_dest)) {
+                    return $tel_dest;
+                } else {
+                    return false;
+                }
+                break;
+
+            case 'IRL':
+                if (preg_match('/^(\+|00)3538(\s?\d{8})$/', $tel_dest)) {
+                    return $tel_dest;
+                } else {
+                    return false;
+                }
+                break;
+
+            case 'E':
+                if (preg_match('/^(\+|00)34(6|7)(\s?\d{8})$/', $tel_dest)) {
+                    return $tel_dest;
+                } else {
+                    return false;
+                }
+                break;
+
+            case 'I':
+                if (preg_match('/^(\+|00)393(\s?\d{9})$/', $tel_dest)) {
+                    return $tel_dest;
+                } else {
+                    return false;
+                }
+                break;
+
+            default:
+                return $tel_dest;
+                break;
         }
     }
 
@@ -151,7 +226,7 @@ class AdminDPDFrance extends AdminTab
             $mobile=self::formatGSM($tel_dest, $code_pays_dest);
             if (preg_match('/P\d{5}/i', $address_delivery->company)) {
                 $service='REL';
-            } elseif ($mobile&&$code_pays_dest=='F'&&$order->id_carrier!=Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID', null, null, (int) $order->id_shop)) {
+            } elseif ($mobile&&$code_pays_dest!='INT'&&$order->id_carrier!=Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID', null, null, (int) $order->id_shop)) {
                 $service='PRE';
             }
         }
@@ -335,7 +410,7 @@ class AdminDPDFrance extends AdminTab
                             }
 
                             if (!empty($statuslist)) {
-                                 // Check delivery state
+                                // Check delivery state
                                 $tracking_number = (key($statuslist));
                                 $delivery_state = 0;
                                 foreach ($statuslist as $events) {
@@ -634,16 +709,16 @@ class AdminDPDFrance extends AdminTab
                         $record=new DPDStation();
                         foreach ($orderlist as $order_var) {
                             // Shipper information retrieval
-                            $order          = new Order($order_var['id_order']);
-                            $nom_exp        = Configuration::get('DPDFRANCE_NOM_EXP', null, null, (int)$order->id_shop);            // Raison sociale expéditeur
-                            $address_exp    = Configuration::get('DPDFRANCE_ADDRESS_EXP', null, null, (int)$order->id_shop);    // Adresse
-                            $address2_exp   = Configuration::get('DPDFRANCE_ADDRESS2_EXP', null, null, (int)$order->id_shop);   // Complément d'adresse
-                            $cp_exp         = Configuration::get('DPDFRANCE_CP_EXP', null, null, (int)$order->id_shop);             // Code postal
-                            $ville_exp      = Configuration::get('DPDFRANCE_VILLE_EXP', null, null, (int)$order->id_shop);      // Ville
-                            $code_pays_exp  = 'F';                                                                          // Code pays
-                            $tel_exp        = Configuration::get('DPDFRANCE_TEL_EXP', null, null, (int)$order->id_shop);            // Téléphone
-                            $email_exp      = Configuration::get('DPDFRANCE_EMAIL_EXP', null, null, (int)$order->id_shop);      // E-mail
-                            $gsm_exp        = Configuration::get('DPDFRANCE_GSM_EXP', null, null, (int)$order->id_shop);            // N° GSM
+                            $order              = new Order($order_var['id_order']);
+                            $nom_exp            = Configuration::get('DPDFRANCE_NOM_EXP', null, null, (int)$order->id_shop);            // Raison sociale expéditeur
+                            $address_exp        = Configuration::get('DPDFRANCE_ADDRESS_EXP', null, null, (int)$order->id_shop);        // Adresse
+                            $address2_exp       = Configuration::get('DPDFRANCE_ADDRESS2_EXP', null, null, (int)$order->id_shop);       // Complément d'adresse
+                            $cp_exp             = Configuration::get('DPDFRANCE_CP_EXP', null, null, (int)$order->id_shop);             // Code postal
+                            $ville_exp          = Configuration::get('DPDFRANCE_VILLE_EXP', null, null, (int)$order->id_shop);          // Ville
+                            $code_pays_exp      = 'F';                                                                                  // Code pays
+                            $tel_exp            = Configuration::get('DPDFRANCE_TEL_EXP', null, null, (int)$order->id_shop);            // Téléphone
+                            $email_exp          = Configuration::get('DPDFRANCE_EMAIL_EXP', null, null, (int)$order->id_shop);          // E-mail
+                            $gsm_exp            = Configuration::get('DPDFRANCE_GSM_EXP', null, null, (int)$order->id_shop);            // N° GSM
 
                             if (_PS_VERSION_ < '1.5') {
                                 $internalref = $order->id;
@@ -703,8 +778,12 @@ class AdminDPDFrance extends AdminTab
                                 $record->add($address_delivery->lastname, 60, 35);                                      //  Nom du destinataire
                                 $record->add($address_delivery->firstname, 95, 35);                                     //  Prénom du destinataire
                             } else {
-                                $record->add($address_delivery->lastname.' '.$address_delivery->firstname, 60, 35);     //  Nom et prénom du destinataire
-                                $record->add($address_delivery->company, 95, 35);                                       //  Complément d'adresse 1
+                                if ($address_delivery->company) {
+                                    $record->add($address_delivery->company, 60, 35);                                       //  Nom société
+                                    $record->add($address_delivery->lastname.' '.$address_delivery->firstname, 95, 35);     //  Nom et prénom du destinataire
+                                } else {
+                                    $record->add($address_delivery->lastname.' '.$address_delivery->firstname, 60, 35);     //  Nom et prénom du destinataire
+                                }
                             }
                             $record->add($address_delivery->address2, 130, 140);                                        //  Complément d’adresse 2 a 5
                             $record->add($address_delivery->postcode, 270, 10);                                         //  Code postal
@@ -768,7 +847,7 @@ class AdminDPDFrance extends AdminTab
             echo '<script type="text/javascript" src="../modules/'.$this->name.'/views/js/admin/jquery/jquery-1.11.0.min.js"></script>';
         }
         // Calls function to get orders
-        $order_info =  array();
+        $order_info = array();
         $statuses_array = array();
         $statuses = OrderState::getOrderStates((int)Context::getContext()->language->id);
 
@@ -790,6 +869,10 @@ class AdminDPDFrance extends AdminTab
         }
 
         if (version_compare(_PS_VERSION_, '1.5.0.0', '>=') && $current_shop == 0 && Shop::isFeatureActive()) {
+            $predict_carrier_log=Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID', null, null, null).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, null), 1))));
+            $classic_carrier_log=Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID', null, null, null).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, null), 1))));
+            $relais_carrier_log=Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID', null, null, null).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, null), 1))));
+
             foreach (Shop::getShops(true) as $shop) {
                 if (Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID', null, null, $shop['id_shop'])) {
                     $predict_carrier_log.=Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID', null, null, $shop['id_shop']).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, $shop['id_shop']), 1))));
@@ -872,10 +955,15 @@ class AdminDPDFrance extends AdminTab
                     }
                     $amount = number_format($order->total_paid, 2, '.', '.').' €';
                     $service=self::getService($order, Context::getContext()->language->id);
+                    $code_pays_dest = self::getIsoCodebyIdCountry((int)$address_delivery->id_country);
 
                     switch ($service) {
                         case 'PRE':
-                            $type = 'Predict<img src="../modules/dpdfrance/views/img/admin/service_predict.png" title="Predict"/>';
+                            if ($code_pays_dest !== 'F') {
+                                $type = 'Predict Export<img src="../modules/dpdfrance/views/img/admin/service_predict.png" title="Predict Export"/>';
+                            } else {
+                                $type = 'Predict<img src="../modules/dpdfrance/views/img/admin/service_predict.png" title="Predict"/>';
+                            }
                             $compte_chargeur = Configuration::get('DPDFRANCE_PREDICT_SHIPPER_CODE', null, null, (int)$order->id_shop);
                             $depot_code = Configuration::get('DPDFRANCE_PREDICT_DEPOT_CODE', null, null, (int)$order->id_shop);
                             $address = '<a class="popup" href="http://maps.google.com/maps?f=q&hl=fr&geocode=&q='.str_replace(' ', '+', $address_delivery->address1).','.str_replace(' ', '+', $address_delivery->postcode).'+'.str_replace(' ', '+', $address_delivery->city).'&output=embed" target="_blank">'.($address_delivery->company ? $address_delivery->company.'<br/>' : '').$address_delivery->address1.'<br/>'.$address_delivery->postcode.' '.$address_delivery->city.'</a>';
@@ -892,7 +980,6 @@ class AdminDPDFrance extends AdminTab
                             $address = '<a class="popup" href="http://www.dpd.fr/dpdrelais/id_'.$relay_id.'" target="_blank">'.$address_delivery->company.'<br/>'.$address_delivery->postcode.' '.$address_delivery->city.'</a>';
                             break;
                         default:
-                            $code_pays_dest = self::getIsoCodebyIdCountry((int)$address_delivery->id_country);
                             if ($code_pays_dest !== 'F') {
                                 $type = 'Classic Export<img src="../modules/dpdfrance/views/img/admin/service_world.png" title="Classic Export"/>';
                             } else {
