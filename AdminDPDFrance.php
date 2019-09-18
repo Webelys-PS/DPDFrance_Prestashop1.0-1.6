@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2018 PrestaShop
+ * 2007-2019 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -19,7 +19,7 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  * @author    DPD France S.A.S. <support.ecommerce@dpd.fr>
- * @copyright 2018 DPD France S.A.S.
+ * @copyright 2019 DPD France S.A.S.
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
 
@@ -135,7 +135,7 @@ class AdminDPDFrance extends AdminTab
                 break;
 
             case 'D':
-                if (preg_match('/^(\+|00)49(15|16|17)(\s?\d{7,8})$/', $tel_dest)) {
+                if (preg_match('/^(\+|00)49(15|16|17)(\s?\d{8,9})$/', $tel_dest)) {
                     return $tel_dest;
                 } else {
                     return false;
@@ -143,7 +143,7 @@ class AdminDPDFrance extends AdminTab
                 break;
 
             case 'B':
-                if (preg_match('/^(\+|00)324([56789]\d)(\s?\d{6})$/', $tel_dest)) {
+                if (preg_match('/^(\+|00)324([56789])(\s?\d{7})$/', $tel_dest)) {
                     return $tel_dest;
                 } else {
                     return false;
@@ -151,7 +151,7 @@ class AdminDPDFrance extends AdminTab
                 break;
 
             case 'AT':
-                if (preg_match('/^(\+|00)436([56789]\d)(\s?\d{4})$/', $tel_dest)) {
+                if (preg_match('/^(\+|00)436([56789])(\s?\d{4,10})$/', $tel_dest)) {
                     return $tel_dest;
                 } else {
                     return false;
@@ -159,7 +159,7 @@ class AdminDPDFrance extends AdminTab
                 break;
 
             case 'GB':
-                if (preg_match('/^(\+|00)447([3456789]\d)(\s?\d{7})$/', $tel_dest)) {
+                if (preg_match('/^(\+|00)447([3456789])(\s?\d{7})$/', $tel_dest)) {
                     return $tel_dest;
                 } else {
                     return false;
@@ -200,6 +200,14 @@ class AdminDPDFrance extends AdminTab
 
             case 'I':
                 if (preg_match('/^(\+|00)393(\s?\d{9})$/', $tel_dest)) {
+                    return $tel_dest;
+                } else {
+                    return false;
+                }
+                break;
+
+            case 'CH':
+                if (preg_match('/^(\+|00)417([56789])(\s?\d{7})$/', $tel_dest)) {
                     return $tel_dest;
                 } else {
                     return false;
@@ -250,17 +258,30 @@ class AdminDPDFrance extends AdminTab
             $europe_carrier_sql = 'CA.name LIKE \'%DPD%\'';
         }
 
-        if (Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID')) {
-            $predict_carrier_log = Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID').','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG'), 1))));
-            $predict_carrier_sql = 'CA.id_carrier IN ('.$predict_carrier_log.') OR ';
+        if (version_compare(_PS_VERSION_, '1.5.0.0', '>=') && Shop::isFeatureActive()) {
+            foreach (Shop::getShops(true) as $shop) {
+                if (Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID', null, null, $shop['id_shop'])) {
+                    $predict_carrier_log.=Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID', null, null, $shop['id_shop']).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, $shop['id_shop']), 1))));
+                }
+                if (Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID', null, null, $shop['id_shop'])) {
+                    $classic_carrier_log.=Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID', null, null, $shop['id_shop']).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, $shop['id_shop']), 1))));
+                }
+                if (Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID', null, null, $shop['id_shop'])) {
+                    $relais_carrier_log.=Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID', null, null, $shop['id_shop']).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, $shop['id_shop']), 1))));
+                }
+            }
         }
-        if (Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID')) {
-            $classic_carrier_log = Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID').','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG'), 1))));
-            $classic_carrier_sql = 'CA.id_carrier IN ('.$classic_carrier_log.') OR ';
+        if (Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID', null, null, null)) {
+            $predict_carrier_log.=','.Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID', null, null, null).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, null), 1))));
+            $predict_carrier_sql = 'CA.id_carrier IN ('.implode(',', array_unique(explode(',', $predict_carrier_log))).') OR ';
         }
-        if (Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID')) {
-            $relais_carrier_log = Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID').','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG'), 1))));
-            $relais_carrier_sql = 'CA.id_carrier IN ('.$relais_carrier_log.') OR ';
+        if (Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID', null, null, null)) {
+            $classic_carrier_log.=','.Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID', null, null, null).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, null), 1))));
+            $classic_carrier_sql = 'CA.id_carrier IN ('.implode(',', array_unique(explode(',', $classic_carrier_log))).') OR ';
+        }
+        if (Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID', null, null, null)) {
+            $relais_carrier_log.=','.Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID', null, null, null).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, null), 1))));
+            $relais_carrier_sql = 'CA.id_carrier IN ('.implode(',', array_unique(explode(',', $relais_carrier_log))).') OR ';
         }
 
         $sql14='SELECT  O.id_order as reference, O.id_carrier as id_carrier, O.id_order as id_order, O.shipping_number as shipping_number
@@ -283,7 +304,7 @@ class AdminDPDFrance extends AdminTab
                         ('.$predict_carrier_sql.$classic_carrier_sql.$relais_carrier_sql.$europe_carrier_sql.')
                 ORDER BY id_order DESC
                 LIMIT 1000';
-                
+
         if (_PS_VERSION_<'1.5') {
             $orderlist=Db::getInstance()->ExecuteS($sql14);
         } else {
@@ -415,7 +436,7 @@ class AdminDPDFrance extends AdminTab
                                 $delivery_state = 0;
                                 foreach ($statuslist as $events) {
                                     // Check if en-route event has been applied
-                                    if (array_intersect(array(10, 28, 89), $events)) {
+                                    if (array_intersect(array(10, 28, 44, 89), $events)) {
                                         $delivery_state = 1;
                                     }
                                     // Check if delivered event has been applied
@@ -704,9 +725,10 @@ class AdminDPDFrance extends AdminTab
                     $orderlist = Db::getInstance()->ExecuteS($sql);
 
                     if (!empty($orderlist)) {
-                        // File creation
+                        // Labelling tool interface file creation
                         require_once(_PS_MODULE_DIR_.'dpdfrance/classes/admin/DPDStation.php');
                         $record=new DPDStation();
+
                         foreach ($orderlist as $order_var) {
                             // Shipper information retrieval
                             $order              = new Order($order_var['id_order']);
@@ -770,59 +792,9 @@ class AdminDPDFrance extends AdminTab
                                     $compte_chargeur = Configuration::get('DPDFRANCE_CLASSIC_SHIPPER_CODE', null, null, (int)$order->id_shop);
                                     break;
                             }
-
-                            // DPD unified interface file structure
-                            $record->add($internalref, 0, 35);                                                          //  Référence client N°1
-                            $record->add(str_pad((int)$poids, 8, '0', STR_PAD_LEFT), 37, 8);                            //  Poids du colis sur 8 caractères
-                            if ($service == 'REL') {
-                                $record->add($address_delivery->lastname, 60, 35);                                      //  Nom du destinataire
-                                $record->add($address_delivery->firstname, 95, 35);                                     //  Prénom du destinataire
-                            } else {
-                                if ($address_delivery->company) {
-                                    $record->add($address_delivery->company, 60, 35);                                       //  Nom société
-                                    $record->add($address_delivery->lastname.' '.$address_delivery->firstname, 95, 35);     //  Nom et prénom du destinataire
-                                } else {
-                                    $record->add($address_delivery->lastname.' '.$address_delivery->firstname, 60, 35);     //  Nom et prénom du destinataire
-                                }
-                            }
-                            $record->add($address_delivery->address2, 130, 140);                                        //  Complément d’adresse 2 a 5
-                            $record->add($address_delivery->postcode, 270, 10);                                         //  Code postal
-                            $record->add($address_delivery->city, 280, 35);                                             //  Ville
-                            $record->add($address_delivery->address1, 325, 35);                                         //  Rue
-                            $record->add('', 360, 10);                                                                  //  Filler
-                            $record->add($code_pays_dest, 370, 3);                                                      //  Code Pays destinataire
-                            $record->add($tel_dest, 373, 30);                                                           //  Téléphone
-                            $record->add($nom_exp, 418, 35);                                                            //  Nom expéditeur
-                            $record->add($address2_exp, 453, 35);                                                       //  Complément d’adresse 1
-                            $record->add($cp_exp, 628, 10);                                                             //  Code postal
-                            $record->add($ville_exp, 638, 35);                                                          //  Ville
-                            $record->add($address_exp, 683, 35);                                                        //  Rue
-                            $record->add($code_pays_exp, 728, 3);                                                       //  Code Pays
-                            $record->add($tel_exp, 731, 30);                                                            //  Tél.
-                            $record->add($instr_liv_cleaned, 761, 140);                                                 //  Instructions de livraison
-                            $record->add(date('d/m/Y'), 901, 10);                                                       //  Date d'expédition théorique
-                            $record->add(str_pad($compte_chargeur, 8, '0', STR_PAD_LEFT), 911, 8);                      //  N° de compte chargeur DPD
-                            $record->add($order->id, 919, 35);                                                          //  Code à barres
-                            $record->add($order->id, 954, 35);                                                          //  N° de commande - Id Order Prestashop
-                            if (Tools::getIsset('advalorem') && in_array($order->id, Tools::getValue('advalorem'))) {
-                                $record->add(str_pad(number_format($order->total_paid, 2, '.', ''), 9, '0', STR_PAD_LEFT), 1018, 9); // Montant valeur colis
-                            }
-                            $record->add($order->id, 1035, 35);                                                         //  Référence client N°2 - Id Order Prestashop
-                            $record->add($email_exp, 1116, 80);                                                         //  E-mail expéditeur
-                            $record->add($gsm_exp, 1196, 35);                                                           //  GSM expéditeur
-                            $record->add($customer->email, 1231, 80);                                                   //  E-mail destinataire
-                            $record->add($mobile, 1311, 35);                                                            //  GSM destinataire
-                            if ($service == 'REL') {
-                                $record->add($relay_id, 1442, 8);                                                       //  Identifiant relais Pickup
-                            }
-                            if ($service == 'PRE') {
-                                $record->add('+', 1568, 1);                                                             //  Flag Predict
-                            }
-                            $record->add($address_delivery->lastname, 1569, 35);                                        //  Nom de famille du destinataire
-                            if (Tools::getIsset('retour') && in_array($order->id, Tools::getValue('retour')) && $retour_option != 0) {
-                                $record->add($retour_option, 1834, 1);                                                  //  Flag Retour
-                            }
-                            $record->addLine();
+                            
+                            // Add shipment data to file
+                            $record->formatRow($internalref, $order->id, $service, Tools::getValue('advalorem'), $order->total_paid, Tools::getValue('retour'), $retour_option, $poids, $address_delivery, $code_pays_dest, $mobile, $tel_dest, $relay_id, $customer->email, $nom_exp, $address2_exp, $cp_exp, $ville_exp, $address_exp, $code_pays_exp, $tel_exp, $instr_liv_cleaned, $compte_chargeur, $email_exp, $gsm_exp);
                         }
                         $record->download();
                     } else {
@@ -869,10 +841,15 @@ class AdminDPDFrance extends AdminTab
         }
 
         if (version_compare(_PS_VERSION_, '1.5.0.0', '>=') && $current_shop == 0 && Shop::isFeatureActive()) {
-            $predict_carrier_log=Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID', null, null, null).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, null), 1))));
-            $classic_carrier_log=Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID', null, null, null).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, null), 1))));
-            $relais_carrier_log=Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID', null, null, null).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, null), 1))));
-
+            if (Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID', null, null, null)) {
+                $predict_carrier_log=Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID', null, null, null).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, null), 1))));
+            }
+            if (Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID', null, null, null)) {
+                $classic_carrier_log=Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID', null, null, null).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, null), 1))));
+            }
+            if (Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID', null, null, null)) {
+                $relais_carrier_log=Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID', null, null, null).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, null), 1))));
+            }
             foreach (Shop::getShops(true) as $shop) {
                 if (Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID', null, null, $shop['id_shop'])) {
                     $predict_carrier_log.=Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID', null, null, $shop['id_shop']).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, $shop['id_shop']), 1))));

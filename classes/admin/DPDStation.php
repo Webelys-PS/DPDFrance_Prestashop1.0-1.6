@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2018 PrestaShop
+ * 2007-2019 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -19,7 +19,7 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  * @author    DPD France S.A.S. <support.ecommerce@dpd.fr>
- * @copyright 2018 DPD France S.A.S.
+ * @copyright 2019 DPD France S.A.S.
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
 
@@ -91,5 +91,64 @@ class DPDStation
         $str=preg_replace('/[\x{2116}]/u', 'No', $str);
         $str=preg_replace('/[\x{0022}\x{0025}\x{0026}\x{0027}\x{00A1}\x{00A2}\x{00A3}\x{00A4}\x{00A5}\x{00A6}\x{00A7}\x{00A8}\x{00AA}\x{00AB}\x{00AC}\x{00AD}\x{00AE}\x{00AF}\x{00B0}\x{00B1}\x{00B2}\x{00B3}\x{00B4}\x{00B5}\x{00B6}\x{00B7}\x{00B8}\x{00BA}\x{00BB}\x{00BC}\x{00BD}\x{00BE}\x{00BF}\x{2019}]/u', ' ', $str);
         return $str;
+    }
+
+    public function formatRow($internalref, $order_id, $service, $advalorem, $order_total_paid, $retour, $retour_option, $poids, $address_delivery, $code_pays_dest, $mobile, $tel_dest, $relay_id, $customer_email, $nom_exp, $address2_exp, $cp_exp, $ville_exp, $address_exp, $code_pays_exp, $tel_exp, $instr_liv_cleaned, $compte_chargeur, $email_exp, $gsm_exp)
+    {
+        self::add($internalref, 0, 35);                                                         //  Référence client N°1
+        self::add(str_pad((int)$poids, 8, '0', STR_PAD_LEFT), 37, 8);                           //  Poids du colis sur 8 caractères
+        if ($service == 'REL') {
+            self::add($address_delivery->lastname, 60, 35);                                     //  Nom du destinataire
+            self::add($address_delivery->firstname, 95, 35);                                    //  Prénom du destinataire
+        } else {
+            if ($address_delivery->company) {
+                self::add($address_delivery->company, 60, 35);                                  //  Nom société
+                self::add($address_delivery->lastname.' '.$address_delivery->firstname, 95, 35);//  Nom et prénom du destinataire
+            } else {
+                self::add($address_delivery->lastname.' '.$address_delivery->firstname, 60, 35);//  Nom et prénom du destinataire
+            }
+        }
+        self::add($address_delivery->address2, 130, 140);                                       //  Complément d’adresse 2 a 5
+        self::add($address_delivery->postcode, 270, 10);                                        //  Code postal
+        self::add($address_delivery->city, 280, 35);                                            //  Ville
+        self::add($address_delivery->address1, 325, 35);                                        //  Rue
+        self::add('', 360, 10);                                                                 //  Filler
+        self::add($code_pays_dest, 370, 3);                                                     //  Code Pays destinataire
+        self::add($tel_dest, 373, 30);                                                          //  Téléphone
+        self::add($nom_exp, 418, 35);                                                           //  Nom expéditeur
+        self::add($address2_exp, 453, 35);                                                      //  Complément d’adresse 1
+        self::add($cp_exp, 628, 10);                                                            //  Code postal
+        self::add($ville_exp, 638, 35);                                                         //  Ville
+        self::add($address_exp, 683, 35);                                                       //  Rue
+        self::add($code_pays_exp, 728, 3);                                                      //  Code Pays
+        self::add($tel_exp, 731, 30);                                                           //  Tél.
+        self::add($instr_liv_cleaned, 761, 140);                                                //  Instructions de livraison
+        self::add(date('d/m/Y'), 901, 10);                                                      //  Date d'expédition théorique
+        self::add(str_pad($compte_chargeur, 8, '0', STR_PAD_LEFT), 911, 8);                     //  N° de compte chargeur DPD
+        self::add($order_id, 919, 35);                                                          //  Code à barres
+        self::add($order_id, 954, 35);                                                          //  N° de commande - Id Order Prestashop
+        if ($advalorem) {
+            if (in_array($order_id, $advalorem)) {
+                self::add(str_pad(number_format($order_total_paid, 2, '.', ''), 9, '0', STR_PAD_LEFT), 1018, 9); // Montant valeur colis
+            }
+        }
+        self::add($order_id, 1035, 35);                                                         //  Référence client N°2 - Id Order Prestashop
+        self::add($email_exp, 1116, 80);                                                        //  E-mail expéditeur
+        self::add($gsm_exp, 1196, 35);                                                          //  GSM expéditeur
+        self::add($customer_email, 1231, 80);                                                   //  E-mail destinataire
+        self::add($mobile, 1311, 35);                                                           //  GSM destinataire
+        if ($service == 'REL') {
+            self::add($relay_id, 1442, 8);                                                      //  Identifiant relais Pickup
+        }
+        if ($service == 'PRE') {
+            self::add('+', 1568, 1);                                                            //  Flag Predict
+        }
+        self::add($address_delivery->lastname, 1569, 35);                                       //  Nom de famille du destinataire
+        if ($retour) {
+            if (in_array($order_id, $retour) && $retour_option != 0) {
+                self::add($retour_option, 1834, 1);                                             //  Flag Retour
+            }
+        }
+        self::addLine();
     }
 }

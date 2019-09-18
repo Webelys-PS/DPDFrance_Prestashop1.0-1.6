@@ -1,5 +1,5 @@
 /**
- * 2007-2018 PrestaShop
+ * 2007-2019 PrestaShop
  *
  * NOTICE OF LICENSE
  *
@@ -18,7 +18,7 @@
  * needs please refer to http://www.prestashop.com for more information.
  *
  * @author    DPD France S.A.S. <support.ecommerce@dpd.fr>
- * @copyright 2018 DPD France S.A.S.
+ * @copyright 2019 DPD France S.A.S.
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
 
@@ -168,15 +168,16 @@ function dpdfrance_checkGSM()
         var gsmDest = document.getElementById('input_dpdfrance_predict_gsm_dest');
 
         var gsm_fr = new RegExp(/^((\+33|0)[67])(?:[ _.-]?(\d{2})){4}$/);
-        var gsm_de = new RegExp(/^(\+|00)49(15|16|17)(\s?\d{7,8})$/);
-        var gsm_be = new RegExp(/^(\+|00)324([56789]\d)(\s?\d{6})$/);
-        var gsm_at = new RegExp(/^(\+|00)436([56789]\d)(\s?\d{4})$/);
-        var gsm_uk = new RegExp(/^(\+|00)447([3456789]\d)(\s?\d{7})$/);
+        var gsm_de = new RegExp(/^(\+|00)49(15|16|17)(\s?\d{8,9})$/);
+        var gsm_be = new RegExp(/^(\+|00)324([56789])(\s?\d{7})$/);
+        var gsm_at = new RegExp(/^(\+|00)436([56789])(\s?\d{4,10})$/);
+        var gsm_uk = new RegExp(/^(\+|00)447([3456789])(\s?\d{7})$/);
         var gsm_nl = new RegExp(/^(\+|00)316(\s?\d{8})$/);
         var gsm_pt = new RegExp(/^(\+|00)3519(\s?\d{7})$/);
         var gsm_ei = new RegExp(/^(\+|00)3538(\s?\d{8})$/);
         var gsm_es = new RegExp(/^(\+|00)34(6|7)(\s?\d{8})$/);
         var gsm_it = new RegExp(/^(\+|00)393(\s?\d{9})$/);
+        var gsm_ch = new RegExp(/^(\+|00)417([56789])(\s?\d{7})$/);
 
         var numbers = gsmDest.value.substr(-6);
         var pattern = new Array('000000','111111','222222','333333','444444','555555','666666','777777','888888','999999', '123456', '234567', '345678', '456789');
@@ -190,7 +191,8 @@ function dpdfrance_checkGSM()
             || gsm_uk.test(gsmDest.value)
             || gsm_at.test(gsmDest.value)
             || gsm_de.test(gsmDest.value)
-            || gsm_be.test(gsmDest.value))
+            || gsm_be.test(gsmDest.value)
+            || gsm_ch.test(gsmDest.value))
             && !dpdfrance_in_array(numbers, pattern)) {
             // GSM OK
             $("#dpdfrance_predict_gsm_button").css('background-color', '#34a900');
