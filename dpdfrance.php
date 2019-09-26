@@ -185,7 +185,7 @@ class DPDFrance extends CarrierModule
         } else {
             $this->tab='shipping_logistics';
         }
-        $this->version = '5.3.2';
+        $this->version = '5.3.3';
         $this->author = 'DPD France S.A.S.';
         $this->module_key = '41c64060327b5afada101ff25bd38850';
         $this->need_instance = 1;

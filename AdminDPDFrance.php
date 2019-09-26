@@ -271,16 +271,26 @@ class AdminDPDFrance extends AdminTab
                 }
             }
         }
+
         if (Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID', null, null, null)) {
-            $predict_carrier_log.=','.Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID', null, null, null).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, null), 1))));
+            if (!empty($predict_carrier_log)) {
+                $predict_carrier_log .= ',';
+            }
+            $predict_carrier_log .= Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID', null, null, null).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_PREDICT_CARRIER_LOG', null, null, null), 1))));
             $predict_carrier_sql = 'CA.id_carrier IN ('.implode(',', array_unique(explode(',', $predict_carrier_log))).') OR ';
         }
         if (Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID', null, null, null)) {
-            $classic_carrier_log.=','.Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID', null, null, null).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, null), 1))));
+            if (!empty($classic_carrier_log)) {
+                $classic_carrier_log .= ',';
+            }
+            $classic_carrier_log .= Configuration::get('DPDFRANCE_CLASSIC_CARRIER_ID', null, null, null).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_CLASSIC_CARRIER_LOG', null, null, null), 1))));
             $classic_carrier_sql = 'CA.id_carrier IN ('.implode(',', array_unique(explode(',', $classic_carrier_log))).') OR ';
         }
         if (Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID', null, null, null)) {
-            $relais_carrier_log.=','.Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID', null, null, null).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, null), 1))));
+            if (!empty($relais_carrier_log)) {
+                $relais_carrier_log .= ',';
+            }
+            $relais_carrier_log.= Configuration::get('DPDFRANCE_RELAIS_CARRIER_ID', null, null, null).','.implode(',', array_map('intval', explode('|', Tools::substr(Configuration::get('DPDFRANCE_RELAIS_CARRIER_LOG', null, null, null), 1))));
             $relais_carrier_sql = 'CA.id_carrier IN ('.implode(',', array_unique(explode(',', $relais_carrier_log))).') OR ';
         }
 
