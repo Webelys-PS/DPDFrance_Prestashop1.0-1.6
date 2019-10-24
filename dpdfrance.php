@@ -262,7 +262,7 @@ class DPDFrance extends CarrierModule
         if (version_compare(_PS_VERSION_, '1.0.0.0 ', '>=')&&(!$this->registerHook('extraCarrier')||!$this->registerHook('updateCarrier')||!$this->registerHook('newOrder'))) {
             return false;
         }
-        if (version_compare(_PS_VERSION_, '1.4.0.0 ', '>=')&&(!$this->registerHook('header')||!$this->registerHook('paymentTop')||!$this->registerHook('backOfficeHeader'))) {
+        if (version_compare(_PS_VERSION_, '1.4.0.0 ', '>=')&&(!$this->registerHook('header')||!$this->registerHook('paymentTop')||!$this->registerHook('backOfficeHeader')||!$this->registerHook('actionDeleteGDPRCustomer'))) {
             return false;
         }
         return true;
@@ -690,6 +690,22 @@ class DPDFrance extends CarrierModule
             }
             if ($this->context->cart->id_carrier == Configuration::get('DPDFRANCE_PREDICT_CARRIER_ID')) {
                 return $this->display(__FILE__, 'views/templates/front/ps15/predict/dpdfrance_predict.tpl');
+            }
+        }
+    }
+
+    public function hookActionDeleteGDPRCustomer($customer)
+    {
+        if (!empty($customer['email']) && Validate::isEmail($customer['email']) && (int)$customer['id']) {
+            $result = Db::getInstance()->delete(
+                '`dpdfrance_shipping` ',
+                '`id_customer` = \''.(int)$customer['id'].'\''
+            );
+
+            if ($result) {
+                return json_encode(true);
+            } else {
+                return json_encode($this->l('DPDFrance : Unable to delete customer using email.'));
             }
         }
     }
