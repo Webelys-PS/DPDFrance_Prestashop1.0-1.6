@@ -698,8 +698,8 @@ class DPDFrance extends CarrierModule
     {
         if (!empty($customer['email']) && Validate::isEmail($customer['email']) && (int)$customer['id']) {
             $result = Db::getInstance()->delete(
-                '`dpdfrance_shipping` ',
-                '`id_customer` = \''.(int)$customer['id'].'\''
+                'dpdfrance_shipping',
+                'id_customer = '.(int)$customer['id']
             );
 
             if ($result) {
