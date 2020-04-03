@@ -22,15 +22,15 @@
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  *}
 
-<script type="text/javascript">
+<script>
     var badIE = false;
 </script>
 
 <!--[if lt IE 8]>
-    <script type="text/javascript">badIE = true;</script>
+    <script>badIE = true;</script>
 <![endif]-->
 
-<script type="text/javascript">
+<script>
 if (badIE == false){
     {literal}
     $(document).ready(function()

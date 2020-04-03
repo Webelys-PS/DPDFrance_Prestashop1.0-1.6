@@ -23,9 +23,9 @@
  *}
 
 <link rel="stylesheet" type="text/css" href="{$dpdfrance_base_dir|escape:'htmlall':'UTF-8'}/views/css/front/dpdfrance.css"/>
-<script type="text/javascript" src="{$dpdfrance_base_dir|escape:'htmlall':'UTF-8'}/views/js/front/dpdfrance.js"></script>
-<script type="text/javascript" src="https://maps.google.com/maps/api/js?key={$gmaps_api_key|escape:'javascript':'UTF-8'}"></script>
-<script type="text/javascript">
+<script src="{$dpdfrance_base_dir|escape:'htmlall':'UTF-8'}/views/js/front/dpdfrance.js"></script>
+<script src="https://maps.google.com/maps/api/js?key={$gmaps_api_key|escape:'javascript':'UTF-8'}"></script>
+<script >
 {literal}
 $(document).ready(function()
 {
@@ -286,7 +286,7 @@ $(document).ready(function()
 </table>
 <noscript></div></noscript>
 
-<script type="text/javascript">
+<script>
 {literal}
 $(document).ready(function()
 {

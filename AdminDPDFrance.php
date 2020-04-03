@@ -826,7 +826,7 @@ class AdminDPDFrance extends AdminTab
         }
         // Add jQuery for Prestashop before 1.4
         if (_PS_VERSION_ < '1.4') {
-            echo '<script type="text/javascript" src="../modules/'.$this->name.'/views/js/admin/jquery/jquery-1.11.0.min.js"></script>';
+            echo '<script src="../modules/'.$this->name.'/views/js/admin/jquery/jquery-1.11.0.min.js"></script>';
         }
         // Calls function to get orders
         $order_info = array();

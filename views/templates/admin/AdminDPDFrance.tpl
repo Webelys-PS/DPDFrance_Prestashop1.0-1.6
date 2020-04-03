@@ -24,11 +24,11 @@
 
 <link rel="stylesheet" type="text/css" href="../modules/dpdfrance/views/css/admin/AdminDPDFrance.css"/>
 <link rel="stylesheet" type="text/css" href="../modules/dpdfrance/views/js/admin/jquery/plugins/fancybox/jquery.fancybox.css" media="screen"/>
-<script type="text/javascript" src="../modules/dpdfrance/views/js/admin/jquery/plugins/fancybox/jquery.fancybox.js"></script>
-<script type="text/javascript" src="../modules/dpdfrance/views/js/admin/jquery/plugins/marquee/jquery.marquee.min.js"></script>
+<script src="../modules/dpdfrance/views/js/admin/jquery/plugins/fancybox/jquery.fancybox.js"></script>
+<script src="../modules/dpdfrance/views/js/admin/jquery/plugins/marquee/jquery.marquee.min.js"></script>
 
 {literal}
-<script type='text/javascript'>
+<script>
     $(document).ready(function(){
         $('.marquee').marquee({
             duration: 20000,

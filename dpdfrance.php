@@ -440,7 +440,7 @@ class DPDFrance extends CarrierModule
         $output = '<h2>'.$this->displayName.'</h2>';
 
         if (version_compare(_PS_VERSION_, '1.5.0.0 ', '<')) {
-            $output .= '<script type="text/javascript" src="../modules/'.$this->name.'/views/js/admin/jquery/jquery-1.11.0.min.js"></script>';
+            $output .= '<script src="../modules/'.$this->name.'/views/js/admin/jquery/jquery-1.11.0.min.js"></script>';
         }
         // DPD Relais carrier creation
         if (Tools::isSubmit('submitCreateCarrierRelais')) {
@@ -598,7 +598,7 @@ class DPDFrance extends CarrierModule
     {
         if ((int) Configuration::get('DPDFRANCE_AUTO_UPDATE')) {
             $cron_url = _MODULE_DIR_.'dpdfrance/cron.php?token='.Tools::encrypt('dpdfrance/cron').'&employee='.(int) $this->context->employee->id;
-            return '<script type="text/javascript">$(document).ready(function() {$.get("'.$cron_url.'");});</script>';
+            return '<script>$(document).ready(function() {$.get("'.$cron_url.'");});</script>';
         }
     }
 
