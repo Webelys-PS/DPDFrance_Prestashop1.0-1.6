@@ -32,7 +32,7 @@ $(document).ready(function()
     dpdfranceRelaisCarrierId = "{/literal}{$dpdfrance_relais_carrier_id|escape:'javascript':'UTF-8'}{literal}";
     dpdfrancePredictCarrierId = "{/literal}{$dpdfrance_predict_carrier_id|escape:'javascript':'UTF-8'}{literal}";
     psVer = parseFloat("{/literal}{$ps_version|escape:'javascript':'UTF-8'}{literal}");
-    opc = "{/literal}{$opc|escape:'javascript':'UTF-8'}{literal}";
+    opc = Boolean({$opc|default:0|boolval);
     dpdfrance_cart_id = "{/literal}{$dpdfrance_cart->id|escape:'javascript':'UTF-8'}{literal}";
     dpdfrance_base_dir = "{/literal}{$dpdfrance_base_dir|escape:'javascript':'UTF-8'}{literal}";
     dpdfrance_token = "{/literal}{$dpdfrance_token|escape:'javascript':'UTF-8'}{literal}";

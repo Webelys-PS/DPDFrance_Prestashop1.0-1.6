@@ -26,7 +26,7 @@
     var dpdfranceRelaisCarrierId = "{$dpdfrance_relais_carrier_id|escape:'javascript':'UTF-8'}";
     var dpdfrancePredictCarrierId = "{$dpdfrance_predict_carrier_id|escape:'javascript':'UTF-8'}";
     var psVer = parseFloat("{$ps_version|escape:'javascript':'UTF-8'}");
-    var opc = "{$opc|escape:'javascript':'UTF-8'}";
+    var opc = Boolean({$opc|boolval});
     var dpdfrance_cart_id = "{$dpdfrance_cart->id|escape:'javascript':'UTF-8'}";
     var dpdfrance_base_dir = "{$dpdfrance_base_dir|escape:'javascript':'UTF-8'}";
     var dpdfrance_token = "{$dpdfrance_token|escape:'javascript':'UTF-8'}";
